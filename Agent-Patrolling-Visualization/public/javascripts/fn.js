@@ -1,3 +1,5 @@
+import 'whatwg-fetch';
+
 class f{
   ajax (obj){
     if(!obj.headers) obj.headers = {'Content-type': 'application/json; charset=UTF-8'};

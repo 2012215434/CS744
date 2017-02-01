@@ -9,7 +9,7 @@ app.get('/', (req, res) => {
 
 app.get('/test', (req, res) => {
   res.send({success: true});
-})
+});
 
 app.listen(3000, () => {
   console.log('Server is running at port 30000');
