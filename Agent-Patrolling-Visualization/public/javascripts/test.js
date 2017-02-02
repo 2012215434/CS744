@@ -14,5 +14,5 @@ function test(){
     }
   });
 }
-
 test();
+console.log(5);

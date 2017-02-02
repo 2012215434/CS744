@@ -1,10 +1,4 @@
-#container{
-  position: fixed;
-  width: 900px;
-  height: 900px;
-  border: 1px solid grey;
-}
-.square{
+.square {
   border-top: 1px solid lightgrey;
   border-left: 1px solid lightgrey;
   width: 29px;
@@ -13,4 +7,34 @@
 }
 .clearFloat {
   clear: both
+}
+#background {
+  position: fixed;
+  top: -10px;
+  left: -10px;
+  width: 900px;
+  height: 900px;
+}
+#environment {
+  position: fixed;
+}
+.inner-square {
+  width: 29px;
+  height: 29px;
+  border-top: 0.1px solid lightgrey;
+  border-left: 1px solid lightgrey;
+  float: left;
+  background: #6A9AD0;
+}
+.top{
+  border-top: 0;
+  height: 30;
+}
+.left{
+  border-left: 0;
+  width: 30px;
+}
+.obstacle {
+}
+.open{
 }
