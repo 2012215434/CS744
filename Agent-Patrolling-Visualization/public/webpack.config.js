@@ -29,17 +29,8 @@ module.exports = {
             { test: [ /\.js$/, /\.jsx$/],use: ['babel-loader',],exclude: /node_modules/ },
         ]
     },
-    // devServer: {
-    //     inline:true,
-    //     proxy: {
-    //         '/': {
-    //             target: 'http://localhost:3000/',
-    //             secure: false
-    //         }
-    //     }
-    // },
     devServer: {
-        inline:true,
+        // inline:true,
         // hot: true,
         // // enable HMR on the server
 
