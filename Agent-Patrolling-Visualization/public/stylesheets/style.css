@@ -1,3 +1,16 @@
-body {
-    background: lightgrey;
+#container{
+  position: fixed;
+  width: 900px;
+  height: 900px;
+  border: 1px solid grey;
+}
+.square{
+  border-top: 1px solid lightgrey;
+  border-left: 1px solid lightgrey;
+  width: 29px;
+  height: 29px;
+  float: left;
+}
+.clearFloat {
+  clear: both
 }

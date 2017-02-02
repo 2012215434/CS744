@@ -24,5 +24,3 @@ class f{
 const $f = new f();
 
 export {$f};
-
-// module.exports = 'fn123123';
