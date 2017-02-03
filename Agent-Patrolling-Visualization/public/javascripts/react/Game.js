@@ -66,7 +66,7 @@ class Game extends React.Component {
   constructor(){
     super();
     this.state = {
-      background: Immutable.fromJS(Array(30).fill(Array(30).fill(""))),
+      background: Immutable.fromJS(Array(20).fill(Array(20).fill(""))),
       environment: null,
       mouseDown: false,
       environmentSettled: false,

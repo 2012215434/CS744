@@ -1,8 +1,8 @@
 .square {
   border-top: 1px solid lightgrey;
   border-left: 1px solid lightgrey;
-  width: 29px;
-  height: 29px;
+  width: 39px;
+  height: 39px;
   float: left;
 }
 .clearFloat {
@@ -12,15 +12,15 @@
   position: fixed;
   top: -10px;
   left: -10px;
-  width: 900px;
-  height: 900px;
+  width: 800px;
+  height: 800px;
 }
 #environment {
   position: fixed;
 }
 .inner-square {
-  width: 29px;
-  height: 29px;
+  width: 39px;
+  height: 39px;
   border-top: 0.1px solid lightgrey;
   border-left: 1px solid lightgrey;
   float: left;
@@ -28,11 +28,11 @@
 }
 .top{
   border-top: 0;
-  height: 30;
+  height: 40px;
 }
 .left{
   border-left: 0;
-  width: 30px;
+  width: 40px;
 }
 .obstacle {
 }
