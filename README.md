@@ -13,7 +13,7 @@ Start server：
 npm start
 ```
 <br>
-Start webpack server: (runing at port 3000)
+Start webpack server: (runing at port 8080)
 ```
 //In public/ directory
 webpack-dev-server
