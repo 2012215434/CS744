@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 import { AppContainer } from 'react-hot-loader';
 
-import {Board} from './Game';
+import {Board1} from './Game';
 
 const render = (Component) => {
   ReactDOM.render(

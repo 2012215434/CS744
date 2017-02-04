@@ -1,66 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Immutable from 'immutable';
+import {Board} from './Board';
 
 const OPEN = 'open',
       OBSTACLE = 'obstacle',
       AGENT = 'agent';
-
-function Square(props) { 
-  const className = 
-    ( props.info ? 'inner-square ' + props.info : 'square ' + props.info ) + 
-    ( props.row == 0 ? ' top' : '' ) + 
-    ( props.column == 0 ? ' left ' : '' )
-  return (
-    <div 
-      className={className}
-      data-row={props.row}
-      data-column={props.column}
-    >
-    </div>
-  );
-}
-
-class Row extends React.Component {
-  renderSquares(num) {
-    let squares = [];
-    for(let i = 0; i < num; i++) {
-      squares.push(<Square key={i} row={this.props.rIndex} column={i} info={this.props.rowInfo.get(i)}/>);
-    }
-    return squares;
-  }
-  
-  render() {
-    return (
-      <div className="row">
-        {this.renderSquares(this.props.num)}
-        <div className="clearFloat"></div>
-      </div>
-    );
-  }
-}
-
-class Board extends React.Component {
-  renderRows(rNum, cNum) {
-    let rows = [];
-    for(let i = 0; i < rNum; i++) { 
-      rows.push(<Row key={i} rIndex={i} num={cNum} rowInfo={this.props.board.get(i)}/>);
-    }
-    return rows; 
-  }
-  
-  render() {
-    return (
-      <div 
-        onMouseDown={this.props.onMouseDown}
-        onMouseUp={this.props.onMouseUp}
-        onMouseOver={this.props.onMouseOver} 
-        id={this.props.id}>
-        {this.renderRows(this.props.board.size, this.props.board.get(0).size)}
-      </div>
-    )
-  }
-}
 
 class Game extends React.Component {
   constructor(){
@@ -69,8 +14,10 @@ class Game extends React.Component {
       background: Immutable.fromJS(Array(20).fill(Array(20).fill(""))),
       environment: null,
       mouseDown: false,
+      mouseDownOnEnvir: false,
       environmentSettled: false,
-      initial: true
+      initial: true,
+      regions: Immutable.List([])
     };
 
     this.envirPosition = {
@@ -100,12 +47,6 @@ class Game extends React.Component {
     }
   }
 
-  handleMouseUpOnEnvironment(e) {
-    if(this.state.mouseDown){
-      this.setState({mouseDown: false});
-    }
-  }
-
   handleMouseOverOnBackground(e) {
     // e.target.innerHTML = '1';
     if(this.state.mouseDown){
@@ -116,13 +57,64 @@ class Game extends React.Component {
 
       let width = Math.abs(this.envirPosition.endColumn - this.envirPosition.startColumn) + 1,
           height = Math.abs(this.envirPosition.endRow - this.envirPosition.startRow) + 1;
-      this.setState({
+      this.setState(
+      {
         environment: Immutable.fromJS(Array(height).fill(Array(width).fill(OBSTACLE)))
       }, () => {
         document.getElementById('environment').style.top = this.mouseDownCoor.top;
         document.getElementById('environment').style.left = this.mouseDownCoor.left;
       });
     }
+  }
+
+  handleMouseUpOnEnvironment(e) {
+    this.setState({mouseDown: false});
+    if(this.state.mouseDownOnEnvir){
+      this.setState({mouseDownOnEnvir: false});
+      console.log(this.state.regions);
+    }
+  }
+
+  handleMouseDownOnEnvironment(e) {
+    e.preventDefault();
+    this.setState({mouseDownOnEnvir: true});
+    let target = e.target;
+    this.setState({regions: this.state.regions.push([])}, () => {this.setOpen(target)})
+  }
+
+  handleMouseOverOnEnvironment(e) {
+    if(this.state.mouseDownOnEnvir) {
+      this.setOpen(e.target);
+    }
+  }
+
+  setOpen(target) {
+    let row = target.getAttribute('data-row'),
+        column = target.getAttribute('data-column');
+    let regions = this.state.regions,
+        connectedToOtherRegions = false;
+    for(let i = 0; i < regions.size - 1 ; i++) {
+      let region = regions.get(i);
+      for(let j = 0; j < region.length; j++) {
+        if((row == region[j].row && column == region[j].column - 1) || 
+           (row == region[j].row && column == region[j].column + 1) || 
+           (column == region[j].column && row == region[j].row - 1) || 
+           (column == region[j].column && row == region[j].row + 1)) {
+              return;
+            }
+      }
+    }
+    let region = regions.last();
+    for(let i = 0; i < region.length; i ++) {
+      if(row == region[i].row && column == region[i].column) {
+        return;
+      }
+    }
+    this.setState({environment: this.state.environment.update(row, column, OPEN)});
+
+    region = JSON.parse(JSON.stringify(region));
+    region.push({row: Number(row), column: Number(column)});
+    this.setState({regions: regions.set(-1, region)});
   }
 
   render() {
@@ -135,7 +127,13 @@ class Game extends React.Component {
       />
     );
     const environment = this.state.environment ? (
-      <Board id="environment" board={this.state.environment} onMouseUp={this.handleMouseUpOnEnvironment.bind(this)}/>
+      <Board 
+        id="environment" 
+        board={this.state.environment}
+        onMouseDown={this.handleMouseDownOnEnvironment.bind(this)}
+        onMouseUp={this.handleMouseUpOnEnvironment.bind(this)}
+        onMouseOver={this.handleMouseOverOnEnvironment.bind(this)}
+      />
     ) : null;
     
     return (
@@ -152,8 +150,6 @@ ReactDOM.render(
   document.getElementById('container')
 );
 
-export {Board};
-
 function setPosition(){
   let background = document.getElementById('background');
   let top = (window.innerHeight - background.clientHeight) / 2,
@@ -164,7 +160,6 @@ function setPosition(){
 
 //update Immutable.js list of lists
 Immutable.List.prototype.update = function (row, column, value){
-  console.log(this.size);
   if(this.size == 0) return;
   return this.set(row, this.get(row).set(column, value))
 }

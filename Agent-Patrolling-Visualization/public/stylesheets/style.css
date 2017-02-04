@@ -24,7 +24,6 @@
   border-top: 0.1px solid lightgrey;
   border-left: 1px solid lightgrey;
   float: left;
-  background: #6A9AD0;
 }
 .top{
   border-top: 0;
@@ -35,6 +34,8 @@
   width: 40px;
 }
 .obstacle {
+  background: #6A9AD0;
 }
 .open{
+  background: #FFFFFF;
 }
