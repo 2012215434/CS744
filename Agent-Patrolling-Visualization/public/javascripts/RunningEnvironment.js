@@ -7,10 +7,10 @@ class RunningEnvironment{
     }
 
     initBlock(blockMatrix) {
-        var len = blockMatrix.length;
-        var width = blockMatrix[0].length;
+        const len = blockMatrix.length;
+        const width = blockMatrix[0].length;
 
-        var i, j;
+        let i, j;
         for (i = 0; i < len; i++) {
             this.block[i] = [];
             this.visited[i] = [];
@@ -26,7 +26,7 @@ class RunningEnvironment{
     }
 
     addAgent(ID, initialPosition) {
-        var positions = buckets.LinkedList();
+        let positions = buckets.LinkedList();
         positions.add(initialPosition, 0);
         this.traces.set(ID, positions);
     }
