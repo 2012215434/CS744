@@ -31,10 +31,10 @@ class Game extends React.Component {
     this.mouseUpCoor = {};
   }
 
-  componentDidMount() {
-    setTimeout(setPosition, 0);
-    setTimeout(setPosition, 500);
-  }
+  // componentDidMount() {
+  //   setTimeout(setPosition, 0);
+  //   setTimeout(setPosition, 500);
+  // }
 
   handleMouseDownOnBackground(e) {
     if(this.state.initial){
@@ -150,13 +150,13 @@ ReactDOM.render(
   document.getElementById('container')
 );
 
-function setPosition(){
-  let background = document.getElementById('background');
-  let top = (window.innerHeight - background.clientHeight) / 2,
-  left = (window.innerWidth - background.clientWidth) / 2;
-  background.style.top = top;
-  background.style.left = left;
-}
+// function setPosition(){
+//   let background = document.getElementById('background');
+//   let top = (window.innerHeight - background.clientHeight) / 2,
+//   left = (window.innerWidth - background.clientWidth) / 2;
+//   background.style.top = top;
+//   background.style.left = left;
+// }
 
 //update Immutable.js list of lists
 Immutable.List.prototype.update = function (row, column, value){
