@@ -30,6 +30,7 @@ Bundle resources:
 ```
 $ cd public/
 $ webpack
+$ cd ..
 ```
 
 <br>
@@ -54,8 +55,8 @@ Optional:
 
 Start webpack server: (runing at port 8080)
 ```
-//In public/ directory
-webpack-dev-server
+$ cd public/
+$ webpack-dev-server
 ```
 Then open [http://localhost:8080/](http://localhost:8080/).
 
