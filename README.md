@@ -1,17 +1,20 @@
 # CS744
 ## Agent-Patrolling-Visualization
+Make sure install node and npm on your machinie before you start the following steps.
+How to install node refer to [https://nodejs.org/en/download/package-manager/] (https://nodejs.org/en/download/package-manager/)
 ```
-npm install webpack -g
-npm install webpack-dev-server -g
+$ cd CS744/Agent-Patrolling-Visualization/
+$ npm install webpack -g
+$ npm install webpack-dev-server -g
 ```
 ```
-npm install
+$ npm install
 ```
 
 Bundle resources:
 ```
-//In public/ directory
-webpack
+$ cd public/
+$ webpack
 ```
 
 
@@ -28,7 +31,7 @@ $ nohup npm start &
 you can close your terminal but keep the app still running on the server.
 
 <br>
-Then you can open [http://localhost:3000/].
+Then you can open [http://localhost:3000/](http://localhost:3000/).
 
 <br>
 ---
