@@ -16,7 +16,7 @@ class RunningEnvironment{
             this.visited[i] = [];
             for (j = 0; j < width; j++) {
                 this.block[i][j] = blockMatrix[i][j];
-                if (blockMatrix[i][j] == 1) {
+                if (blockMatrix[i][j] === 1) {
                     this.visited[i][j] = -1;
                 } else {
                     this.visited[i][j] = 0;
@@ -31,5 +31,8 @@ class RunningEnvironment{
         this.traces.set(ID, positions);
     }
 }
+
+const environment = new RunningEnvironment();
+export {environment};
 
 
