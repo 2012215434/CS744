@@ -1,8 +1,13 @@
 # CS744
 ## Agent-Patrolling-Visualization
 Make sure install node and npm on your machinie before you start the following steps.
+<br>
 How to install node refer to [https://nodejs.org/en/download/package-manager/] (https://nodejs.org/en/download/package-manager/)
+
+<br>
+
 ```
+$ git clone https://github.com/2012215434/CS744.git
 $ cd CS744/Agent-Patrolling-Visualization/
 $ npm install webpack -g
 $ npm install webpack-dev-server -g
