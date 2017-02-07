@@ -1,4 +1,5 @@
 import React from 'react';
+import {Tip} from './Tip';
 
 const OPEN = 'open',
       OBSTACLE = 'obstacle',
@@ -9,17 +10,6 @@ function Square(props) {
     ( props.info ? 'inner-square ' + props.info : 'square ' + props.info ) + 
     ( props.row == 0 ? ' top' : '' ) + 
     ( props.column == 0 ? ' left ' : '' );
-  
-  // const agents = props.agents.map((agent, index) => {
-  //   return (
-  //     <div className="agent"></div>
-  //   );
-  // });
-
-  // (function(){
-  //   if(props.agents)
-  //     console.log(props.agents);
-  // }())
 
   function generateAgents() {
     if(props.agents.length < 5) {
@@ -108,8 +98,12 @@ class Board extends React.Component {
     }
     return rows; 
   }
-  
+
   render() {
+    const tip = this.props.tipText ? (
+      <Tip text={this.props.tipText}></Tip>
+    ) : null;
+
     return (
       <div 
         onMouseDown={this.props.onMouseDown}
@@ -117,6 +111,7 @@ class Board extends React.Component {
         onMouseOver={this.props.onMouseOver} 
         id={this.props.id}>
         {this.renderRows(this.props.board.size, this.props.board.get(0).size)}
+        {tip}
       </div>
     )
   }

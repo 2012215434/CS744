@@ -19,7 +19,8 @@ class Game extends React.Component {
       mouseDownOnEnvir: false,
       environmentSettled: false,
       initial: true,
-      regions: Immutable.List([])
+      regions: Immutable.List([]),
+      tipText: ''
     };
 
     this.envirPosition = {
@@ -54,6 +55,8 @@ class Game extends React.Component {
 
       let width = Math.abs(this.envirPosition.endColumn - this.envirPosition.startColumn) + 1,
           height = Math.abs(this.envirPosition.endRow - this.envirPosition.startRow) + 1;
+      
+      this.setState({tipText: `${width} X ${height}`});
       this.setState(
       {
         environment: Immutable.fromJS(Array(height).fill(Array(width).fill(OBSTACLE)))
@@ -70,6 +73,8 @@ class Game extends React.Component {
       this.setState({mouseDownOnEnvir: false});
       this.setState({initial: false});
     }
+
+    if(this.state.tipText) this.setState({tipText: ''});
   }
 
   handleMouseDownOnEnvironment(e) {
@@ -232,6 +237,7 @@ class Game extends React.Component {
         id="environment" 
         board={this.state.environment}
         agents={this.state.agents}
+        tipText={this.state.tipText}
         onMouseDown={this.handleMouseDownOnEnvironment.bind(this)}
         onMouseUp={this.handleMouseUpOnEnvironment.bind(this)}
         onMouseOver={this.handleMouseOverOnEnvironment.bind(this)}
@@ -241,6 +247,12 @@ class Game extends React.Component {
     const leftBar = (
       <div id="leftBar">
         {this.state.regions.map(this.constructRegionSketch.bind(this))}
+      </div>
+    );
+
+    const rightBar = (
+      <div id="rightBar">
+        
       </div>
     );
     

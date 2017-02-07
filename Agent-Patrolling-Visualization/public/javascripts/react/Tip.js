@@ -1,8 +1,13 @@
-class Tip extends React.Component {
+import React from 'react';
 
+class Tip extends React.Component {
   render() {
-    <div className="tip">
-      
-    </div>
+    return (
+      <div className="tip">
+        {this.props.text}
+      </div>
+    );
   }
 }
+
+export {Tip};

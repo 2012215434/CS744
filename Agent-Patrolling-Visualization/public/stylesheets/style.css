@@ -1,3 +1,6 @@
+body{
+  background: #666699;
+}
 .square {
   border-top: 1px solid lightgrey;
   border-left: 1px solid lightgrey;
@@ -19,7 +22,7 @@
 }
 #environment {
   position: fixed;
-  border: 1px solid grey;
+  border: 1px solid #0099CC;
 }
 .inner-square {
   width: 39px;
@@ -87,7 +90,7 @@
 
 
 
-
+/* delete btn */
 .close {
   position: absolute;
   width: 50px;
@@ -131,4 +134,17 @@
 }
 .close.warp::before, .close.warp::after {
   border-radius: 120% 0;
+}
+/* delete btn */
+
+
+
+.tip{
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  font-size: .8em;
+  color: white;
+  /*background: white;*/
+  user-select: none;
 }
