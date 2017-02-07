@@ -5,14 +5,16 @@ import {Board} from './Board';
 
 const OPEN = 'open',
       OBSTACLE = 'obstacle',
-      AGENT = 'agent';
+      AGENT = 'agent',
+      BlANK  = '';
 
 class Game extends React.Component {
   constructor(){
     super();
     this.state = {
-      background: Immutable.fromJS(Array(20).fill(Array(20).fill(""))),
+      background: Immutable.fromJS(Array(20).fill(Array(20).fill(BlANK))),
       environment: null,
+      agents: Immutable.List([]),
       mouseDown: false,
       mouseDownOnEnvir: false,
       environmentSettled: false,
@@ -30,11 +32,6 @@ class Game extends React.Component {
     this.mouseDownCoor = {};
     this.mouseUpCoor = {};
   }
-
-  // componentDidMount() {
-  //   setTimeout(setPosition, 0);
-  //   setTimeout(setPosition, 500);
-  // }
 
   handleMouseDownOnBackground(e) {
     if(this.state.initial){
@@ -71,7 +68,7 @@ class Game extends React.Component {
     this.setState({mouseDown: false});
     if(this.state.mouseDownOnEnvir){
       this.setState({mouseDownOnEnvir: false});
-      console.log(this.state.regions);
+      this.setState({initial: false});
     }
   }
 
@@ -79,7 +76,17 @@ class Game extends React.Component {
     e.preventDefault();
     this.setState({mouseDownOnEnvir: true});
     let target = e.target;
-    this.setState({regions: this.state.regions.push([])}, () => {this.setOpen(target)})
+    
+    if(target.classList.contains('agent') || target.classList.contains('agentMore')) {
+      target = target.parentElement
+    }
+
+    if(target.classList.contains(OPEN)) {
+      this.addAgent.call(this, target);
+    }
+    else {
+      this.setState({regions: this.state.regions.push([])}, () => {this.setOpen(target)});
+    }
   }
 
   handleMouseOverOnEnvironment(e) {
@@ -88,33 +95,127 @@ class Game extends React.Component {
     }
   }
 
+  addAgent(target) {
+    let row = target.getAttribute('data-row'),
+        column = target.getAttribute('data-column');
+    let agents = this.state.agents;
+    agents = agents.push({
+      id: agents.size,
+      row: row,
+      column: column
+    });
+    this.setState({agents});
+  }
+
   setOpen(target) {
     let row = target.getAttribute('data-row'),
         column = target.getAttribute('data-column');
     let regions = this.state.regions,
         connectedToOtherRegions = false;
+
     for(let i = 0; i < regions.size - 1 ; i++) {
-      let region = regions.get(i);
-      for(let j = 0; j < region.length; j++) {
-        if((row == region[j].row && column == region[j].column - 1) || 
-           (row == region[j].row && column == region[j].column + 1) || 
-           (column == region[j].column && row == region[j].row - 1) || 
-           (column == region[j].column && row == region[j].row + 1)) {
-              return;
-            }
-      }
+      let illegal = false;
+      
+      regions.get(i).forEach((square) => {
+        if((row == square.row && column == square.column - 1) || 
+           (row == square.row && column == square.column + 1) || 
+           (column == square.column && row == square.row - 1) || 
+           (column == square.column && row == square.row + 1)) {
+          illegal = true;
+          return false;
+        }
+      })
+      if(illegal) return;
     }
+
     let region = regions.last();
-    for(let i = 0; i < region.length; i ++) {
-      if(row == region[i].row && column == region[i].column) {
-        return;
+    let notConnected = true,
+        repeated = false;
+    region.forEach((square) => {
+      if(row == square.row && column == square.column) {
+        repeated = true;
       }
-    }
+      if((row == square.row && column == square.column - 1) || 
+           (row == square.row && column == square.column + 1) || 
+           (column == square.column && row == square.row - 1) || 
+           (column == square.column && row == square.row + 1)) {
+        notConnected = false;
+      }
+    });
+    if(region.length > 0 && (repeated || notConnected)) return;
+    
     this.setState({environment: this.state.environment.update(row, column, OPEN)});
 
     region = JSON.parse(JSON.stringify(region));
     region.push({row: Number(row), column: Number(column)});
     this.setState({regions: regions.set(-1, region)});
+  }
+
+  constructRegionSketch(region, index) {
+    if(region.length <= 0) return;
+    let left = region[0].column, 
+        right = region[0].column, 
+        up = region[0].row, 
+        down = region[0].row;
+    
+    region.forEach((square) => {
+      left = Math.min(square.column, left);
+      right = Math.max(square.column, right);
+      up = Math.min(square.row, up);
+      down = Math.max(square.row, down);
+    });
+
+    let width = (right - left + 1) * 10,
+        height = (down - up + 1) * 10;
+    
+    const squares = [];
+    let key = 0;
+    for(let i = up; i <= down; i++) {
+      for(let j = left; j <= right; j++) {
+        let isOpen = false;
+        region.forEach((square) => {
+          if(i == square.row && j == square.column) isOpen = true;
+        });
+
+        squares.push(
+          <div className={'sketchSquare ' + (isOpen ? 'sketchSquare-obstacle ' : '')} key={key++}></div>
+        )
+      }
+    }
+
+    const deleter = this.state.mouseDown ? null : (
+      <span className="close warp black" onClick={() => {
+        let environment = this.state.environment,
+            regions = this.state.regions,
+            agents = this.state.agents;
+        regions.get(index).forEach((square) => {
+          environment = environment.update(square.row, square.column, OBSTACLE);
+          agents = agents.filter((agent, i) => {
+            if(agent.row == square.row && agent.column == square.column) {
+              return false;
+            }
+            return true;
+          });
+        });
+        this.setState({agents})
+        this.setState({environment})
+
+        regions = regions.delete(index);
+        
+        this.setState({regions})
+      }}>
+      </span>
+    );
+    
+    return (
+      <div key={index} className="sketchBlock" data-regionID={index}>
+        <div style={{width, height}} className="sketch">
+          {squares}
+        </div>
+        {deleter}
+        <div className="clearFloat"></div>
+      </div>
+    );
   }
 
   render() {
@@ -130,14 +231,22 @@ class Game extends React.Component {
       <Board 
         id="environment" 
         board={this.state.environment}
+        agents={this.state.agents}
         onMouseDown={this.handleMouseDownOnEnvironment.bind(this)}
         onMouseUp={this.handleMouseUpOnEnvironment.bind(this)}
         onMouseOver={this.handleMouseOverOnEnvironment.bind(this)}
       />
     ) : null;
+
+    const leftBar = (
+      <div id="leftBar">
+        {this.state.regions.map(this.constructRegionSketch.bind(this))}
+      </div>
+    );
     
     return (
       <div>
+        {leftBar}
         {background}
         {environment}
       </div>

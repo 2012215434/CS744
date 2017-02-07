@@ -24,7 +24,7 @@
 .inner-square {
   width: 39px;
   height: 39px;
-  border-top: 0.1px solid lightgrey;
+  border-top: 1px solid lightgrey;
   border-left: 1px solid lightgrey;
   float: left;
 }
@@ -41,4 +41,94 @@
 }
 .open{
   background: #FFFFFF;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+}
+#leftBar {
+  margin-left: 50%;
+  transform: translatex(-500px);
+}
+.sketchBlock {
+  position: relative; 
+  width: 10px;
+}
+.sketch {
+  border-right: 1px solid lightgray;
+  border-bottom: 1px solid lightgray;
+  margin: 10px;
+  margin-right: -10px;
+  float: left;
+}
+.sketchSquare {
+  width: 9px;
+  height: 9px;
+  float: left;
+  border-top: 0.1px solid lightgrey;
+  border-left: 1px solid lightgrey;
+  background: lightgrey
+}
+.sketchSquare-obstacle {
+  background: white;
+}
+.agent {
+  width: 12px;
+  height: 12px;
+  background: #FF9966;
+  margin: 2px;
+}
+.agentMore {
+  width: 15px;
+  height: 15px;
+  text-align: center;
+  line-height: 15px;
+}
+
+
+
+
+.close {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+  top: 50%;
+  transform: translateY(-50%) scale(.3);
+  z-index: 10;
+}
+.close:hover::before, .close:hover::after {
+  background: #1ebcc5;
+}
+.close::before, .close::after {
+  content: '';
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  top: 50%;
+  left: 0;
+  margin-top: -1px;
+  background: #000;
+}
+.close::before {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.close::after {
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+
+.close.black::before, .close.black::after {
+  height: 8px;
+  margin-top: -4px;
+}
+.close.warp::before, .close.warp::after {
+  border-radius: 120% 0;
 }
