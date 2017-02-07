@@ -8,6 +8,8 @@ const OPEN = 'open',
       AGENT = 'agent',
       BlANK  = '';
 
+let agentId = 0;
+
 class Game extends React.Component {
   constructor(){
     super();
@@ -105,9 +107,9 @@ class Game extends React.Component {
         column = target.getAttribute('data-column');
     let agents = this.state.agents;
     agents = agents.push({
-      id: agents.size,
-      row: row,
-      column: column
+      id: agentId++,
+      row: Number(row),
+      column: Number(column)
     });
     this.setState({agents});
   }
@@ -189,29 +191,31 @@ class Game extends React.Component {
     }
 
     const deleter = this.state.mouseDown ? null : (
-      <span className="close warp black" onClick={() => {
-        let environment = this.state.environment,
-            regions = this.state.regions,
-            agents = this.state.agents;
-        regions.get(index).forEach((square) => {
-          environment = environment.update(square.row, square.column, OBSTACLE);
-          agents = agents.filter((agent, i) => {
-            if(agent.row == square.row && agent.column == square.column) {
-              return false;
-            }
-            return true;
+      <div className="deleter">
+        <span className="close warp black" onClick={() => {
+          let environment = this.state.environment,
+              regions = this.state.regions,
+              agents = this.state.agents;
+          regions.get(index).forEach((square) => {
+            environment = environment.update(square.row, square.column, OBSTACLE);
+            agents = agents.filter((agent, i) => {
+              if(agent.row == square.row && agent.column == square.column) {
+                return false;
+              }
+              return true;
+            });
           });
-        });
-        this.setState({agents})
-        this.setState({environment})
+          this.setState({agents})
+          this.setState({environment})
 
-        regions = regions.delete(index);
-        
-        this.setState({regions})
-      }}>
-      </span>
+          regions = regions.delete(index);
+          
+          this.setState({regions})
+        }}>
+        </span>
+      </div>
     );
-    
+      
     return (
       <div key={index} className="sketchBlock" data-regionID={index}>
         <div style={{width, height}} className="sketch">
@@ -221,6 +225,52 @@ class Game extends React.Component {
         <div className="clearFloat"></div>
       </div>
     );
+  }
+
+  runOneStep() {
+    let agents = this.state.agents;
+    let environment = this.state.environment;
+    agents = agents.map((agent, index) => {
+      return this.goOneStep(Math.floor(Math.random() * 4), agent, environment);
+    });
+
+    this.setState({agents});
+  }
+
+  goOneStep(initialDirection, agent, environment) {
+    let goOne = [
+      () => {
+        if(environment.get(agent.row + 1) && environment.get(agent.row + 1).get(agent.column) === OPEN) {
+          agent.row++;
+          return agent;
+        }
+        return false;
+      },
+      () => {
+        if(environment.get(agent.row - 1) && environment.get(agent.row - 1).get(agent.column) === OPEN) {
+          agent.row--;
+          return agent;
+        }
+      },
+      () => {
+        if(environment.get(agent.row) && environment.get(agent.row).get(agent.column + 1) === OPEN) {
+          agent.column++;
+          return agent;
+        }
+      },
+      () => {
+        if(environment.get(agent.row) && environment.get(agent.row).get(agent.column - 1) === OPEN) {
+          agent.column--;
+          return agent;
+        }
+      }
+    ];
+
+    for(let i = initialDirection; i < initialDirection + goOne.length; i++){
+      if(goOne[i % goOne.length]()) break;
+    }
+
+    return agent;
   }
 
   render() {
@@ -252,7 +302,9 @@ class Game extends React.Component {
 
     const rightBar = (
       <div id="rightBar">
-        
+        <div id="btn-runOne" onClick={this.runOneStep.bind(this)}>
+          RUN 1 STEP
+        </div>
       </div>
     );
     
@@ -261,6 +313,7 @@ class Game extends React.Component {
         {leftBar}
         {background}
         {environment}
+        {rightBar}
       </div>
     )
   }

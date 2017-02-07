@@ -1,9 +1,15 @@
 import React from 'react';
 import {Tip} from './Tip';
+import randomColor from 'randomcolor';
 
 const OPEN = 'open',
       OBSTACLE = 'obstacle',
       AGENT = 'agent';
+
+const agentColors = randomColor({
+   count: 20,
+   luminosity: 'light'
+});
 
 function Square(props) { 
   const className = 
@@ -15,7 +21,7 @@ function Square(props) {
     if(props.agents.length < 5) {
       return props.agents.map((agent, index) => {
         return (
-          <div key={index} className="agent">
+          <div key={index} className="agent" style={{background: agentColors[agent.id]}}>
           </div>
         );
       })
