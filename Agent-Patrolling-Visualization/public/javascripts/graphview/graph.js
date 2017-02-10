@@ -93,14 +93,14 @@ function graph(region) {
   //绘制整张图
   function drawGraph() {
     context.beginPath();
-    nodes.forEach(drawNode); //对于每一个node，执行drawNode方法
-    context.fillStyle = '#fff';
-    context.fill();
-
-    context.beginPath();
     links.forEach(drawLink);
     context.strokeStyle = '#aaa';
     context.stroke();
+
+    context.beginPath();
+    nodes.forEach(drawNode); //对于每一个node，执行drawNode方法
+    context.fillStyle = '#fff';
+    context.fill();
   }
 
   function drawNode(d) {
