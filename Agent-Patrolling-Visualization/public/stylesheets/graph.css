@@ -1,0 +1,26 @@
+#graph {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -400px;
+  margin-left: -400px;
+  width: 800px;
+  height: 800px;
+  border: 1px solid;
+}
+
+#graph .info {
+  position: absolute;
+  right: 0;
+  top:100px;
+  width: 200px;
+  height: 400px;
+  border: 1px solid;
+}
+
+#graph .graphView {
+  position: absolute; 
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
+}

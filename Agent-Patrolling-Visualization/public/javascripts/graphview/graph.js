@@ -7,11 +7,11 @@ function graph(region) {
     height = canvas.height;
 
   //计算这个region一共有多少行多少列
-  let left = region[0].column, 
-    right = region[0].column, 
-    up = region[0].row, 
+  let left = region[0].column,
+    right = region[0].column,
+    up = region[0].row,
     down = region[0].row;
-    
+
   region.forEach((node) => {
     left = Math.min(node.column, left);
     right = Math.max(node.column, right);
@@ -26,7 +26,7 @@ function graph(region) {
   var nodes = d3.range(columns * rows).map(function(i) {
     let column = i % columns + left,
         row = Math.floor(i / columns) + up;
-    
+
     let exists = false;
     region.forEach((node) => {
       if(node.column == column && node.row == row){
@@ -78,14 +78,14 @@ function graph(region) {
   d3.select(canvas).call(d3.zoom()
     .scaleExtent([1 / 2, 4])
     .on('zoom', zoomed));
-  
+
   //zoom事件触发时的回调函数，使之放大缩小
   function zoomed() {
     context.save();
     context.clearRect(0, 0, width, height);
     context.translate(d3.event.transform.x, d3.event.transform.y);
     context.scale(d3.event.transform.k, d3.event.transform.k);
-    
+
     drawGraph();
     context.restore();
   }
@@ -109,7 +109,7 @@ function graph(region) {
       context.moveTo(d.x + 3, d.y);
       context.arc(d.x, d.y, d.r, 0,  2 * Math.PI);
     }
-  } 
+  }
 
   function drawLink(d) {
     if(d.source.exists && d.target.exists) {
@@ -155,7 +155,11 @@ function graph(region) {
 
 
 if(location.hash) {
-  document.querySelector('#container').remove();
+  let enviroment = document.querySelector('#environment');
+  if(enviroment) enviroment.remove();
+  
+  document.querySelector('#background').remove();
+  document.querySelector('#graph').style.display= 'block';
 
   //模拟输入一个region。到时候我传给你的就是这个格式
   var region = [{column: 2, row: 1}, {column: 2, row: 2}, {column: 2, row: 3},
