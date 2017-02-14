@@ -107,7 +107,7 @@ function graph(region) {
     //这边就用到了我已开始设置的exists属性，如果是true才绘制。你可以试着把if去掉，画出来是个长方形
     if(d.exists) {
       context.moveTo(d.x + 3, d.y);
-      context.arc(d.x, d.y, d.r, 0,  2 * Math.PI);
+      context.arc(d.x, d.y, d.r,0,  2 * Math.PI);
     }
   }
 
