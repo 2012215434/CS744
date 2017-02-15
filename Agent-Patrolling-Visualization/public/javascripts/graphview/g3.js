@@ -37,8 +37,8 @@ function graph(region) {
     return {
       index: i,
       r:  10, //node半径
-      x: (i % columns) * 40, //每个node的x坐标
-      y: (Math.floor(i / columns)) * 40, //每个node的y坐标
+      fx: (i % columns) * 40, //每个node的x坐标
+      fy: (Math.floor(i / columns)) * 40, //每个node的y坐标
       exists: exists, //该node是否需要显示，这是我另外加上去的属性，为了绘制时判断用的。见drawGraph里的drawLink和drawNode
       row,
       column,
@@ -77,11 +77,31 @@ function graph(region) {
     context.restore();
   }
 
+
+// function ticked() {
+//   context.clearRect(0, 0, width, height);
+//   context.save();
+//   context.translate(width / 2, height / 2);
+
+//   context.beginPath();
+//   links.forEach(drawLink);
+//   context.strokeStyle = "#aaa";
+//   context.stroke();
+
+//   context.beginPath();
+//   nodes.forEach(drawNode);
+//   context.fill();
+//   context.strokeStyle = "#fff";
+//   context.stroke();
+
+//   context.restore();
+// }
+
   //zoom时的事件（放大缩小）
-  // d3.select(canvas).call(d3.zoom()
-  //   .scaleExtent([1 / 2, 4])
-  //   .on('zoom', zoomed))
-  //   .on('click', (d) => {console.log(d)});
+  d3.select(canvas).call(d3.zoom()
+    .scaleExtent([1 / 2, 4])
+    .on('zoom', zoomed))
+    .on('click', (d) => {console.log(d)});
 
   //zoom事件触发时的回调函数，使之放大缩小
   function zoomed() {
@@ -133,6 +153,10 @@ function graph(region) {
     }
   }
 
+  var canvas = document.querySelector("canvas"),
+    context = canvas.getContext("2d"),
+    width = canvas.width,
+    height = canvas.height;
   //以下是控制drag，想想还是先不做了(具体原因先不用管)，以后你想做再说。
   d3.select(canvas)
     .call(
@@ -140,22 +164,24 @@ function graph(region) {
       .container(canvas)
       .subject(dragsubject)
       .on('start', dragstarted)
-      .on('drag', dragged)
-      .on('end', dragended)
+       .on('drag', dragged)
+       .on('end', dragended)
     );
+
+
 
   function dragsubject() {
     return simulation.find(d3.event.x - width / 2, d3.event.y - height / 2);
   }
 
   function dragstarted() {
-     if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+    if (!d3.event.active) simulation.alphaTarget(0.3).restart();
     d3.event.subject.fx = d3.event.subject.x;
     d3.event.subject.fy = d3.event.subject.y;
-    console.log(d3.event.subject)
+    // console.log(d3.event.subject)
   }
 
-   function dragged() {
+  function dragged() {
     d3.event.subject.fx = d3.event.x;
     d3.event.subject.fy = d3.event.y;
   }

@@ -37,8 +37,8 @@ function graph(region) {
     return {
       index: i,
       r:  10, //node半径
-      x: (i % columns) * 40, //每个node的x坐标
-      y: (Math.floor(i / columns)) * 40, //每个node的y坐标
+      fx: (i % columns) * 40, //每个node的x坐标
+      fy: (Math.floor(i / columns)) * 40, //每个node的y坐标
       exists: exists, //该node是否需要显示，这是我另外加上去的属性，为了绘制时判断用的。见drawGraph里的drawLink和drawNode
       row,
       column,
@@ -140,8 +140,8 @@ function graph(region) {
       .container(canvas)
       .subject(dragsubject)
       .on('start', dragstarted)
-      .on('drag', dragged)
-      .on('end', dragended)
+      // .on('drag', dragged)
+      // .on('end', dragended)
     );
 
   function dragsubject() {
@@ -149,21 +149,7 @@ function graph(region) {
   }
 
   function dragstarted() {
-     if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-    d3.event.subject.fx = d3.event.subject.x;
-    d3.event.subject.fy = d3.event.subject.y;
     console.log(d3.event.subject)
-  }
-
-   function dragged() {
-    d3.event.subject.fx = d3.event.x;
-    d3.event.subject.fy = d3.event.y;
-  }
-
-  function dragended() {
-    if (!d3.event.active) simulation.alphaTarget(0);
-    d3.event.subject.fx = null;
-    d3.event.subject.fy = null;
   }
 
   setTimeout(() => {simulation.stop();}, 400);
