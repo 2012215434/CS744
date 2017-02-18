@@ -3,6 +3,7 @@
 
 function graph(region, traces, step) {
   console.log(step);
+  traces.forEach((trace) => {console.log(trace[step])});
   var canvas = document.querySelector('canvas'),
     context = canvas.getContext('2d'),
     width = canvas.width,
@@ -38,7 +39,7 @@ function graph(region, traces, step) {
 
     return {
       index: i,
-      r:  10, //node半径
+      r:  20, //node半径
       x: (i % columns) * 40, //每个node的x坐标
       y: (Math.floor(i / columns)) * 40, //每个node的y坐标
       exists: exists, //该node是否需要显示，这是我另外加上去的属性，为了绘制时判断用的。见drawGraph里的drawLink和drawNode
@@ -66,7 +67,7 @@ function graph(region, traces, step) {
   //相当于整张图的configuration
   var simulation = d3.forceSimulation(nodes)
     .force('charge', d3.forceManyBody().strength(-60)) //这些具体查api，我都调好了，基本不用动
-    .force('link', d3.forceLink(links).strength(1).distance(37).iterations(10))
+    .force('link', d3.forceLink(links).strength(1).distance(70).iterations(10))
     .on('tick', ticked);
 
   function ticked() {
@@ -142,8 +143,8 @@ function graph(region, traces, step) {
       .container(canvas)
       .subject(dragsubject)
       .on('start', dragstarted)
-      .on('drag', dragged)
-      .on('end', dragended)
+      // .on('drag', dragged)
+      // .on('end', dragended)
     );
 
   function dragsubject() {
@@ -151,22 +152,22 @@ function graph(region, traces, step) {
   }
 
   function dragstarted() {
-     if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-    d3.event.subject.fx = d3.event.subject.x;
-    d3.event.subject.fy = d3.event.subject.y;
+    //  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+    // d3.event.subject.fx = d3.event.subject.x;
+    // d3.event.subject.fy = d3.event.subject.y;
     console.log(d3.event.subject)
   }
 
-   function dragged() {
-    d3.event.subject.fx = d3.event.x;
-    d3.event.subject.fy = d3.event.y;
-  }
+  //  function dragged() {
+  //   d3.event.subject.fx = d3.event.x;
+  //   d3.event.subject.fy = d3.event.y;
+  // }
 
-  function dragended() {
-    if (!d3.event.active) simulation.alphaTarget(0);
-    d3.event.subject.fx = null;
-    d3.event.subject.fy = null;
-  }
+  // function dragended() {
+  //   if (!d3.event.active) simulation.alphaTarget(0);
+  //   d3.event.subject.fx = null;
+  //   d3.event.subject.fy = null;
+  // }
 
   setTimeout(() => {simulation.stop();}, 400);
 }
