@@ -1,7 +1,8 @@
-body{
+body {
   background: #666699;
   color: white;
   font-family: Arial, Helvetica, sans-serif;
+  overflow:hidden;
 }
 .square {
   border-top: 1px solid lightgrey;
@@ -113,6 +114,9 @@ body{
 }
 .agentBlock > p {
   margin: 10px;
+}
+.grey {
+  color: #8585ad;
 }
 
 .hidden {
@@ -271,4 +275,45 @@ body{
 @-webkit-keyframes hide{
   0% {opacity: 1; }
   100% {opacity: 0; transform: translateX(25px)}
+}
+
+.moveUp {
+  animation: moveUp .4s ease;
+  -webkit-animation: moveUp .4s ease;
+}
+@keyframes moveUp {
+  100% {transform: translateY(-40px)}
+}
+@-webkit-keyframes moveUp{
+  100% {transform: translateY(-40px)}
+}
+.moveDown {
+  animation: moveDown .4s ease;
+  -webkit-animation: moveDown .4s ease;
+}
+@keyframes moveDown {
+  100% {transform: translateY(40px)}
+}
+@-webkit-keyframes moveDown{
+  100% {transform: translateY(40px)}
+}
+.moveLeft {
+  animation: moveLeft .4s ease;
+  -webkit-animation: moveLeft .4s ease;
+}
+@keyframes moveLeft {
+  100% {transform: translateX(-40px)}
+}
+@-webkit-keyframes moveLeft{
+  100% {transform: translateX(-40px)}
+}
+.moveRight {
+  animation: moveRight .4s ease;
+  -webkit-animation: moveRight .4s ease;
+}
+@keyframes moveRight {
+  100% {transform: translateX(40px)}
+}
+@-webkit-keyframes moveRight{
+  100% {transform: translateX(40px)}
 }

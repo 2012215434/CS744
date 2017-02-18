@@ -15,7 +15,12 @@ function Square(props) {
     if(props.agents.length < 5) {
       return props.agents.map((agent, index) => {
         return (
-          <div key={index} className="agent" style={{background: props.agentColors[agent.id]}}>
+          <div 
+            key={index} 
+            id={'agent-' + agent.id} 
+            className={'agent' + (agent.hidden ? ' hidden' : '')}
+            style={{background: props.agentColors[agent.id]}}
+          >
           </div>
         );
       })

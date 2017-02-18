@@ -65,11 +65,36 @@ class Game extends React.Component {
       let curPosition = trace[this.curStep],
           row = curPosition.row,
           column = curPosition.column;
-      agents = agents.set(id, {id, row, column})
+      
+      let move = judgeMove(agents.get(id), {row, column});
+      document.getElementById('agent-' + id).classList.add(move);
+
+      let hidden = agents.get(id).hidden;
+      agents = agents.set(id, {id, row, column, hidden});
     });
     if(isEnd) return;
+    setTimeout(() => this.setState({agents}), 350);
 
-    this.setState({agents});
+    function judgeMove(prev, cur) {
+      if (cur.row < prev.row) {
+        return 'moveUp';
+      } else if (cur.row > prev.row) {
+        return 'moveDown';
+      } else if (cur.column < prev.column) {
+        return 'moveLeft';
+      } else {
+        return 'moveRight';
+      }
+    }
+  }
+
+  runMutiSteps() {
+    let total = this.stepsInput.value,
+        steps = total;
+    while(steps > 0) {
+      setTimeout(this.runOneStep.bind(this), (total - steps) * 400);
+      steps--;
+    }
   }
 
   handleMouseDownOnBackground(e) {
@@ -328,8 +353,8 @@ class Game extends React.Component {
     this.setState({btn_finished_class: 'hide'});
     setTimeout(() => this.setState({btn_finished_class: 'hidden'}), 500);
 
-    setTimeout(() => this.setState({btn_runOne_class: 'show'}), 700);
-    setTimeout(() => this.setState({btn_runMuti_class: 'show'}), 850);
+    setTimeout(() => this.setState({btn_runOne_class: 'show'}), 500);
+    setTimeout(() => this.setState({btn_runMuti_class: 'show'}), 650);
     
     let envri = this.state.environment.toArray();
     envri = envri.map((row) => {
@@ -367,6 +392,15 @@ class Game extends React.Component {
     }
   }
 
+  handleLeftBarAgentClick(e) {
+    let agentId = e.currentTarget.getAttribute('data-id');
+    let agent = this.state.agents.get(agentId);
+    agent.hidden = !agent.hidden;
+    let agents = this.state.agents.set(agentId, agent);
+
+    this.setState(agents)
+  }
+
   render() {
     const background = (
       <Board 
@@ -394,10 +428,14 @@ class Game extends React.Component {
         <div className="leftBar">
           <div className={'hidden ' + this.state.agentBar_class}>
             {this.state.agents.map((agent, index) => (
-              <div className="agentBlock" key={index}>
-                <div className="agent" style={{background: agentColors[agent.id]}}>
+              <div data-id={index} 
+                className="agentBlock" 
+                key={index} 
+                onClick={this.handleLeftBarAgentClick.bind(this)}
+              >
+                <div className="agent" style={{background: agent.hidden ? '#8585ad' : agentColors[agent.id]}}>
                 </div>
-                <p>agent {index+1}</p>
+                <p className={agent.hidden ? ' light' : ''}>agent {index+1}</p>
               </div>
             ))}
           </div>
@@ -413,10 +451,14 @@ class Game extends React.Component {
         <div className={`btn ${this.state.btn_runOne_class}`} onClick={this.runOneStep.bind(this)}>
           RUN 1 STEP
         </div>
-        <div className={`btn ${this.state.btn_runMuti_class}`} onClick={this.runOneStep.bind(this)}>
+        <div className={`btn ${this.state.btn_runMuti_class}`} onClick={this.runMutiSteps.bind(this)}>
           RUN <input type="text" ref={input => this.stepsInput = input}/> STEPS
         </div>
-        <div id="btn-finished" className={`btn ${this.state.btn_finished_class}`} onClick={this.configFinished.bind(this)}>
+        <div 
+          id="btn-finished" 
+          className={`btn ${this.state.btn_finished_class}`} 
+          onClick={this.configFinished.bind(this)}
+        >
           FINISHED
         </div>
       </div>
