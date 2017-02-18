@@ -60,9 +60,9 @@ class RunningEnvironment{
                 var neighbour = this.findANeighbour(lastPosition.row, lastPosition.column);
 
                 if (!neighbour) {
-                    if (stack.length == 0) continue;
+                    if (stack.length == 0) return;
                     stack.pop();
-                    if (stack.length == 0) continue;
+                    if (stack.length == 0) return;
                     var nextPosition = stack[stack.length - 1];
                     this.visited[nextPosition.row][nextPosition.column]++;
                     trace.push(nextPosition);
