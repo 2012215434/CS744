@@ -1,15 +1,9 @@
 import React from 'react';
 import {Tip} from './Tip';
-import randomColor from 'randomcolor';
 
 const OPEN = 'open',
       OBSTACLE = 'obstacle',
       AGENT = 'agent';
-
-const agentColors = randomColor({
-   count: 20,
-   luminosity: 'light'
-});
 
 function Square(props) { 
   const className = 
@@ -21,7 +15,7 @@ function Square(props) {
     if(props.agents.length < 5) {
       return props.agents.map((agent, index) => {
         return (
-          <div key={index} className="agent" style={{background: agentColors[agent.id]}}>
+          <div key={index} className="agent" style={{background: props.agentColors[agent.id]}}>
           </div>
         );
       })
@@ -61,11 +55,11 @@ class Row extends React.Component {
         });
         // console.log(agents);
         squares.push(
-          <Square key={i} row={this.props.rIndex} column={i} info={this.props.rowInfo.get(i)} agents={agents}/>
+          <Square key={i} row={this.props.rIndex} column={i} info={this.props.rowInfo.get(i)} agents={agents} agentColors={this.props.agentColors}/>
         );
       }
       else {
-        squares.push(<Square key={i} row={this.props.rIndex} column={i} info={this.props.rowInfo.get(i)}/>);
+        squares.push(<Square key={i} row={this.props.rIndex} column={i} info={this.props.rowInfo.get(i)} agentColors={this.props.agentColors}/>);
       }
     }
     return squares;
@@ -93,12 +87,12 @@ class Board extends React.Component {
           }
         });
         rows.push(
-          <Row key={i} rIndex={i} num={cNum} rowInfo={this.props.board.get(i)} agents={agents}/>
+          <Row key={i} rIndex={i} num={cNum} rowInfo={this.props.board.get(i)} agents={agents} agentColors={this.props.agentColors}/>
         );
       }
       else {
         rows.push(
-          <Row key={i} rIndex={i} num={cNum} rowInfo={this.props.board.get(i)}/>
+          <Row key={i} rIndex={i} num={cNum} rowInfo={this.props.board.get(i)} agentColors={this.props.agentColors}/>
         );
       }
     }

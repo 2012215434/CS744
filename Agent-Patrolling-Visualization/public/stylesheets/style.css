@@ -1,5 +1,7 @@
 body{
   background: #666699;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
 }
 .square {
   border-top: 1px solid lightgrey;
@@ -50,13 +52,14 @@ body{
   align-items: center;
   flex-wrap: wrap;
 }
-#leftBar {
+.leftBar {
   position: fixed;
   left: 50%;
-  transform: translatex(calc(-400px - 100%));
+  transform: translatex(calc(-420px - 100%));
   padding-top: 30px;
-  display: flex;
-  flex-direction: column;
+  height: 600px;
+  overflow: auto;
+  overflow-x: hidden;
 }
 .sketchBlock {
   position: relative; 
@@ -88,7 +91,7 @@ body{
 .sketchSquare-obstacle {
   background: white;
 }
-.agent {
+.agent { 
   width: 12px;
   height: 12px;
   background: #FF9966;
@@ -99,9 +102,34 @@ body{
   height: 15px;
   text-align: center;
   line-height: 15px;
+  color: black;
 }
 
+.agentBlock {
+  position: relative; 
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.agentBlock > p {
+  margin: 10px;
+}
 
+.hidden {
+  display: none;
+}
+
+.show_regionBar {
+  display: inline-block;
+  animation: show .5s ease;
+  -webkit-animation: show .5s ease;
+}
+
+.show_agentBar {
+  display: inline-block;
+  animation: show .5s ease;
+  -webkit-animation: show .5s ease;
+}
 
 /* delete btn */
 .close {
@@ -167,17 +195,80 @@ body{
   left: 50%;
   top: 30px;
   transform: translatex(450px);
-  width: 120px;
+  width: 180px;
 }
-#btn-runOne {
-  margin: 10px;
+#rightBar > .hidden {
+  display: none;
+}
+
+#rightBar input {
+  width: 20px;
+  margin: 0 5px;
+}
+/*#btn-runOne {
   width: 100px;
+}*/
+.btn {
   height: 30px;
+  margin: 10px;
+  padding-left: 16px;
+  padding-right: 16px;
   border: 1px solid white;
   border-radius: 15px;
-  font-size: .8em;
   color: white;
   text-align: center;
   line-height: 30px;
   cursor: pointer;
+  font-size: .8em;
+  display: inline-block;
+}
+
+#moreBar {
+  height: 400px;
+  width: 200px;
+  position: fixed;
+  top: 30px;
+  left: 0;
+  color:white;
+  display: none;
+}
+#moreBar > div {
+  margin: 10px;
+}
+#moreBar input {
+  width: 40px;
+  float: right;
+  margin-right: 80px;
+}
+#moreBar .btn {
+  position: relative;
+  left: -10px;
+}
+
+#rightBar > .show {
+  /*display: inline-block;*/
+  animation: show .5s ease;
+  -webkit-animation: show .5s ease;
+}
+#rightBar > .hide {
+  /*display: inline-block;*/
+  animation: hide .5s ease;
+  -webkit-animation: hide .5s ease;
+}
+
+@keyframes show {
+  0% {opacity: 0; transform: translateX(25px)}
+  100% {opacity: 1;}
+}
+@-webkit-keyframes show{
+  0% {opacity: 0; transform: translateX(25px)}
+  100% {opacity: 1;}
+}
+@keyframes hide {
+  0% {opacity: 1;}
+  100% {opacity: 0; transform: translateX(25px)}
+}
+@-webkit-keyframes hide{
+  0% {opacity: 1; }
+  100% {opacity: 0; transform: translateX(25px)}
 }

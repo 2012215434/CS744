@@ -2,9 +2,6 @@ import buckets from 'buckets-js';
 class RunningEnvironment{
     constructor() {
         this.block = [];
-        //visted is a two dimensional array with 0 filled in unvisited space, 
-        //-1 filled in block space, positive number filled in visited space indicating 
-        // how many agents visited this space
         this.visited = [];
         this.traces = new Map();
     }
@@ -20,7 +17,7 @@ class RunningEnvironment{
             this.visited[i] = [];
             for (j = 0; j < width; j++) {
                 this.block[i][j] = blockMatrix[i][j];
-                if (blockMatrix[i][j] === 1) {
+                if (blockMatrix[i][j] === -1) {
                     this.visited[i][j] = -1;
                 } else {
                     this.visited[i][j] = 0;
@@ -40,30 +37,41 @@ class RunningEnvironment{
     move() {
         let stacks = new Map();
         // create a stack for each agent
-        for (var key of this.traces.keys) {
+        let Iter = this.traces.keys();
+
+        this.traces.forEach((value, key) => {
             let stack = [];
             stacks.set(key, stack);
-        }
+        });
+        
+        this.traces.forEach((value, key) => {
+            var trace = this.traces.get(key);
+            var stack = stacks.get(key);
+            var lastPosition = trace[trace.length - 1];
+            stack.push(lastPosition);
+        });
 
-        while (isComplete() != 1) {
-            for (var key of this.traces.keys) {
-
+        while (this.isComplete() != 1) {
+            this.traces.forEach((value, key) => {
                 var trace = this.traces.get(key);
                 var stack = stacks.get(key);
                 var lastPosition = trace[trace.length - 1];
-                var neighbour = findANeighbour(lastPosition.row, lastPosition.column);
+                // stack.push(lastPosition);
+                var neighbour = this.findANeighbour(lastPosition.row, lastPosition.column);
 
-                if (neighbour == null) {
-                    if (stack.length == 0) continue;
+                if (!neighbour) {
+                    if (stack.length == 0) return;
                     stack.pop();
-                    if (stack.length == 0) continue;
+                    if (stack.length == 0) return;
                     var nextPosition = stack[stack.length - 1];
+                    this.visited[nextPosition.row][nextPosition.column]++;
                     trace.push(nextPosition);
                 } else {
+                    this.visited[neighbour.row][neighbour.column]++;
                     stack.push(neighbour);
                     trace.push(neighbour);
                 }
-            }
+            });
         }
 
     }
@@ -73,7 +81,7 @@ class RunningEnvironment{
         const len = this.visited.length;
         const width = this.visited[0].length;
 
-        if (row >= len || row < 0 || column <= 0 || column >= width) return null;
+        if (row >= len || row < 0 || column < 0 || column >= width) return null;
 
         let neighbour = {};
 
@@ -124,7 +132,7 @@ class RunningEnvironment{
     }
 }
 
-const environment = new RunningEnvironment();
-export {environment};
+// const algorithm = RunningEnvironment;
+export {RunningEnvironment};
 
 

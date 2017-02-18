@@ -1,14 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Immutable from 'immutable';
-import {Board} from './Board';
+import {Board, initAgentsColor} from './Board';
+import {RunningEnvironment} from '../RunningEnvironment'
+import randomColor from 'randomcolor';
+import Hammer from 'react-hammerjs';
 
 const OPEN = 'open',
       OBSTACLE = 'obstacle',
       AGENT = 'agent',
       BlANK  = '';
 
+const agentColors = randomColor({
+   count: 20,
+   luminosity: 'light'
+});
+
 let agentId = 0;
+let algorithm;
 
 class Game extends React.Component {
   constructor(){
@@ -22,7 +31,12 @@ class Game extends React.Component {
       environmentSettled: false,
       initial: true,
       regions: Immutable.List([]),
-      tipText: ''
+      tipText: '',
+      btn_finished_class: 'hidden',
+      btn_runOne_class: 'hidden',
+      btn_runMuti_class: 'hidden',
+      regionBar_class: 'show_regionBar',
+      agentBar_class: ''
     };
 
     this.envirPosition = {
@@ -32,8 +46,30 @@ class Game extends React.Component {
       endColumn: null
     };
 
+    this.curStep = 0;
+
     this.mouseDownCoor = {};
     this.mouseUpCoor = {};
+  }
+
+  runOneStep() {
+    this.curStep++;
+    let agents = this.state.agents;
+
+    let isEnd = true;
+
+    algorithm.traces.forEach((trace, id) => {
+      if(!trace[this.curStep]) return;
+      isEnd = false;
+
+      let curPosition = trace[this.curStep],
+          row = curPosition.row,
+          column = curPosition.column;
+      agents = agents.set(id, {id, row, column})
+    });
+    if(isEnd) return;
+
+    this.setState({agents});
   }
 
   handleMouseDownOnBackground(e) {
@@ -70,8 +106,11 @@ class Game extends React.Component {
   }
 
   handleMouseUpOnEnvironment(e) {
-    this.setState({mouseDown: false});
-    if(this.state.mouseDownOnEnvir){
+    if (this.state.mouseDown) {
+      this.setState({mouseDown: false});
+      setTimeout(() => this.setState({btn_finished_class: 'show'}), 1000);
+    }
+    if (this.state.mouseDownOnEnvir){
       this.setState({mouseDownOnEnvir: false});
       this.setState({initial: false});
     }
@@ -227,15 +266,15 @@ class Game extends React.Component {
     );
   }
 
-  runOneStep() {
-    let agents = this.state.agents;
-    let environment = this.state.environment;
-    agents = agents.map((agent, index) => {
-      return this.goOneStep(Math.floor(Math.random() * 4), agent, environment);
-    });
+  // runOneStep() {
+  //   let agents = this.state.agents;
+  //   let environment = this.state.environment;
+  //   agents = agents.map((agent, index) => {
+  //     return this.goOneStep(Math.floor(Math.random() * 4), agent, environment);
+  //   });
 
-    this.setState({agents});
-  }
+  //   this.setState({agents});
+  // }
 
   goOneStep(initialDirection, agent, environment) {
     let goOne = [
@@ -273,6 +312,61 @@ class Game extends React.Component {
     return agent;
   }
 
+  generateEnvironment() {
+    let height = parseInt(this.heightInput.value),
+        width = parseInt(this.widthInput.value);
+    this.setState(
+      {
+        environment: Immutable.fromJS(Array(height).fill(Array(width).fill(OBSTACLE)))
+      }, () => {
+
+      });
+  }
+
+  //两件事：给RunningEnvironment.js传参；阻止用户继续设置环境
+  configFinished() {
+    this.setState({btn_finished_class: 'hide'});
+    setTimeout(() => this.setState({btn_finished_class: 'hidden'}), 500);
+
+    setTimeout(() => this.setState({btn_runOne_class: 'show'}), 700);
+    setTimeout(() => this.setState({btn_runMuti_class: 'show'}), 850);
+    
+    let envri = this.state.environment.toArray();
+    envri = envri.map((row) => {
+      return row.toArray();
+    });
+
+    envri = envri.map((row) => {
+      return row.map((square) => {
+        switch (square) {
+          case OPEN || AGENT:
+            return 0;
+          case OBSTACLE:
+            return -1;
+        }
+      });
+    });
+    algorithm = new RunningEnvironment();
+    algorithm.initBlock(envri);
+    this.state.agents.forEach((agent) => {
+      algorithm.addAgent(agent.id, {column: agent.column, row: agent.row})
+    });
+
+    algorithm.move();
+  }
+
+  handleLeftBarSwipe(e) {
+    if (Math.abs(e.angle) > 140) {
+      if (this.state.regionBar_class) {
+        this.setState({regionBar_class: ''});
+        this.setState({agentBar_class: 'show_agentBar'});
+      } else {
+        this.setState({regionBar_class: 'show_regionBar'});
+        this.setState({agentBar_class: ''});
+      }
+    }
+  }
+
   render() {
     const background = (
       <Board 
@@ -287,6 +381,7 @@ class Game extends React.Component {
         id="environment" 
         board={this.state.environment}
         agents={this.state.agents}
+        agentColors={agentColors}
         tipText={this.state.tipText}
         onMouseDown={this.handleMouseDownOnEnvironment.bind(this)}
         onMouseUp={this.handleMouseUpOnEnvironment.bind(this)}
@@ -295,21 +390,57 @@ class Game extends React.Component {
     ) : null;
 
     const leftBar = (
-      <div id="leftBar">
-        {this.state.regions.map(this.constructRegionSketch.bind(this))}
-      </div>
+      <Hammer onSwipe={this.handleLeftBarSwipe.bind(this)}>
+        <div className="leftBar">
+          <div className={'hidden ' + this.state.agentBar_class}>
+            {this.state.agents.map((agent, index) => (
+              <div className="agentBlock" key={index}>
+                <div className="agent" style={{background: agentColors[agent.id]}}>
+                </div>
+                <p>agent {index+1}</p>
+              </div>
+            ))}
+          </div>
+          <div id="regionBar" className={'hidden ' + this.state.regionBar_class}>
+            {this.state.regions.map(this.constructRegionSketch.bind(this))}
+          </div>
+        </div>
+      </Hammer>
     );
 
     const rightBar = (
       <div id="rightBar">
-        <div id="btn-runOne" onClick={this.runOneStep.bind(this)}>
+        <div className={`btn ${this.state.btn_runOne_class}`} onClick={this.runOneStep.bind(this)}>
           RUN 1 STEP
+        </div>
+        <div className={`btn ${this.state.btn_runMuti_class}`} onClick={this.runOneStep.bind(this)}>
+          RUN <input type="text" ref={input => this.stepsInput = input}/> STEPS
+        </div>
+        <div id="btn-finished" className={`btn ${this.state.btn_finished_class}`} onClick={this.configFinished.bind(this)}>
+          FINISHED
+        </div>
+      </div>
+    );
+
+
+    const moreBar = (
+      <div id="moreBar">
+        <div>
+          <p>Enter the size:</p>
+          <div>
+            width: <input type="text" ref={(input) => { this.widthInput = input; }}/>
+          </div>
+          <div>
+            height: <input type="text" ref={(input) => { this.heightInput = input; }}/>
+          </div>
+          <div className="btn" onClick={this.generateEnvironment.bind(this)}>GENERATE</div>
         </div>
       </div>
     );
     
     return (
       <div>
+        {moreBar}
         {leftBar}
         {background}
         {environment}
@@ -337,3 +468,7 @@ Immutable.List.prototype.update = function (row, column, value){
   if(this.size == 0) return;
   return this.set(row, this.get(row).set(column, value))
 }
+
+// setTimeout(() => {
+//   document.getElementsByClassName('leftBar')[0].style.left = window.innerWidth / 2 + 'px';
+// }, 2000);
