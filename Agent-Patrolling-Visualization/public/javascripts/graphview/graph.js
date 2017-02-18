@@ -196,6 +196,7 @@ window.onhashchange = () => {
   // }
 
 
+};
 
 export {graph};
 
