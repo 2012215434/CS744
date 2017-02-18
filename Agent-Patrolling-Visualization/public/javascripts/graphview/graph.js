@@ -107,9 +107,9 @@ function graph(region) {
     context.fill();
 
     context.beginPath();
-    context.fillStyle = '#000'; 
+    context.fillStyle = '#000';
     nodes.forEach(drawText);
-    
+
   }
 
   function drawNode(d) {
@@ -128,7 +128,7 @@ function graph(region) {
   }
 
   function drawText(d) {
-    if(d.exists) {   
+    if(d.exists) {
       context.fillText(d.count, d.x, d.y);
     }
   }
@@ -173,7 +173,7 @@ function graph(region) {
 if(location.hash) {
   let enviroment = document.querySelector('#environment');
   if(enviroment) enviroment.remove();
-  
+
   document.querySelector('#background').remove();
   document.querySelector('#graph').style.display= 'block';
 
