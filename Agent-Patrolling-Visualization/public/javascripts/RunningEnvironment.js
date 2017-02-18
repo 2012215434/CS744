@@ -85,7 +85,7 @@ class RunningEnvironment{
 
         let neighbour = {};
 
-        if (column + 1 < len && this.visited[row][column + 1] === 0) {
+        if (column + 1 < width && this.visited[row][column + 1] === 0) {
             neighbour['row'] = row;
             neighbour['column'] = column + 1;
             return neighbour; 
