@@ -5,6 +5,7 @@ import {Board, initAgentsColor} from './Board';
 import {RunningEnvironment} from '../RunningEnvironment'
 import randomColor from 'randomcolor';
 import Hammer from 'react-hammerjs';
+import {graph}  from '../graphview/graph';
 
 const OPEN = 'open',
       OBSTACLE = 'obstacle',
@@ -86,6 +87,8 @@ class Game extends React.Component {
         return 'moveRight';
       }
     }
+    
+    graph(this.state.regions.get(0), algorithm.traces, this.curStep);
   }
 
   runMutiSteps() {
@@ -378,6 +381,7 @@ class Game extends React.Component {
     });
 
     algorithm.move();
+    // window.algorithm = algorithm;
   }
 
   handleLeftBarSwipe(e) {

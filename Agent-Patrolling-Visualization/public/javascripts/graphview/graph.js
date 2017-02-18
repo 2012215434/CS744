@@ -1,6 +1,8 @@
 // import * as d3 from 'd3';
+// import Immutable from 'immutable';
 
-function graph(region) {
+function graph(region, traces, step) {
+  console.log(step);
   var canvas = document.querySelector('canvas'),
     context = canvas.getContext('2d'),
     width = canvas.width,
@@ -169,18 +171,37 @@ function graph(region) {
   setTimeout(() => {simulation.stop();}, 400);
 }
 
+window.onhashchange = () => {
+  console.log(location.hash);
+  if(location.hash == '#1') {
+    let enviroment = document.querySelector('#environment');
+    if(enviroment) enviroment.style.display= 'none';
 
-if(location.hash) {
-  let enviroment = document.querySelector('#environment');
-  if(enviroment) enviroment.remove();
+    document.querySelector('#background').style.display= 'none';
+    document.querySelector('#graph').style.display= 'block';
 
-  document.querySelector('#background').remove();
-  document.querySelector('#graph').style.display= 'block';
+    //模拟输入一个region。到时候我传给你的就是这个格式
+    // var region = [{column: 2, row: 1}, {column: 2, row: 2}, {column: 2, row: 3},
+    //   {column: 3, row: 2}, {column: 3, row: 3}, {column: 3, row: 4},{column: 3, row: 5},
+    //   {column: 4, row: 2}, {column: 4, row: 3}, {column: 5, row: 2},
+    // ];
+    // graph(region);
+  }
+  // else {
+  //   let enviroment = document.querySelector('#environment');
+  //   if(enviroment) enviroment.remove();
 
-  //模拟输入一个region。到时候我传给你的就是这个格式
-  var region = [{column: 2, row: 1}, {column: 2, row: 2}, {column: 2, row: 3},
-    {column: 3, row: 2}, {column: 3, row: 3}, {column: 3, row: 4},{column: 3, row: 5},
-    {column: 4, row: 2}, {column: 4, row: 3}, {column: 5, row: 2},
-  ];
-  graph(region);
-}
+  //   document.querySelector('#background').remove();
+  //   document.querySelector('#graph').style.display= 'block';
+  // }
+
+
+
+export {graph};
+
+// let agents = Immutable.List([{id: 0, row: 1, colunm:2}, {id: 1, row: 2, colunm:5}]);
+// agents.forEach((agent) => {
+//   console.log(agent);
+// });
+
+// traces.forEach((trace) => {console.log(trace[2])})
