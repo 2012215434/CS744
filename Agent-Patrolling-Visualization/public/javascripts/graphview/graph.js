@@ -26,10 +26,19 @@ function graph(region, traces, step) {
 
   let allAgents = [];
   traces.forEach((trace, id) => {
+    let row, column;
+    if(trace.length - 1 >= step) {
+      row = trace[step].row;
+      column = trace[step].column;
+    } else {
+      row = trace.slice(-1).pop().row;
+      column = trace.slice(-1).pop().column;
+    }
+
     allAgents.push({
       id,
-      row: trace[step].row,
-      column: trace[step].column
+      row,
+      column
     });
   });
 

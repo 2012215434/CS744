@@ -88,7 +88,7 @@ class Game extends React.Component {
       }
     }
     
-    graph(this.state.regions.get(0), algorithm.traces, this.curStep);
+    graph(this.state.regions.get(num ? num : 0), algorithm.traces, this.curStep);
   }
 
   runMutiSteps() {
