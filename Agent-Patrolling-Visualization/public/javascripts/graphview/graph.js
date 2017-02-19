@@ -29,6 +29,8 @@ function graph(region, traces, step) {
   let columns = right - left + 1,
       rows = down - up + 1;
 
+
+
   let allAgents = [];
   traces.forEach((trace, id) => {
     let row, column;
@@ -49,6 +51,7 @@ function graph(region, traces, step) {
 
   //数组，图上的所有点
   var nodes = d3.range(columns * rows).map(function(i) {
+
     let column = i % columns + left,
         row = Math.floor(i / columns) + up;
 
@@ -65,7 +68,6 @@ function graph(region, traces, step) {
       });
     }
 
-
     return {
       index: i,
       r:  15, //node半径
@@ -75,7 +77,7 @@ function graph(region, traces, step) {
       row,
       column,
       count: agents.length,
-      agents
+      agents,
     };
     /*
       注意，以上除了exists属性，都是交给d3处理的，比如r设置为10，每个点绘制出来的半径就会是10，相当于配置信息；
@@ -134,22 +136,31 @@ function graph(region, traces, step) {
     context.strokeStyle = '#aaa';
     context.stroke();
 
-    context.beginPath();
+  //  context.beginPath();
     nodes.forEach(drawNode); //对于每一个node，执行drawNode方法
-    context.fillStyle = '#fff';
-    context.fill();
+    // context.fillStyle = '#fff';
+    // context.fill();
 
     context.beginPath();
     context.fillStyle = '#000';
     nodes.forEach(drawText);
+
+
 
   }
 
   function drawNode(d) {
     //这边就用到了我已开始设置的exists属性，如果是true才绘制。你可以试着把if去掉，画出来是个长方形
     if(d.exists) {
+      context.beginPath();
       context.moveTo(d.x + 3, d.y);
       context.arc(d.x, d.y, d.r,0,  2 * Math.PI);
+      context.fillStyle = '#fff';
+      context.fill();
+      if(d.visited){
+        context.fillStyle = 'red';
+        context.fill();
+      }
     }
   }
 
@@ -165,6 +176,7 @@ function graph(region, traces, step) {
       context.fillText(d.count, d.x, d.y);
     }
   }
+
 
   //以下是控制drag，想想还是先不做了(具体原因先不用管)，以后你想做再说。
   d3.select(canvas)
@@ -185,6 +197,9 @@ function graph(region, traces, step) {
     //  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
     // d3.event.subject.fx = d3.event.subject.x;
     // d3.event.subject.fy = d3.event.subject.y;
+    let flip = document.querySelector('#flip');
+    flip.style.display= 'block';
+    flip.innerHTML = flip.innerHTML + d3.event.subject;
     console.log(d3.event.subject)
   }
 
