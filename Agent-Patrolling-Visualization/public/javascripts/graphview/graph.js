@@ -3,9 +3,12 @@
 
 function graph(region, traces, step) {
   console.log(step);
+
   traces.forEach(trace => {
     console.log(trace);
   })
+
+
   var canvas = document.querySelector('canvas'),
     context = canvas.getContext('2d'),
     width = canvas.width,
@@ -23,9 +26,26 @@ function graph(region, traces, step) {
     up = Math.min(node.row, up);
     down = Math.max(node.row, down);
   });
-
   let columns = right - left + 1,
       rows = down - up + 1;
+
+  let allAgents = [];
+  traces.forEach((trace, id) => {
+    let row, column;
+    if(trace.length - 1 >= step) {
+      row = trace[step].row;
+      column = trace[step].column;
+    } else {
+      row = trace.slice(-1).pop().row;
+      column = trace.slice(-1).pop().column;
+    }
+
+    allAgents.push({
+      id,
+      row,
+      column
+    });
+  });
 
   //数组，图上的所有点
   var nodes = d3.range(columns * rows).map(function(i) {
@@ -38,6 +58,12 @@ function graph(region, traces, step) {
         exists = true;
       }
     });
+    let agents = [];
+    if (exists) {
+      agents = allAgents.filter((agent) => {
+        if(agent.column == column && agent.row == row) return true;
+      });
+    }
 
 
     return {
@@ -48,7 +74,8 @@ function graph(region, traces, step) {
       exists: exists, //该node是否需要显示，这是我另外加上去的属性，为了绘制时判断用的。见drawGraph里的drawLink和drawNode
       row,
       column,
-      count: 2
+      count: agents.length,
+      agents
     };
     /*
       注意，以上除了exists属性，都是交给d3处理的，比如r设置为10，每个点绘制出来的半径就会是10，相当于配置信息；
@@ -175,31 +202,48 @@ function graph(region, traces, step) {
   setTimeout(() => {simulation.stop();}, 400);
 }
 
-window.onhashchange = () => {
-  console.log(location.hash);
-  if(location.hash == '#1') {
+// window.onhashchange = () => {
+//   console.log(location.hash);
+//   if(location.hash == '#1') {
+//     let enviroment = document.querySelector('#environment');
+//     if(enviroment) enviroment.style.display= 'none';
+
+//     document.querySelector('#background').style.display= 'none';
+//     document.querySelector('#graph').style.display= 'block';
+
+//     //模拟输入一个region。到时候我传给你的就是这个格式
+//     // var region = [{column: 2, row: 1}, {column: 2, row: 2}, {column: 2, row: 3},
+//     //   {column: 3, row: 2}, {column: 3, row: 3}, {column: 3, row: 4},{column: 3, row: 5},
+//     //   {column: 4, row: 2}, {column: 4, row: 3}, {column: 5, row: 2},
+//     // ];
+//     // graph(region);
+//   }
+//   // else {
+//   //   let enviroment = document.querySelector('#environment');
+//   //   if(enviroment) enviroment.remove();
+
+//   //   document.querySelector('#background').remove();
+//   //   document.querySelector('#graph').style.display= 'block';
+//   // }
+
+
+// };
+
+
+window.toggle = function() {
+  if(document.querySelector('#graph').style.display == 'none') {
     let enviroment = document.querySelector('#environment');
     if(enviroment) enviroment.style.display= 'none';
 
     document.querySelector('#background').style.display= 'none';
     document.querySelector('#graph').style.display= 'block';
+  } else {
+    let enviroment = document.querySelector('#environment');
+    if(enviroment) enviroment.style.display= 'block';
 
-    //模拟输入一个region。到时候我传给你的就是这个格式
-    // var region = [{column: 2, row: 1}, {column: 2, row: 2}, {column: 2, row: 3},
-    //   {column: 3, row: 2}, {column: 3, row: 3}, {column: 3, row: 4},{column: 3, row: 5},
-    //   {column: 4, row: 2}, {column: 4, row: 3}, {column: 5, row: 2},
-    // ];
-    // graph(region);
+    document.querySelector('#background').style.display= 'block';
+    document.querySelector('#graph').style.display= 'none';
   }
-  // else {
-  //   let enviroment = document.querySelector('#environment');
-  //   if(enviroment) enviroment.remove();
-
-  //   document.querySelector('#background').remove();
-  //   document.querySelector('#graph').style.display= 'block';
-  // }
-
-
 };
 
 export {graph};
