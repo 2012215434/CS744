@@ -5,8 +5,9 @@ import {Board, initAgentsColor} from './Board';
 import {RunningEnvironment} from '../RunningEnvironment'
 import randomColor from 'randomcolor';
 import Hammer from 'react-hammerjs';
-import {graph}  from '../graphview/graph';
-import {Traces}  from './Traces';
+import {graph} from '../graphview/graph';
+import {Traces} from './Traces';
+import {Graph} from './Graph';
 
 const OPEN = 'open',
       OBSTACLE = 'obstacle',
@@ -40,6 +41,8 @@ class Game extends React.Component {
       agentBar_class: '',
       configFinished: false,
       curStep: 0,
+      toggle: true,
+      curRegion: 0,
     };
 
     this.envirPosition = {
@@ -96,7 +99,7 @@ class Game extends React.Component {
       }
     }
     
-    graph(this.state.regions.get(0), algorithm.traces, curStep);
+    graph(this.state.regions.get(this.state.curRegion), algorithm.traces, curStep);
   }
 
   runMutiSteps(e) {
@@ -258,6 +261,16 @@ class Game extends React.Component {
     this.setState({regions: regions.set(-1, region)});
   }
 
+  handleSketchClick(regionID) {
+    if (this.state.toggle) {
+      this.setState({toggle: false});
+      this.setState({curRegion: regionID});
+      graph(this.state.regions.get(regionID), algorithm.traces, this.state.curStep);
+    } else {
+      this.setState({toggle: true});
+    }
+  }
+
   constructRegionSketch(region, index) {
     if(region.length <= 0) return;
     let left = region[0].column, 
@@ -286,7 +299,7 @@ class Game extends React.Component {
 
         squares.push(
           <div className={'sketchSquare ' + (isOpen ? 'sketchSquare-obstacle ' : '')} key={key++}></div>
-        )
+        );
       }
     }
 
@@ -317,7 +330,7 @@ class Game extends React.Component {
     );
       
     return (
-      <div key={index} className="sketchBlock" data-regionID={index}>
+      <div key={index} className="sketchBlock" data-regionID={index} onClick={this.handleSketchClick.bind(this, index)}>
         <div style={{width, height}} className="sketch">
           {squares}
         </div>
@@ -457,8 +470,10 @@ class Game extends React.Component {
         board={this.state.background}
         onMouseDown={this.handleMouseDownOnBackground.bind(this)}
         onMouseOver={this.handleMouseOverOnBackground.bind(this)}
+        toggle={this.state.toggle}
       />
     );
+
     const environment = this.state.environment ? (
       <Board 
         id="environment" 
@@ -469,6 +484,7 @@ class Game extends React.Component {
         onMouseDown={this.handleMouseDownOnEnvironment.bind(this)}
         onMouseUp={this.handleMouseUpOnEnvironment.bind(this)}
         onMouseOver={this.handleMouseOverOnEnvironment.bind(this)}
+        toggle={this.state.toggle}
         Traces={
           this.state.configFinished ? (
             <Traces 
@@ -542,6 +558,10 @@ class Game extends React.Component {
       </div>
     );
     
+    const graph = (
+      <Graph toggle={this.state.toggle}/>
+    );
+
     return (
       <div>
         {moreBar}
@@ -549,6 +569,7 @@ class Game extends React.Component {
         {background}
         {environment}
         {rightBar}
+        {graph}
       </div>
     )
   }

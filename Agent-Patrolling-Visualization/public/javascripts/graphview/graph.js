@@ -71,8 +71,8 @@ function graph(region, traces, step) {
     return {
       index: i,
       r:  15, //node半径
-      x: (i % columns) * 40, //每个node的x坐标
-      y: (Math.floor(i / columns)) * 40, //每个node的y坐标
+      fx: (i % columns) * 40, //每个node的x坐标
+      fy: (Math.floor(i / columns)) * 40, //每个node的y坐标
       exists: exists, //该node是否需要显示，这是我另外加上去的属性，为了绘制时判断用的。见drawGraph里的drawLink和drawNode
       row,
       column,
@@ -105,7 +105,7 @@ function graph(region, traces, step) {
   function ticked() {
     context.clearRect(0, 0, width, height);
     context.save();
-    context.translate(width/2, height/2);
+    context.translate(width/2 - columns * 20, height/2 - rows * 20);
 
     drawGraph();
 
@@ -113,16 +113,16 @@ function graph(region, traces, step) {
   }
 
   //zoom时的事件（放大缩小）
-  // d3.select(canvas).call(d3.zoom()
-  //   .scaleExtent([1 / 2, 4])
-  //   .on('zoom', zoomed))
-  //   .on('click', (d) => {console.log(d)});
+  d3.select(canvas).call(d3.zoom()
+    .scaleExtent([1 / 2, 4])
+    .on('zoom', zoomed));
 
   //zoom事件触发时的回调函数，使之放大缩小
   function zoomed() {
+    let transform = d3.event.transform.translate(width/2 - columns * 20, height/2 - rows * 20)
     context.save();
     context.clearRect(0, 0, width, height);
-    context.translate(d3.event.transform.x, d3.event.transform.y);
+    context.translate(transform.x, transform.y);
     context.scale(d3.event.transform.k, d3.event.transform.k);
 
     drawGraph();
@@ -144,9 +144,6 @@ function graph(region, traces, step) {
     context.beginPath();
     context.fillStyle = '#000';
     nodes.forEach(drawText);
-
-
-
   }
 
   function drawNode(d) {
@@ -173,35 +170,35 @@ function graph(region, traces, step) {
 
   function drawText(d) {
     if(d.exists) {
-      context.fillText(d.count, d.x, d.y);
+      context.fillText(d.count, d.x - 3.2, d.y + 3.5);
     }
   }
 
 
   //以下是控制drag，想想还是先不做了(具体原因先不用管)，以后你想做再说。
-  d3.select(canvas)
-    .call(
-    d3.drag()
-      .container(canvas)
-      .subject(dragsubject)
-      .on('start', dragstarted)
-      // .on('drag', dragged)
-      // .on('end', dragended)
-    );
+  // d3.select(canvas)
+  //   .call(
+  //   d3.drag()
+  //     .container(canvas)
+  //     .subject(dragsubject)
+  //     .on('start', dragstarted)
+  //     // .on('drag', dragged)
+  //     // .on('end', dragended)
+  //   );
 
-  function dragsubject() {
-    return simulation.find(d3.event.x - width / 2, d3.event.y - height / 2);
-  }
+  // function dragsubject() {
+  //   return simulation.find(d3.event.x - width / 2, d3.event.y - height / 2);
+  // }
 
-  function dragstarted() {
-    //  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-    // d3.event.subject.fx = d3.event.subject.x;
-    // d3.event.subject.fy = d3.event.subject.y;
-    let flip = document.querySelector('#flip');
-    flip.style.display= 'block';
-    flip.innerHTML = flip.innerHTML + d3.event.subject;
-    console.log(d3.event.subject)
-  }
+  // function dragstarted() {
+  //   //  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+  //   // d3.event.subject.fx = d3.event.subject.x;
+  //   // d3.event.subject.fy = d3.event.subject.y;
+  //   let flip = document.querySelector('#flip');
+  //   flip.style.display= 'block';
+  //   flip.innerHTML = flip.innerHTML + d3.event.subject;
+  //   console.log(d3.event.subject)
+  // }
 
   //  function dragged() {
   //   d3.event.subject.fx = d3.event.x;
@@ -214,7 +211,7 @@ function graph(region, traces, step) {
   //   d3.event.subject.fy = null;
   // }
 
-  setTimeout(() => {simulation.stop();}, 400);
+  // setTimeout(() => {simulation.stop();}, 400);
 }
 
 // window.onhashchange = () => {

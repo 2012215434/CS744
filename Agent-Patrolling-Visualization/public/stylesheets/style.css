@@ -22,12 +22,20 @@ body {
   margin-left: -400px;
   width: 800px;
   height: 800px;
+  animation: show .5s ease;
+  -webkit-animation: show .5s ease;
 }
 #environment {
   position: fixed;
   /*border: 1px solid #0099CC;
   margin: -1px 0 0 -1px;*/
 }
+/*#environment.animate{
+  position: fixed;
+  animation: show .5s ease;
+  -webkit-animation: show .5s ease .2s;
+}*/
+
 .inner-square {
   width: 39px;
   height: 39px;

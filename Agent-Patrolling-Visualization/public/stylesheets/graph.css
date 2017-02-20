@@ -6,7 +6,9 @@
   margin-left: -400px;
   width: 800px;
   height: 800px;
-  border: 1px solid;
+  animation: show .5s ease;
+  -webkit-animation: show .5s ease;
+  /*border: 1px solid;*/
 }
 
 #graph .info {
@@ -36,4 +38,22 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+
+@keyframes show {
+  0% {opacity: 0; transform: translateX(25px)}
+  100% {opacity: 1;}
+}
+@-webkit-keyframes show{
+  0% {opacity: 0; transform: translateX(25px)}
+  100% {opacity: 1;}
+}
+@keyframes hide {
+  0% {opacity: 1;}
+  100% {opacity: 0; transform: translateX(25px)}
+}
+@-webkit-keyframes hide{
+  0% {opacity: 1; }
+  100% {opacity: 0; transform: translateX(25px)}
 }
