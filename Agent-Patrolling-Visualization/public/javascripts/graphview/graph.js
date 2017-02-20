@@ -2,11 +2,11 @@
 // import Immutable from 'immutable';
 
 function graph(region, traces, step) {
-  console.log(step);
+  // console.log(step);
 
-  traces.forEach(trace => {
-    console.log(trace);
-  })
+  // traces.forEach(trace => {
+  //   console.log(trace);
+  // })
 
 
   var canvas = document.querySelector('canvas'),

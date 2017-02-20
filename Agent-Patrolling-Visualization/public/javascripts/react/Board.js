@@ -117,6 +117,7 @@ class Board extends React.Component {
         id={this.props.id}>
         {this.renderRows(this.props.board.size, this.props.board.get(0).size)}
         {tip}
+        {this.props.Traces}
       </div>
     )
   }

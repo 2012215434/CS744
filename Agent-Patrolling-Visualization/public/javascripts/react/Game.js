@@ -6,6 +6,7 @@ import {RunningEnvironment} from '../RunningEnvironment'
 import randomColor from 'randomcolor';
 import Hammer from 'react-hammerjs';
 import {graph}  from '../graphview/graph';
+import {Traces}  from './Traces';
 
 const OPEN = 'open',
       OBSTACLE = 'obstacle',
@@ -30,14 +31,15 @@ class Game extends React.Component {
       mouseDown: false,
       mouseDownOnEnvir: false,
       environmentSettled: false,
-      initial: true,
       regions: Immutable.List([]),
       tipText: '',
       btn_finished_class: 'hidden',
       btn_runOne_class: 'hidden',
       btn_runMuti_class: 'hidden',
       regionBar_class: 'show_regionBar',
-      agentBar_class: ''
+      agentBar_class: '',
+      configFinished: false,
+      curStep: 0,
     };
 
     this.envirPosition = {
@@ -47,33 +49,39 @@ class Game extends React.Component {
       endColumn: null
     };
 
-    this.curStep = 0;
 
     this.mouseDownCoor = {};
     this.mouseUpCoor = {};
   }
 
   runOneStep() {
-    this.curStep++;
+    let curStep = this.state.curStep + 1;
+    this.setState({curStep});
     let agents = this.state.agents;
 
     let isEnd = true;
 
     algorithm.traces.forEach((trace, id) => {
-      if(!trace[this.curStep]) return;
+      if(!trace[curStep]) return;
       isEnd = false;
 
-      let curPosition = trace[this.curStep],
+      let curPosition = trace[curStep],
           row = curPosition.row,
           column = curPosition.column;
       
       let move = judgeMove(agents.get(id), {row, column});
-      document.getElementById('agent-' + id).classList.add(move);
+
+      if(document.getElementById('agent-' + id)) {
+        document.getElementById('agent-' + id).classList.add(move);
+      }
 
       let hidden = agents.get(id).hidden;
       agents = agents.set(id, {id, row, column, hidden});
     });
+    
     if(isEnd) return;
+
+    this.agents = agents;
     setTimeout(() => this.setState({agents}), 350);
 
     function judgeMove(prev, cur) {
@@ -88,7 +96,7 @@ class Game extends React.Component {
       }
     }
     
-    graph(this.state.regions.get(num ? num : 0), algorithm.traces, this.curStep);
+    graph(this.state.regions.get(0), algorithm.traces, curStep);
   }
 
   runMutiSteps() {
@@ -101,18 +109,19 @@ class Game extends React.Component {
   }
 
   handleMouseDownOnBackground(e) {
-    if(this.state.initial){
-      this.setState({mouseDown: true});
-      // this.setState({initial: false});
-      this.envirPosition.startRow = e.target.getAttribute('data-row');
-      this.envirPosition.startColumn = e.target.getAttribute('data-column');
+    if(this.state.configFinished) return;
 
-      this.mouseDownCoor = e.target.getBoundingClientRect();
-    }
+    this.setState({mouseDown: true});
+    this.envirPosition.startRow = e.target.getAttribute('data-row');
+    this.envirPosition.startColumn = e.target.getAttribute('data-column');
+
+    this.mouseDownCoor = e.target.getBoundingClientRect();
   }
 
   handleMouseOverOnBackground(e) {
     // e.target.innerHTML = '1';
+    if(this.state.configFinished) return;
+
     if(this.state.mouseDown){
       this.envirPosition.endRow = e.target.getAttribute('data-row');
       this.envirPosition.endColumn = e.target.getAttribute('data-column');
@@ -134,19 +143,22 @@ class Game extends React.Component {
   }
 
   handleMouseUpOnEnvironment(e) {
+    if(this.state.configFinished) return;
+
     if (this.state.mouseDown) {
       this.setState({mouseDown: false});
       setTimeout(() => this.setState({btn_finished_class: 'show'}), 1000);
     }
     if (this.state.mouseDownOnEnvir){
       this.setState({mouseDownOnEnvir: false});
-      this.setState({initial: false});
     }
 
     if(this.state.tipText) this.setState({tipText: ''});
   }
 
   handleMouseDownOnEnvironment(e) {
+    if(this.state.configFinished) return;
+
     e.preventDefault();
     this.setState({mouseDownOnEnvir: true});
     let target = e.target;
@@ -164,6 +176,8 @@ class Game extends React.Component {
   }
 
   handleMouseOverOnEnvironment(e) {
+    if(this.state.configFinished) return;
+
     if(this.state.mouseDownOnEnvir) {
       this.setOpen(e.target);
     }
@@ -258,7 +272,7 @@ class Game extends React.Component {
     }
 
     const deleter = this.state.mouseDown ? null : (
-      <div className="deleter">
+      <div className={"deleter" + (this.state.configFinished ? ' hidden2' : '')}>
         <span className="close warp black" onClick={() => {
           let environment = this.state.environment,
               regions = this.state.regions,
@@ -351,8 +365,19 @@ class Game extends React.Component {
       });
   }
 
-  //两件事：给RunningEnvironment.js传参；阻止用户继续设置环境
   configFinished() {
+    let legal = true;
+    this.state.regions.forEach((region) => {
+      let finded = this.state.agents.find((agent) => {
+        return region.find((square) => {
+          return square.row == agent.row && square.column == agent.column;
+        });
+      });
+
+      if (!finded) legal = false;
+    });
+    if (!legal) return alert('There are some regions that have no agents!');
+
     this.setState({btn_finished_class: 'hide'});
     setTimeout(() => this.setState({btn_finished_class: 'hidden'}), 500);
 
@@ -381,6 +406,7 @@ class Game extends React.Component {
     });
 
     algorithm.move();
+    this.setState({configFinished: true});
     // window.algorithm = algorithm;
   }
 
@@ -424,6 +450,19 @@ class Game extends React.Component {
         onMouseDown={this.handleMouseDownOnEnvironment.bind(this)}
         onMouseUp={this.handleMouseUpOnEnvironment.bind(this)}
         onMouseOver={this.handleMouseOverOnEnvironment.bind(this)}
+        Traces={
+          this.state.configFinished ? (
+            <Traces 
+              width={this.state.environment.get(0).size * 40} 
+              height={this.state.environment.size * 40} 
+              traces={algorithm.traces}
+              agents={this.agents}
+              step={this.state.curStep}
+              agentColors={agentColors}
+            />
+          )
+          : null
+        }
       />
     ) : null;
 
