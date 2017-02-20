@@ -99,13 +99,32 @@ class Game extends React.Component {
     graph(this.state.regions.get(0), algorithm.traces, curStep);
   }
 
-  runMutiSteps() {
-    let total = this.stepsInput.value,
-        steps = total;
-    while(steps > 0) {
-      setTimeout(this.runOneStep.bind(this), (total - steps) * 400);
-      steps--;
-    }
+  runMutiSteps(e) {
+    if (!e.target.classList.contains('btn') || !this.stepsInput.value) return;
+    let total = parseInt(this.stepsInput.value);
+
+   let curStep = this.state.curStep + total;
+    this.setState({curStep});
+    let agents = this.state.agents;
+
+    console.log(curStep);
+    algorithm.traces.forEach((trace, id) => {
+      if(!trace[curStep]) curStep = trace.length - 1;
+
+      let curPosition = trace[curStep],
+          row = curPosition.row,
+          column = curPosition.column;
+      
+
+      let hidden = agents.get(id).hidden;
+      agents = agents.set(id, {id, row, column, hidden});
+    });
+    
+
+    this.agents = agents;
+    this.setState({agents})
+    
+    graph(this.state.regions.get(0), algorithm.traces, curStep);
   }
 
   handleMouseDownOnBackground(e) {
