@@ -1,6 +1,5 @@
 import React from 'react';
-import Vivus from 'vivus';
-window.Vivus = Vivus;
+
 class Traces extends React.Component {
 
   componentWillUpdate(nextProps, nextState) {
