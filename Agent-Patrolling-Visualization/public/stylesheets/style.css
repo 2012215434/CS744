@@ -68,6 +68,10 @@ body {
   align-items: center;
   flex-wrap: wrap;
 }
+#environment .visited{
+  background: #E5E5FF;
+  /*border-color: #E6E6E6;*/
+}
 .leftBar {
   position: fixed;
   left: 50%;

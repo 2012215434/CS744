@@ -6,10 +6,22 @@ const OPEN = 'open',
       AGENT = 'agent';
 
 function Square(props) { 
+  let visited = false;
+  if (props.traces) {
+    props.traces.forEach((trace) => {
+      let finded = trace.find((square, index) => {
+        if (index > props.curStep) return false;
+        return square.row == props.row && square.column == props.column;
+      });
+      if (finded) visited = true;
+    });
+  }
+
   const className = 
     ( props.info ? 'inner-square ' + props.info : 'square ' + props.info ) + 
     ( props.row == 0 ? ' top' : '' ) + 
-    ( props.column == 0 ? ' left ' : '' );
+    ( props.column == 0 ? ' left ' : '' ) + 
+    ( visited ? ' visited ' : '');
 
   function generateAgents() {
     if(props.agents.length < 5) {
@@ -60,11 +72,29 @@ class Row extends React.Component {
         });
         // console.log(agents);
         squares.push(
-          <Square key={i} row={this.props.rIndex} column={i} info={this.props.rowInfo.get(i)} agents={agents} agentColors={this.props.agentColors}/>
+          <Square 
+            key={i} 
+            row={this.props.rIndex} 
+            column={i} 
+            info={this.props.rowInfo.get(i)} 
+            agents={agents} 
+            agentColors={this.props.agentColors}
+            traces={this.props.traces}
+            curStep={this.props.curStep}
+          />
         );
       }
       else {
-        squares.push(<Square key={i} row={this.props.rIndex} column={i} info={this.props.rowInfo.get(i)} agentColors={this.props.agentColors}/>);
+        squares.push(
+          <Square 
+            key={i} 
+            row={this.props.rIndex} 
+            column={i} 
+            info={this.props.rowInfo.get(i)} 
+            agentColors={this.props.agentColors}
+            traces={this.props.traces}
+            curStep={this.props.curStep}
+          />);
       }
     }
     return squares;
@@ -92,12 +122,27 @@ class Board extends React.Component {
           }
         });
         rows.push(
-          <Row key={i} rIndex={i} num={cNum} rowInfo={this.props.board.get(i)} agents={agents} agentColors={this.props.agentColors}/>
+          <Row 
+            key={i} 
+            rIndex={i} 
+            num={cNum} 
+            rowInfo={this.props.board.get(i)} 
+            agents={agents} 
+            agentColors={this.props.agentColors}
+            traces={this.props.traces}
+            curStep={this.props.curStep}
+          />
         );
       }
       else {
         rows.push(
-          <Row key={i} rIndex={i} num={cNum} rowInfo={this.props.board.get(i)} agentColors={this.props.agentColors}/>
+          <Row key={i} 
+            rIndex={i} num={cNum} 
+            rowInfo={this.props.board.get(i)} 
+            agentColors={this.props.agentColors}
+            traces={this.props.traces}
+            curStep={this.props.curStep}
+          />
         );
       }
     }

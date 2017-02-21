@@ -474,6 +474,7 @@ class Game extends React.Component {
   }
 
   generateEnvironment() {
+    this.setState({regions: Immutable.List([])});
     let height, width;
     if (this.fileResult) {
       height = parseInt(this.fileResult.height),
@@ -538,6 +539,8 @@ class Game extends React.Component {
         onMouseUp={this.handleMouseUpOnEnvironment.bind(this)}
         onMouseOver={this.handleMouseOverOnEnvironment.bind(this)}
         toggle={this.state.toggle}
+        traces={this.state.configFinished ? algorithm.traces : null}
+        curStep={this.state.configFinished ? this.state.curStep : 0}
         Traces={
           this.state.configFinished ? (
             <Traces 
@@ -614,6 +617,8 @@ class Game extends React.Component {
         <div className="hr"></div>
         <div className="toggle" onClick={
           () => {
+            if (this.state.configFinished) return;
+            
             this.setState({moreBar_class: this.state.moreBar_class !== 'show' ? 'show' : 'hide'});
             this.setState({content_toggle: 0});
             this.widthInput.value = '';
