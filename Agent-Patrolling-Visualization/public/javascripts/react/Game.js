@@ -462,6 +462,7 @@ class Game extends React.Component {
   handleEnterSize() {
     this.setState({content_toggle: 1});
     this.fileInput.value = '';
+    this.fileResult = null;
   }
 
   handleSelectFile() {
