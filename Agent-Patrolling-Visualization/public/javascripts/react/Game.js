@@ -336,7 +336,7 @@ class Game extends React.Component {
       <div key={index} className="sketchBlock" data-regionID={index}>
         <div 
           style={{width, height}} 
-          className={'sketch ' + (this.state.curRegion === index ? 'selected' : '')}
+          className={'sketch ' + (this.state.toggle === index ? 'selected' : '')}
           onClick={this.handleSketchClick.bind(this, index)}
         >
           {squares}
