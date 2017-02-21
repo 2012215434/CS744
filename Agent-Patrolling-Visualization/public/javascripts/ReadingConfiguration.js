@@ -1,5 +1,5 @@
-function handleFileSelect(evt) {
-    var files = evt.target.files; // FileList object
+function readFile(files, callback) {
+    // var files = evt.target.files; // FileList object
 
     var result = {};
     var regions = [];
@@ -20,7 +20,7 @@ function handleFileSelect(evt) {
             var length = dimension[1].trim();
             
             result['width'] = parseInt(width);
-            result['length'] = parseInt(length);
+            result['height'] = parseInt(length);
 
             var i;
             var numberOfRegions = parseInt(lines[1]);
@@ -41,12 +41,16 @@ function handleFileSelect(evt) {
                     positions.push(position);
                 }
                 //add to regions, positions represent a positions in a region
-                regions[regionID] = positions;
+                regions.push(positions);
             }
             //all regions as an value in the result
             result['regions'] = regions;
-            return result;
+            callback(result);
+            console.log(result);
+            // return result;
         };
         reader.readAsText(f);
     }
 }
+
+export {readFile};

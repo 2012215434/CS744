@@ -8,6 +8,7 @@ import Hammer from 'react-hammerjs';
 import {graph} from '../graphview/graph';
 import {Traces} from './Traces';
 import {Graph} from './Graph';
+import {readFile} from '../ReadingConfiguration'
 
 const OPEN = 'open',
       OBSTACLE = 'obstacle',
@@ -39,10 +40,12 @@ class Game extends React.Component {
       btn_runMuti_class: 'hidden',
       regionBar_class: 'show_regionBar',
       agentBar_class: '',
+      moreBar_class: '',
+      content_toggle: 0, // 0都不高亮；1第一个高亮；2第二个高亮
       configFinished: false,
       curStep: 0,
-      toggle: true,
-      curRegion: 0,
+      toggle: -1, //-1 shows block view; 0,1,2... shows corresponding region
+      curRegion: -1,
     };
 
     this.envirPosition = {
@@ -262,12 +265,12 @@ class Game extends React.Component {
   }
 
   handleSketchClick(regionID) {
-    if (this.state.toggle) {
-      this.setState({toggle: false});
+    if (this.state.toggle !== regionID) {
+      this.setState({toggle: regionID});
       this.setState({curRegion: regionID});
       graph(this.state.regions.get(regionID), algorithm.traces, this.state.curStep);
     } else {
-      this.setState({toggle: true});
+      this.setState({toggle: -1});
     }
   }
 
@@ -330,8 +333,12 @@ class Game extends React.Component {
     );
       
     return (
-      <div key={index} className="sketchBlock" data-regionID={index} onClick={this.handleSketchClick.bind(this, index)}>
-        <div style={{width, height}} className="sketch">
+      <div key={index} className="sketchBlock" data-regionID={index}>
+        <div 
+          style={{width, height}} 
+          className={'sketch ' + (this.state.curRegion === index ? 'selected' : '')}
+          onClick={this.handleSketchClick.bind(this, index)}
+        >
           {squares}
         </div>
         {deleter}
@@ -384,17 +391,6 @@ class Game extends React.Component {
     }
 
     return agent;
-  }
-
-  generateEnvironment() {
-    let height = parseInt(this.heightInput.value),
-        width = parseInt(this.widthInput.value);
-    this.setState(
-      {
-        environment: Immutable.fromJS(Array(height).fill(Array(width).fill(OBSTACLE)))
-      }, () => {
-
-      });
   }
 
   configFinished() {
@@ -461,6 +457,63 @@ class Game extends React.Component {
     let agents = this.state.agents.set(agentId, agent);
 
     this.setState(agents)
+  }
+
+  handleEnterSize() {
+    this.setState({content_toggle: 1});
+    this.fileInput.value = '';
+  }
+
+  handleSelectFile() {
+    this.setState({content_toggle: 2});
+    this.widthInput.value = '';
+    this.heightInput.value = '';
+    readFile(this.fileInput.files, (result) => {
+      this.fileResult = result;
+    });
+  }
+
+  generateEnvironment() {
+    let height, width;
+    if (this.fileResult) {
+      height = parseInt(this.fileResult.height),
+      width = parseInt(this.fileResult.width);
+
+      let regions = Immutable.List(this.fileResult.regions);
+      this.setState({regions});
+
+    } else if (this.heightInput.value && this.widthInput.value) {
+      height = parseInt(this.heightInput.value);
+      width = parseInt(this.widthInput.value);
+
+    } else {
+      return alert('Please set the configration first');
+    }
+    if ( height <=0 || width <= 0) return alert('Please check the configration');
+
+    this.setState({btn_finished_class: 'show'})
+
+    this.setState({
+      environment: Immutable.fromJS(Array(height).fill(Array(width).fill(OBSTACLE)))
+    }, () => {
+      let dataRow = Math.round((20 - height) / 2);
+      let dataColumn = Math.round((20 - width) / 2);
+      let ele = document.querySelector(`[data-row="${dataRow}"][data-column="${dataColumn}"]`);
+
+      let rect = ele.getBoundingClientRect();
+      document.getElementById('environment').style.top = rect.top;
+      document.getElementById('environment').style.left = rect.left;
+
+      if (this.fileResult) {
+        let environment = this.state.environment;
+        this.fileResult.regions.forEach((region) => {
+          region.forEach((square) => {
+            environment = environment.update(square.row, square.column, OPEN);
+          });
+        });
+        this.setState({environment});
+      }
+    });
   }
 
   render() {
@@ -544,17 +597,36 @@ class Game extends React.Component {
 
 
     const moreBar = (
-      <div id="moreBar">
-        <div>
+      <div id="moreBar" className={this.state.moreBar_class}>
+        <div className={'content ' + (this.state.content_toggle === 1 ? 'selected' : '')}>
           <p>Enter the size:</p>
           <div>
-            width: <input type="text" ref={(input) => { this.widthInput = input; }}/>
+            <span>width:</span>
+            <input type="text" ref={(input) => { this.widthInput = input; }} onChange={this.handleEnterSize.bind(this)}/>
+            <div className="clearFloat"></div>
           </div>
           <div>
-            height: <input type="text" ref={(input) => { this.heightInput = input; }}/>
+            <span>height:</span>
+            <input type="text" ref={(input) => { this.heightInput = input; }} onChange={this.handleEnterSize.bind(this)}/>
+            <div className="clearFloat"></div>
           </div>
-          <div className="btn" onClick={this.generateEnvironment.bind(this)}>GENERATE</div>
         </div>
+        <div className="hr"></div>
+        <div className="toggle" onClick={
+          () => {
+            this.setState({moreBar_class: this.state.moreBar_class !== 'show' ? 'show' : 'hide'});
+            this.setState({content_toggle: 0});
+            this.widthInput.value = '';
+            this.heightInput.value = '';
+            this.fileInput.value = '';
+            this.fileResult = null;
+          }
+        }></div>
+        <div className={'content ' + (this.state.content_toggle === 2 ? 'selected' : '')}>
+          <p>Read from file:</p>
+          <input type="file" id = "fileInput" ref={(input) => { this.fileInput = input;}} onChange={this.handleSelectFile.bind(this)}/>
+        </div>
+        <div className={'btn ' + (this.state.content_toggle !== 0 ? 'selected' : '')} onClick={this.generateEnvironment.bind(this)}>GENERATE</div>
       </div>
     );
     
@@ -564,12 +636,12 @@ class Game extends React.Component {
 
     return (
       <div>
-        {moreBar}
         {leftBar}
         {background}
         {environment}
         {rightBar}
         {graph}
+        {moreBar}
       </div>
     )
   }

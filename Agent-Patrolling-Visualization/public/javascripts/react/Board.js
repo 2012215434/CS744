@@ -115,7 +115,7 @@ class Board extends React.Component {
         onMouseUp={this.props.onMouseUp}
         onMouseOver={this.props.onMouseOver} 
         id={this.props.id}
-        style={{display: (this.props.toggle ? 'block' : 'none')}}
+        style={{display: (this.props.toggle === -1 ? 'block' : 'none')}}
       >
         {this.renderRows(this.props.board.size, this.props.board.get(0).size)}
         {tip}

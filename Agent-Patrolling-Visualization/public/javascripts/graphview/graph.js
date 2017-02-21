@@ -68,16 +68,26 @@ function graph(region, traces, step) {
       });
     }
 
+    let visited = false;
+    traces.forEach((trace) => {
+      let finded  = trace.find((node, index) => {
+        if (index > step) return false;
+        return node.column == column && node.row == row;
+      });
+      if (finded) visited = true;
+    });
+
     return {
       index: i,
       r:  15, //node半径
-      fx: (i % columns) * 40, //每个node的x坐标
-      fy: (Math.floor(i / columns)) * 40, //每个node的y坐标
+      fx: (i % columns) * 60, //每个node的x坐标
+      fy: (Math.floor(i / columns)) * 60, //每个node的y坐标
       exists: exists, //该node是否需要显示，这是我另外加上去的属性，为了绘制时判断用的。见drawGraph里的drawLink和drawNode
       row,
       column,
       count: agents.length,
       agents,
+      visited
     };
     /*
       注意，以上除了exists属性，都是交给d3处理的，比如r设置为10，每个点绘制出来的半径就会是10，相当于配置信息；
@@ -133,7 +143,7 @@ function graph(region, traces, step) {
   function drawGraph() {
     context.beginPath();
     links.forEach(drawLink);
-    context.strokeStyle = '#aaa';
+    context.strokeStyle = '#fff';
     context.stroke();
 
   //  context.beginPath();
@@ -142,7 +152,6 @@ function graph(region, traces, step) {
     // context.fill();
 
     context.beginPath();
-    context.fillStyle = '#000';
     nodes.forEach(drawText);
   }
 
@@ -155,7 +164,7 @@ function graph(region, traces, step) {
       context.fillStyle = '#fff';
       context.fill();
       if(d.visited){
-        context.fillStyle = 'red';
+        context.fillStyle = '#FFCC99';
         context.fill();
       }
     }
@@ -170,7 +179,12 @@ function graph(region, traces, step) {
 
   function drawText(d) {
     if(d.exists) {
-      context.fillText(d.count, d.x - 3.2, d.y + 3.5);
+      context.font = '12px Arial';
+      context.fillStyle = '#666699';
+      context.fillText(d.count, d.x - 3.2, d.y + 3.6);
+      context.font = '11px Arial';
+      context.fillStyle = '#fff';
+      context.fillText(`(${d.row}, ${d.column})`, d.x + 5, d.y - 15);
     }
   }
 
@@ -211,7 +225,7 @@ function graph(region, traces, step) {
   //   d3.event.subject.fy = null;
   // }
 
-  // setTimeout(() => {simulation.stop();}, 400);
+  setTimeout(() => {simulation.stop();}, 400);
 }
 
 // window.onhashchange = () => {
