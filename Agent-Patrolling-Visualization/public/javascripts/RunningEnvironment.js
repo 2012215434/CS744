@@ -1,9 +1,14 @@
 import buckets from 'buckets-js';
+import PF from 'pathfinding';
+
 class RunningEnvironment{
     constructor() {
         this.block = [];
         this.visited = [];
         this.traces = new Map();
+        this.regions = new Object();
+        this.targetLists = new Object();
+        this.agentMapRegion = new Object();
     }
 
     //init the environment with blockMatrix
@@ -28,51 +33,97 @@ class RunningEnvironment{
 
     //add an agent in a region
     addAgent(ID, initialPosition) {
+        this.bindAgentWithRegion(ID, initialPosition);
         let positions = [];
         positions.push(initialPosition);
         this.traces.set(ID, positions);
         this.visited[initialPosition['row']][initialPosition['column']]++;
+        //remove from target lists
+        this.removeFromTargetList(ID, initialPosition);
+    }
+
+    //remove a position that the agent whose ID is agentID 
+    //visited from the region's target list
+    removeFromTargetList(agentID, position) {
+        let regionID = this.agentMapRegion.agentID;
+        this.targetLists.regionID.fillter((coordinate) => 
+            coordinate.row !== position.row || coordinate.column !== position.column
+        );
+    }
+
+    //bind a agent with the region where the agent locate in
+    bindAgentWithRegion(agentID, initialPosition) {
+        let regionID;
+        this.regions.forEach((value, key) => {
+            let i = 0;
+            for (i = 0; i < value.length; i++) {
+                if (value[i].row === initialPosition.row &&
+                 value[i].column === initialPosition.column) {
+                    regionID = key;
+                 }
+            }
+        });
+        this.agentMapRegion.agentID = regionID;
+    }
+
+    //add a region, this function should be invoked before addAgent
+    addRegions(regions) {
+        regions.forEach((value, key) => {
+            this.regions.key = value;
+            this.targetLists.key = value;
+        });
+    }
+
+
+    getATargetFromTargetList(agentID, currentPosistion) {
+        let regionID = this.agentMapRegion.agentID;
+        let maxDistance = 0;
+        let target;
+        this.targetLists.regionID.forEach(function(position) {
+            if (this.manhattanDistance(currentPosition, position) > maxDistance) {
+                target = position;
+            }
+        });
+        return target;
+    }
+
+    manhattanDistance(position1, position2) {
+        return Math.abs(position1.row - position2.row) + 
+               Math.abs(position1.column - position2.column);
+    }
+
+    markVisited(path) {
+        let i;
+        for (i = 0; i < path.length; i++) {
+            this.visited[path[i].row][path[i].column]++;
+        }
     }
 
     move() {
-        let stacks = new Map();
-        // create a stack for each agent
-        let Iter = this.traces.keys();
-
-        this.traces.forEach((value, key) => {
-            let stack = [];
-            stacks.set(key, stack);
-        });
-        
-        this.traces.forEach((value, key) => {
-            var trace = this.traces.get(key);
-            var stack = stacks.get(key);
-            var lastPosition = trace[trace.length - 1];
-            stack.push(lastPosition);
-        });
-
-        while (this.isComplete() != 1) {
-            this.traces.forEach((value, key) => {
-                var trace = this.traces.get(key);
-                var stack = stacks.get(key);
-                var lastPosition = trace[trace.length - 1];
-                // stack.push(lastPosition);
-                var neighbour = this.findANeighbour(lastPosition.row, lastPosition.column);
-
-                if (!neighbour) {
-                    if (stack.length == 0) return;
-                    stack.pop();
-                    if (stack.length == 0) return;
-                    var nextPosition = stack[stack.length - 1];
-                    this.visited[nextPosition.row][nextPosition.column]++;
-                    trace.push(nextPosition);
-                } else {
-                    this.visited[neighbour.row][neighbour.column]++;
-                    stack.push(neighbour);
-                    trace.push(neighbour);
+        while (!this.isComplete()) {
+            for (let agentID in this.traces) {
+                let regionsID = this.agentMapRegion.agentID;
+                let trace = this.traces.agentID;
+                let currentPosistion = trace[trace.length - 1];
+                let target = this.getATargetFromTargetList(agentID, currentPosistion);
+                if (!target) {
+                    continue;
                 }
-            });
-        }
+                let grid = new PF.Grid(this.block); 
+                let finder = new PF.AStarFinder();
+                let path = finder.findPath(currentPosistion.row, currentPosistion.column,
+                                             target.row, target.column, grid);
+                //mark those point to be visited
+                this.markVisited(path);
+
+                //remove every visited point from the target list
+                let i;
+                for (i = 0; i < path.length; i++) {
+                    this.removeFromTargetList(agentID, path[i]);
+                }
+
+            }
+        }    
 
     }
 
