@@ -429,6 +429,8 @@ class Game extends React.Component {
     });
     algorithm = new RunningEnvironment();
     algorithm.initBlock(envri);
+    console.log(this.state.regions.toObject());
+    algorithm.addRegions(this.state.regions.toObject());
     this.state.agents.forEach((agent) => {
       algorithm.addAgent(agent.id, {column: agent.column, row: agent.row})
     });

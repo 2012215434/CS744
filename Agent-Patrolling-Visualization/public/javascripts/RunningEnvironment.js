@@ -68,10 +68,10 @@ class RunningEnvironment{
 
     //add a region, this function should be invoked before addAgent
     addRegions(regions) {
-        regions.forEach((value, key) => {
-            this.regions.key = value;
-            this.targetLists.key = value;
-        });
+        for (let key in regions) {
+            this.regions[key] = regions[key];
+            this.targetLists[key] = regions[key];
+        }
     }
 
 
