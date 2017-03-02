@@ -13,7 +13,6 @@ module.exports = {
         // 'webpack/hot/only-dev-server',
         // // bundle the client for hot reloading
         // // only- means to only hot reload for successful updates
-
         "./entry.js",
         'whatwg-fetch'
     ],
@@ -24,9 +23,13 @@ module.exports = {
     },
     
     module: {
-        rules: [
-            { test: /\.css$/, use: [ 'style-loader', 'css-loader' ] },
-            { test: [ /\.js$/, /\.jsx$/],use: ['babel-loader',],exclude: /node_modules/ },
+        loaders: [
+            { test: /\.css$/, loader: [ 'style-loader', 'css-loader' ] },
+            { test: [ /\.js$/, /\.jsx$/],loader: 'babel-loader',
+            query: {
+          presets: ['es2015']
+        },
+            exclude: /node_modules/ },
         ]
     },
     devServer: {

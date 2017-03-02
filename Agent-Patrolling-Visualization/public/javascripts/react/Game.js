@@ -1,10 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Immutable from 'immutable';
-import {Board, initAgentsColor} from './Board';
-import {RunningEnvironment} from '../RunningEnvironment'
 import randomColor from 'randomcolor';
 import Hammer from 'react-hammerjs';
+
+import {$f} from '../fn.js'
+import {Board, initAgentsColor} from './Board';
+import {RunningEnvironment} from '../RunningEnvironment'
 import {graph} from '../graphview/graph';
 import {Traces} from './Traces';
 import {Graph} from './Graph';
@@ -106,6 +108,11 @@ class Game extends React.Component {
   }
 
   runMutiSteps(e) {
+    if (!isPositiveInterger(this.stepsInput.value)) {
+      alert('Please enter a positive integer');
+      return;
+    }
+
     if (!e.target.classList.contains('btn') || !this.stepsInput.value) return;
     let total = parseInt(this.stepsInput.value);
 
@@ -487,9 +494,15 @@ class Game extends React.Component {
       this.setState({regions});
 
     } else if (this.heightInput.value && this.widthInput.value) {
-      height = parseInt(this.heightInput.value);
-      width = parseInt(this.widthInput.value);
-
+      height = this.heightInput.value;
+      width = this.widthInput.value;
+      if (!$f.isPositiveInterger(height) || !$f.isPositiveInterger(width)) {
+        alert('Please enter an positive integer');
+        return;
+      }
+      
+      height = Number(height);
+      width = Number(width);
     } else {
       return alert('Please set the configration first');
     }
@@ -601,7 +614,6 @@ class Game extends React.Component {
       </div>
     );
 
-
     const moreBar = (
       <div id="moreBar" className={this.state.moreBar_class}>
         <div className={'content ' + (this.state.content_toggle === 1 ? 'selected' : '')}>
@@ -659,14 +671,6 @@ ReactDOM.render(
   <Game/>,
   document.getElementById('container')
 );
-
-// function setPosition(){
-//   let background = document.getElementById('background');
-//   let top = (window.innerHeight - background.clientHeight) / 2,
-//   left = (window.innerWidth - background.clientWidth) / 2;
-//   background.style.top = top;
-//   background.style.left = left;
-// }
 
 //update Immutable.js list of lists
 Immutable.List.prototype.update = function (row, column, value){
