@@ -111,6 +111,7 @@ class RunningEnvironment{
 
     move() {
         while (!this.isComplete()) {
+            
             for (var agentID in this.traces) {
                 let regionsID = this.agentMapRegion[agentID];
                 let trace = this.traces[agentID];
@@ -126,18 +127,25 @@ class RunningEnvironment{
                 //mark those point to be visited
                 this.markVisited(path);
 
-                //remove every visited point from the target list
+                //remove every visited point from the target list and add to trace
                 let i;
                 for (i = 0; i < path.length; i++) {
                     let position = new Object();
                     position['column'] = path[i][0];
                     position['row'] = path[i][1];
                     this.removeFromTargetList(agentID, position);
+                    if (i > 0) {
+                        trace.push(position);
+                    } 
                 }
 
             }
         }    
-
+        let map = new Map();
+        Object.keys(this.traces).forEach(key => {
+            map.set(key, this.traces[key]);
+        }); 
+        this.traces = map;
     }
 
     //find unvisited neighbour in the order of right->up->left->down
