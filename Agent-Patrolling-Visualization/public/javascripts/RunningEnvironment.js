@@ -5,7 +5,8 @@ class RunningEnvironment{
     constructor() {
         this.block = [];
         this.visited = [];
-        this.traces = new Map();
+        this.matrix = [];
+        this.traces = new Object();
         this.regions = new Object();
         this.targetLists = new Object();
         this.agentMapRegion = new Object();
@@ -20,12 +21,15 @@ class RunningEnvironment{
         for (i = 0; i < len; i++) {
             this.block[i] = [];
             this.visited[i] = [];
+            this.matrix[i] = [];
             for (j = 0; j < width; j++) {
                 this.block[i][j] = blockMatrix[i][j];
                 if (blockMatrix[i][j] === -1) {
                     this.visited[i][j] = -1;
+                    this.matrix[i][j] = 1;
                 } else {
                     this.visited[i][j] = 0;
+                    this.matrix[i][j] = 0;
                 }
             }
         }
@@ -36,7 +40,7 @@ class RunningEnvironment{
         this.bindAgentWithRegion(ID, initialPosition);
         let positions = [];
         positions.push(initialPosition);
-        this.traces.set(ID, positions);
+        this.traces[ID] = positions;
         this.visited[initialPosition['row']][initialPosition['column']]++;
         //remove from target lists
         this.removeFromTargetList(ID, initialPosition);
@@ -47,8 +51,9 @@ class RunningEnvironment{
     removeFromTargetList(agentID, position) {
         let regionID = this.agentMapRegion[agentID];
 
-        this.targetLists[regionID].filter((coordinate) => 
-            coordinate.row !== position.row || coordinate.column !== position.column
+        this.targetLists[regionID] = this.targetLists[regionID].filter((coordinate) => {
+                return coordinate.row != position.row || coordinate.column != position.column;
+            }   
         );
     }
 
@@ -78,13 +83,15 @@ class RunningEnvironment{
     }
 
 
-    getATargetFromTargetList(agentID, currentPosistion) {
+    getATargetFromTargetList(agentID, currentPosition) {
         let regionID = this.agentMapRegion[agentID];
         let maxDistance = 0;
         let target;
-        this.targetLists[regionID].forEach(function(position) {
-            if (this.manhattanDistance(currentPosition, position) > maxDistance) {
+        this.targetLists[regionID].forEach((position) => {
+            let distance = this.manhattanDistance(currentPosition, position)
+            if (distance > maxDistance) {
                 target = position;
+                maxDistance = distance;
             }
         });
         return target;
@@ -97,14 +104,14 @@ class RunningEnvironment{
 
     markVisited(path) {
         let i;
-        for (i = 0; i < path.length; i++) {
-            this.visited[path[i].row][path[i].column]++;
+        for (i = 1; i < path.length; i++) {
+            this.visited[path[i][1]][path[i][0]]++;
         }
     }
 
     move() {
         while (!this.isComplete()) {
-            for (let agentID in this.traces) {
+            for (var agentID in this.traces) {
                 let regionsID = this.agentMapRegion[agentID];
                 let trace = this.traces[agentID];
                 let currentPosistion = trace[trace.length - 1];
@@ -112,17 +119,20 @@ class RunningEnvironment{
                 if (!target) {
                     continue;
                 }
-                let grid = new PF.Grid(this.block); 
+                let grid = new PF.Grid(this.matrix); 
                 let finder = new PF.AStarFinder();
-                let path = finder.findPath(currentPosistion.row, currentPosistion.column,
-                                             target.row, target.column, grid);
+                let path = finder.findPath(currentPosistion.column, currentPosistion.row,
+                                             target.column, target.row, grid);
                 //mark those point to be visited
                 this.markVisited(path);
 
                 //remove every visited point from the target list
                 let i;
                 for (i = 0; i < path.length; i++) {
-                    this.removeFromTargetList(agentID, path[i]);
+                    let position = new Object();
+                    position['column'] = path[i][0];
+                    position['row'] = path[i][1];
+                    this.removeFromTargetList(agentID, position);
                 }
 
             }
