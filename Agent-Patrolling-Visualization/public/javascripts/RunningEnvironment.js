@@ -45,8 +45,9 @@ class RunningEnvironment{
     //remove a position that the agent whose ID is agentID 
     //visited from the region's target list
     removeFromTargetList(agentID, position) {
-        let regionID = this.agentMapRegion.agentID;
-        this.targetLists.regionID.fillter((coordinate) => 
+        let regionID = this.agentMapRegion[agentID];
+
+        this.targetLists[regionID].filter((coordinate) => 
             coordinate.row !== position.row || coordinate.column !== position.column
         );
     }
@@ -54,16 +55,18 @@ class RunningEnvironment{
     //bind a agent with the region where the agent locate in
     bindAgentWithRegion(agentID, initialPosition) {
         let regionID;
-        this.regions.forEach((value, key) => {
+        for (let key in this.regions) {
             let i = 0;
-            for (i = 0; i < value.length; i++) {
-                if (value[i].row === initialPosition.row &&
-                 value[i].column === initialPosition.column) {
+            for (i = 0; i < this.regions[key].length; i++) {
+                if (this.regions[key][i].row === initialPosition.row &&
+                 this.regions[key][i].column === initialPosition.column) {
                     regionID = key;
                  }
             }
-        });
-        this.agentMapRegion.agentID = regionID;
+        
+        }
+            
+        this.agentMapRegion[agentID] = regionID;
     }
 
     //add a region, this function should be invoked before addAgent
@@ -76,10 +79,10 @@ class RunningEnvironment{
 
 
     getATargetFromTargetList(agentID, currentPosistion) {
-        let regionID = this.agentMapRegion.agentID;
+        let regionID = this.agentMapRegion[agentID];
         let maxDistance = 0;
         let target;
-        this.targetLists.regionID.forEach(function(position) {
+        this.targetLists[regionID].forEach(function(position) {
             if (this.manhattanDistance(currentPosition, position) > maxDistance) {
                 target = position;
             }
@@ -102,8 +105,8 @@ class RunningEnvironment{
     move() {
         while (!this.isComplete()) {
             for (let agentID in this.traces) {
-                let regionsID = this.agentMapRegion.agentID;
-                let trace = this.traces.agentID;
+                let regionsID = this.agentMapRegion[agentID];
+                let trace = this.traces[agentID];
                 let currentPosistion = trace[trace.length - 1];
                 let target = this.getATargetFromTargetList(agentID, currentPosistion);
                 if (!target) {
