@@ -10,6 +10,7 @@ class RunningEnvironment{
         this.regions = new Object();
         this.targetLists = new Object();
         this.agentMapRegion = new Object();
+        this.shortestPaths = new Object();
     }
 
     //init the environment with blockMatrix
@@ -41,6 +42,10 @@ class RunningEnvironment{
         let positions = [];
         positions.push(initialPosition);
         this.traces[ID] = positions;
+
+        let shortestPath = [];
+        this.shortestPaths[ID] = shortestPath;
+
         this.visited[initialPosition['row']][initialPosition['column']]++;
         //remove from target lists
         this.removeFromTargetList(ID, initialPosition);
@@ -102,43 +107,49 @@ class RunningEnvironment{
                Math.abs(position1.column - position2.column);
     }
 
-    markVisited(path) {
-        let i;
-        for (i = 1; i < path.length; i++) {
-            this.visited[path[i][1]][path[i][0]]++;
-        }
+    markVisited(position) {
+        this.visited[position.row][position.column]++;
     }
 
     move() {
-        while (!this.isComplete()) {
-            
+        while (!this.isComplete() || !this.allAgentArriveTarget()) {
             for (var agentID in this.traces) {
-                let regionsID = this.agentMapRegion[agentID];
-                let trace = this.traces[agentID];
-                let currentPosistion = trace[trace.length - 1];
-                let target = this.getATargetFromTargetList(agentID, currentPosistion);
-                if (!target) {
-                    continue;
-                }
-                let grid = new PF.Grid(this.matrix); 
-                let finder = new PF.AStarFinder();
-                let path = finder.findPath(currentPosistion.column, currentPosistion.row,
-                                             target.column, target.row, grid);
-                //mark those point to be visited
-                this.markVisited(path);
+                let shortestPath = this.shortestPaths[agentID];
 
-                //remove every visited point from the target list and add to trace
-                let i;
-                for (i = 0; i < path.length; i++) {
-                    let position = new Object();
-                    position['column'] = path[i][0];
-                    position['row'] = path[i][1];
-                    this.removeFromTargetList(agentID, position);
-                    if (i > 0) {
-                        trace.push(position);
-                    } 
+                if (shortestPath.length != 0) {
+                    let nextPosition = shortestPath.shift();
+                    this.markVisited(nextPosition);
+                    this.traces[agentID].push(nextPosition);
+                    this.removeFromTargetList(agentID, nextPosition);
+                } else {
+                
+                    let trace = this.traces[agentID];
+                    let currentPosistion = trace[trace.length - 1];
+                    let target = this.getATargetFromTargetList(agentID, currentPosistion);
+                    if (!target) {
+                        continue;
+                    }
+                    let grid = new PF.Grid(this.matrix); 
+                    let finder = new PF.AStarFinder();
+                    let path = finder.findPath(currentPosistion.column, currentPosistion.row,
+                                                target.column, target.row, grid);
+                    
+                    //take the next point and move to it
+                    let nextPosition = new Object();
+                    nextPosition.row = path[1][1];
+                    nextPosition.column = path[1][0];
+                    this.markVisited(nextPosition);
+                    trace.push(nextPosition);
+                    this.removeFromTargetList(agentID, nextPosition);
+                    //store the path into shortestPath
+                    let i;
+                    for (i = 2; i < path.length; i++) {
+                        let position = new Object();
+                        position['column'] = path[i][0];
+                        position['row'] = path[i][1];
+                        shortestPath.push(position);
+                    }
                 }
-
             }
         }    
         let map = new Map();
@@ -146,6 +157,14 @@ class RunningEnvironment{
             map.set(key, this.traces[key]);
         }); 
         this.traces = map;
+    }
+
+    allAgentArriveTarget() {
+        for (var agentID in this.traces) {
+            let shortestPath = this.shortestPaths[agentID];
+            if (shortestPath.length > 0) return false; 
+        }
+        return true;
     }
 
     //find unvisited neighbour in the order of right->up->left->down
