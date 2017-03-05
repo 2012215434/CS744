@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Immutable from 'immutable';
-import randomColor from 'randomcolor';
 import Hammer from 'react-hammerjs';
 
 import {$f} from '../fn.js'
@@ -10,17 +9,13 @@ import {RunningEnvironment} from '../RunningEnvironment'
 import {graph} from '../graphview/graph';
 import {Traces} from './Traces';
 import {Graph} from './Graph';
+import {agentColors} from './agentColors';
 import {readFile} from '../ReadingConfiguration'
 
 const OPEN = 'open',
       OBSTACLE = 'obstacle',
       AGENT = 'agent',
       BlANK  = '';
-
-const agentColors = randomColor({
-   count: 20,
-   luminosity: 'light'
-});
 
 let agentId = 0;
 let algorithm;
@@ -48,6 +43,7 @@ class Game extends React.Component {
       curStep: 0,
       toggle: -1, //-1 shows block view; 0,1,2... shows corresponding region
       curRegion: -1,
+      show_nodeDetailBoard: false,
     };
 
     this.envirPosition = {
@@ -653,6 +649,10 @@ class Game extends React.Component {
     const graph = (
       <Graph toggle={this.state.toggle}/>
     );
+
+    // const nodeDetailBoard = this.state.show_nodeDetailBoard ? (
+      
+    // ) : null;
 
     return (
       <div>

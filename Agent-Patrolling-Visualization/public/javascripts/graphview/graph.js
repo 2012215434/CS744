@@ -2,14 +2,9 @@
 // import Immutable from 'immutable';
 
 function graph(region, traces, step) {
-  // console.log(step);
+  let transform = {x: 0, y: 0, scale: 1};
 
-  // traces.forEach(trace => {
-  //   console.log(trace);
-  // })
-
-
-  var canvas = document.querySelector('canvas'),
+  let canvas = document.querySelector('canvas'),
     context = canvas.getContext('2d'),
     width = canvas.width,
     height = canvas.height;
@@ -49,11 +44,12 @@ function graph(region, traces, step) {
     });
   });
 
-  //数组，图上的所有点
+  //图上的所有点
   var nodes = d3.range(columns * rows).map(function(i) {
-
-    let column = i % columns + left,
-        row = Math.floor(i / columns) + up;
+    let columnAtRegion = i % columns,
+        rowAtRegion =  Math.floor(i / columns);
+    let column = columnAtRegion + left,
+        row = rowAtRegion + up;
 
     let exists = false;
     region.forEach((node) => {
@@ -85,6 +81,8 @@ function graph(region, traces, step) {
       exists: exists, //该node是否需要显示，这是我另外加上去的属性，为了绘制时判断用的。见drawGraph里的drawLink和drawNode
       row,
       column,
+      rowAtRegion,
+      columnAtRegion,
       count: agents.length,
       agents,
       visited
@@ -117,23 +115,27 @@ function graph(region, traces, step) {
     context.save();
     context.translate(width/2 - columns * 20, height/2 - rows * 20);
 
+    transform.x = width/2 - columns * 20;
+    transform.y = height/2 - rows * 20;
+
     drawGraph();
 
     context.restore();
   }
 
-  //zoom时的事件（放大缩小）
   d3.select(canvas).call(d3.zoom()
-    .scaleExtent([1 / 2, 4])
+    .scaleExtent([1, 1])
     .on('zoom', zoomed));
 
-  //zoom事件触发时的回调函数，使之放大缩小
   function zoomed() {
-    let transform = d3.event.transform.translate(width/2 - columns * 20, height/2 - rows * 20)
+    let trans = d3.event.transform.translate(width/2 - columns * 20, height/2 - rows * 20);
     context.save();
     context.clearRect(0, 0, width, height);
-    context.translate(transform.x, transform.y);
+    context.translate(trans.x, trans.y);
     context.scale(d3.event.transform.k, d3.event.transform.k);
+
+    transform = trans;
+    transform.scale = d3.event.transform.k;
 
     drawGraph();
     context.restore();
@@ -146,17 +148,13 @@ function graph(region, traces, step) {
     context.strokeStyle = '#fff';
     context.stroke();
 
-  //  context.beginPath();
-    nodes.forEach(drawNode); //对于每一个node，执行drawNode方法
-    // context.fillStyle = '#fff';
-    // context.fill();
+    nodes.forEach(drawNode);
 
     context.beginPath();
     nodes.forEach(drawText);
   }
 
   function drawNode(d) {
-    //这边就用到了我已开始设置的exists属性，如果是true才绘制。你可以试着把if去掉，画出来是个长方形
     if(d.exists) {
       context.beginPath();
       context.moveTo(d.x + 3, d.y);
@@ -188,6 +186,28 @@ function graph(region, traces, step) {
     }
   }
 
+  d3.select(canvas)
+    .on('click', () => {
+      // let unScaledNode = simulation.find(d3.event.offsetX - transform.x, d3.event.offsetY - transform.y);
+      // console.log(unScaledNode)
+      // console.log(unScaledNode.columnAtRegion * 60 * (transform.scale - 1));
+      // console.log(simulation.find(d3.event.offsetX - transform.x, d3.event.offsetY - transform.y));
+      let node = simulation.find(d3.event.offsetX - transform.x, d3.event.offsetY - transform.y);
+
+      let visitedTraces = {};
+      traces.forEach((agent, index) => {
+        let finded = agent.find((square, index) => {
+          if (index > step) return false;
+          if (square.row === node.row && square.column === node.column) return true;
+        });
+
+        if (finded) {
+          visitedTraces[index] = agent;
+        }
+      });
+      console.log(visitedTraces);
+      // console.log(traces);
+    });
 
   //以下是控制drag，想想还是先不做了(具体原因先不用管)，以后你想做再说。
   // d3.select(canvas)
@@ -256,21 +276,21 @@ function graph(region, traces, step) {
 // };
 
 
-window.toggle = function() {
-  if(document.querySelector('#graph').style.display == 'none') {
-    let enviroment = document.querySelector('#environment');
-    if(enviroment) enviroment.style.display= 'none';
+// window.toggle = function() {
+//   if(document.querySelector('#graph').style.display == 'none') {
+//     let enviroment = document.querySelector('#environment');
+//     if(enviroment) enviroment.style.display= 'none';
 
-    document.querySelector('#background').style.display= 'none';
-    document.querySelector('#graph').style.display= 'block';
-  } else {
-    let enviroment = document.querySelector('#environment');
-    if(enviroment) enviroment.style.display= 'block';
+//     document.querySelector('#background').style.display= 'none';
+//     document.querySelector('#graph').style.display= 'block';
+//   } else {
+//     let enviroment = document.querySelector('#environment');
+//     if(enviroment) enviroment.style.display= 'block';
 
-    document.querySelector('#background').style.display= 'block';
-    document.querySelector('#graph').style.display= 'none';
-  }
-};
+//     document.querySelector('#background').style.display= 'block';
+//     document.querySelector('#graph').style.display= 'none';
+//   }
+// };
 
 export {graph};
 
