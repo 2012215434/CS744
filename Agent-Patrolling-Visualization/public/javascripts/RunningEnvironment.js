@@ -141,6 +141,7 @@ class RunningEnvironment{
                     this.markVisited(nextPosition);
                     trace.push(nextPosition);
                     this.removeFromTargetList(agentID, nextPosition);
+                    this.removeFromTargetList(agentID, target);
                     //store the path into shortestPath
                     let i;
                     for (i = 2; i < path.length; i++) {
