@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+// import ReactDOM from 'react-dom';
 import Immutable from 'immutable';
 import Hammer from 'react-hammerjs';
 
@@ -561,7 +561,7 @@ class Game extends React.Component {
       id: new Date().getTime(),
       environment: algorithm.block,
       regions,
-      name: this.nameInput.value,
+      // name: this.nameInput.value,
       description: this.descriptionInput.value
     }
     console.log(body);
@@ -706,10 +706,10 @@ class Game extends React.Component {
 
     const savePopUp = this.state.show_savePopUp ? (
       <div className="save-popup">
-        <div>
+        {/*<div>
           <div>Name:</div>
           <input type="text" ref={input => this.nameInput = input}/>
-        </div>
+        </div>*/}
         <div>
           <div>Description:</div>
           <textarea type="text" ref={input => this.descriptionInput = input}/>
@@ -734,10 +734,10 @@ class Game extends React.Component {
   }
 }
 
-ReactDOM.render(
-  <Game/>,
-  document.getElementById('container')
-);
+// ReactDOM.render(
+//   <Game/>,
+//   document.getElementById('container')
+// );
 
 //update Immutable.js list of lists
 Immutable.List.prototype.update = function (row, column, value){
@@ -748,3 +748,5 @@ Immutable.List.prototype.update = function (row, column, value){
 // setTimeout(() => {
 //   document.getElementsByClassName('leftBar')[0].style.left = window.innerWidth / 2 + 'px';
 // }, 2000);
+
+export {Game};
