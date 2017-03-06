@@ -56,7 +56,6 @@ module.exports.getRecordByTime = function(start,end, callback){
   });
 }
 
-
 var findRecordByDescription= function(db, description, callback){
   db.collection('record').find({ description: { $regex: /.*?/+description+/.*?/} } , function(err,thing){
     db.close();
