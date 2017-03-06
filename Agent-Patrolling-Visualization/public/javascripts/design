@@ -1,0 +1,22 @@
+
+
+
+
+
+
+
+{
+  id: timestamp,
+  environment: [[ 0|1 ]],
+  regions: [
+    {
+      region,
+      coordinates: [{row, column}],
+      agents: [
+        {agent, trace: [{row, column}]}
+      ]
+    }
+  ],
+  name,
+  description
+}

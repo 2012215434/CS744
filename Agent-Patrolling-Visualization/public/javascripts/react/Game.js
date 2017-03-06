@@ -35,6 +35,7 @@ class Game extends React.Component {
       btn_finished_class: 'hidden',
       btn_runOne_class: 'hidden',
       btn_runMuti_class: 'hidden',
+      btn_save_class: 'hidden',
       regionBar_class: 'show_regionBar',
       agentBar_class: '',
       moreBar_class: '',
@@ -44,6 +45,7 @@ class Game extends React.Component {
       toggle: -1, //-1 shows block view; 0,1,2... shows corresponding region
       curRegion: -1,
       show_nodeDetailBoard: false,
+      show_savePopUp: false,
     };
 
     this.envirPosition = {
@@ -83,7 +85,15 @@ class Game extends React.Component {
       agents = agents.set(id, {id, row, column, hidden});
     });
     
-    if(isEnd) return;
+    if  (isEnd) {
+      this.setState({btn_runOne_class: 'hide'});
+      setTimeout(() => this.setState({btn_runOne_class: 'hidden'}), 490);
+      this.setState({btn_runMuti_class: 'hide'});
+      setTimeout(() => this.setState({btn_runMuti_class: 'hidden'}), 490);
+
+      setTimeout(() => this.setState({btn_save_class: 'show'}), 700);
+      return;
+    }
 
     this.agents = agents;
     setTimeout(() => this.setState({agents}), 350);
@@ -104,7 +114,9 @@ class Game extends React.Component {
   }
 
   runMutiSteps(e) {
-    if (!isPositiveInterger(this.stepsInput.value)) {
+    if(!this.stepsInput.value) return;
+
+    if (!$f.isPositiveInterger(this.stepsInput.value)) {
       alert('Please enter a positive integer');
       return;
     }
@@ -350,16 +362,6 @@ class Game extends React.Component {
     );
   }
 
-  // runOneStep() {
-  //   let agents = this.state.agents;
-  //   let environment = this.state.environment;
-  //   agents = agents.map((agent, index) => {
-  //     return this.goOneStep(Math.floor(Math.random() * 4), agent, environment);
-  //   });
-
-  //   this.setState({agents});
-  // }
-
   goOneStep(initialDirection, agent, environment) {
     let goOne = [
       () => {
@@ -432,7 +434,9 @@ class Game extends React.Component {
     });
     algorithm = new RunningEnvironment();
     algorithm.initBlock(envri);
-    console.log(this.state.regions.toObject());
+    // console.log(this.state.regions.toObject());
+    console.log(algorithm);
+    // console.log(this.state.environment.toJS());
     algorithm.addRegions(this.state.regions.toObject());
     this.state.agents.forEach((agent) => {
       algorithm.addAgent(agent.id, {column: agent.column, row: agent.row})
@@ -529,6 +533,53 @@ class Game extends React.Component {
     });
   }
 
+  saveRun() {
+    let regions = Object.keys(algorithm.regions).map((key) => {
+      let agents = [];
+      algorithm.traces.forEach((trace, index) => {
+        let finded = algorithm.regions[key].find((square, index) => {
+          if (square.row === trace[0].row && square.column === trace[0].column) return true;
+          return false;
+        });
+
+        if (finded) {
+          agents.push({
+            agent: Number(index),
+            trace
+          });
+        }
+      });
+
+      return {
+        region: Number(key),
+        coordinates: algorithm.regions[key],
+        agents,
+      };
+    });
+
+    let body = {
+      id: new Date().getTime(),
+      environment: algorithm.block,
+      regions,
+      name: this.nameInput.value,
+      description: this.descriptionInput.value
+    }
+    console.log(body);
+
+    const obj = {
+      method: 'post',
+      url: '/run',
+      data: JSON.stringify(body)
+    };
+    $f.ajax(obj)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+  }
+
   render() {
     const background = (
       <Board 
@@ -600,6 +651,9 @@ class Game extends React.Component {
         <div className={`btn ${this.state.btn_runMuti_class}`} onClick={this.runMutiSteps.bind(this)}>
           RUN <input type="text" ref={input => this.stepsInput = input}/> STEPS
         </div>
+        <div className={`btn ${this.state.btn_save_class}`} onClick={() => this.setState({show_savePopUp: true})}>
+          SAVE
+        </div>
         <div 
           id="btn-finished" 
           className={`btn ${this.state.btn_finished_class}`} 
@@ -650,9 +704,21 @@ class Game extends React.Component {
       <Graph toggle={this.state.toggle}/>
     );
 
-    // const nodeDetailBoard = this.state.show_nodeDetailBoard ? (
-      
-    // ) : null;
+    const savePopUp = this.state.show_savePopUp ? (
+      <div className="save-popup">
+        <div>
+          <div>Name:</div>
+          <input type="text" ref={input => this.nameInput = input}/>
+        </div>
+        <div>
+          <div>Description:</div>
+          <textarea type="text" ref={input => this.descriptionInput = input}/>
+        </div>
+        <div className="btn" onClick={this.saveRun.bind(this)}>
+          SAVE
+        </div>
+      </div>
+    ) : null;
 
     return (
       <div>
@@ -662,6 +728,7 @@ class Game extends React.Component {
         {rightBar}
         {graph}
         {moreBar}
+        {savePopUp}
       </div>
     )
   }

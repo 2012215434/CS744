@@ -455,7 +455,6 @@ body {
   stroke-dashoffset: 0;
   animation: dash .3s linear;
 }
-
 @keyframes dash {
   from {
     stroke-dashoffset: 40;
@@ -463,4 +462,68 @@ body {
   to {
     stroke-dashoffset: 0;
   }
+}
+
+.save-popup {
+  position: fixed;
+  width: 260px;
+  height: 210px;
+  top: 50%;
+  left: 50%;
+  margin-top: -150px;
+  margin-left: -150px;
+  padding: 10px;
+  background: rgb(245, 245, 245);
+  color: black;
+  animation: popup .3s ease;
+  -webkit-animation: popup .3s;
+  border-radius: 10px;
+}
+/*.save-popup::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: white;
+  opacity: .4;
+  z-index: -1;
+}*/
+.save-popup > div {
+  text-align: center;
+  margin-top: 10px;
+}
+.save-popup input {
+  width: 150px;
+}
+.save-popup textarea {
+  width: 200px;
+  height: 80px;
+}
+.save-popup .btn {
+  margin: 0 auto;
+  margin-top: 15px;
+  width: 100px;
+  display: block;
+  border-color: lightgray;
+  color: black;
+}
+@keyframes popup {
+  0%{transform:translateY(-500px)};
+}
+@-webkit-keyframes popup {
+  0%{transform:translateY(-500px)};
+}
+input {
+  border: 0;
+}
+input:focus {
+  outline:none;
+}
+textarea {
+  border: 0;
+}
+textarea:focus {
+  outline:none;
 }

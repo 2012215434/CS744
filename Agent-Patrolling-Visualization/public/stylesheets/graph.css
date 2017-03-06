@@ -19,7 +19,7 @@
   padding: 10px;
   color: white;
 }
-#graph > .info > div:not(:last-child) {
+#graph > .info > div {
   margin: 10px;
 }
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const db = require('../db/db')
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
@@ -18,6 +19,15 @@ app.get('/test', (req, res) => {
 app.post('/test', (req, res) => {
   console.log(req.body.test);
   res.send(req.body);
+});
+
+app.post('/run', (req, res) => {
+  db.recordCreate(req.body, (err, result) => {
+    if (err) console.log(err);
+    else if (result) return res.send({success: true});
+
+    res.send({success: false});
+  });
 });
 
 app.listen(3000, () => {

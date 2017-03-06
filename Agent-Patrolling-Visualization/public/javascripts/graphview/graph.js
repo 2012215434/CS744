@@ -1,5 +1,6 @@
 // import * as d3 from 'd3';
 // import Immutable from 'immutable';
+import {agentColors} from '../react/agentColors';
 
 function graph(region, traces, step) {
   let transform = {x: 0, y: 0, scale: 1};
@@ -88,8 +89,8 @@ function graph(region, traces, step) {
       visited
     };
     /*
-      注意，以上除了exists属性，都是交给d3处理的，比如r设置为10，每个点绘制出来的半径就会是10，相当于配置信息；
-      而exists是我人为添加的，我在遍历nodes并绘制的函数中，加入了if判断，只绘制被我标记为exists的点。否则会绘制出整个长方形，
+      以上除了exists属性，都是交给d3处理的，比如r设置为10，每个点绘制出来的半径就会是10，相当于配置信息；
+      而exists是人为添加的，我在遍历nodes并绘制的函数中，加入了if判断，只绘制被我标记为exists的点。否则会绘制出整个长方形，
       （看前面的“d3.range(columns * rows)”，实际上我们添加了columns * rows个node，最终绘制出来的node数量肯定小于它
     */
   });
@@ -104,9 +105,9 @@ function graph(region, traces, step) {
     }
   }
 
-  //相当于整张图的configuration
+  //configuration
   var simulation = d3.forceSimulation(nodes)
-    .force('charge', d3.forceManyBody().strength(-60)) //这些具体查api，我都调好了，基本不用动
+    .force('charge', d3.forceManyBody().strength(-60))
     .force('link', d3.forceLink(links).strength(1).distance(50).iterations(10))
     .on('tick', ticked);
 
@@ -194,20 +195,63 @@ function graph(region, traces, step) {
       // console.log(simulation.find(d3.event.offsetX - transform.x, d3.event.offsetY - transform.y));
       let node = simulation.find(d3.event.offsetX - transform.x, d3.event.offsetY - transform.y);
 
-      let visitedTraces = {};
-      traces.forEach((agent, index) => {
-        let finded = agent.find((square, index) => {
+      let visitedAgents = [];
+      traces.forEach((trace, index) => {
+        let finded = trace.find((square, index) => {
           if (index > step) return false;
+
           if (square.row === node.row && square.column === node.column) return true;
         });
 
         if (finded) {
-          visitedTraces[index] = agent;
+          visitedAgents.push({
+            index,
+            trace
+          });
         }
       });
-      console.log(visitedTraces);
-      // console.log(traces);
+
+      let currentAgent = visitedAgents.filter((agent) => {
+        let square = agent.trace[step];
+  
+        if (square.row === node.row && square.column === node.column) return true;
+
+        return false;
+      });
+
+      showNodeDetail(node, currentAgent, visitedAgents);
     });
+
+  function showNodeDetail(node, currentAgents, visitedAgents) {
+    let $board = document.querySelector('#graph .info');
+    $board.children[0].innerHTML = `Node (${node.row}, ${node.column})`;
+
+    let $currentAgents = $board.querySelector('.current-agents');
+    $currentAgents.innerHTML = '';
+    currentAgents.forEach((agent) => {
+      $currentAgents.innerHTML +=
+        `<div class="agentPair">
+          <div class="agent" style="background: ${agentColors[agent.index]}">
+          </div>
+          <div>agent ${Number(agent.index) + 1}</div>
+        </div>`
+      ;
+    });
+
+    let $visitedAgents = $board.querySelector('.visited-agents');
+    $visitedAgents.innerHTML = '';
+    visitedAgents.forEach((agent) => {
+      $visitedAgents.innerHTML +=
+        `<div class="agentPair">
+          <div class="agent" style="background: ${agentColors[agent.index]}">
+          </div>
+          <div>agent ${Number(agent.index) + 1}</div>
+        </div>`
+      ;
+    });
+    // if (currentAgents.length === 0) $board.children[1].style.display = 'none';
+    // else $board.children[1].style.display = 'block';
+  }
 
   //以下是控制drag，想想还是先不做了(具体原因先不用管)，以后你想做再说。
   // d3.select(canvas)
