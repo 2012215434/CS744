@@ -12,9 +12,29 @@ body {
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none;
 }
+
 #main {
   width: 100%;
   height: 100%;
+  overflow: auto;
+}
+#bottomDetector {
+  position: fixed;
+  bottom: 0;
+  height: 60px;
+  width: 100%;
+}
+#bottomDetector.wide {
+  height: 100px;
+}
+.runList .regions {
+  margin-left: 10px;
+}
+
+#Game {
+  width: 100%;
+  height: 100%;
+  position: fixed;
   background: #666699;
 }
 .square {
@@ -482,7 +502,7 @@ body {
   background: rgb(245, 245, 245);
   color: black;
   animation: popup .3s ease;
-  -webkit-animation: popup .3s;
+  -webkit-animation: popup .3s ease;
   box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.2);
   /*border-radius: 10px;*/
 }
@@ -534,4 +554,47 @@ textarea {
 }
 textarea:focus {
   outline:none;
+}
+
+.navbar {
+  position: absolute !important;
+  top: 100% !important;
+  width: 100% !important;
+  z-index: 2 !important;
+}
+.navbar.show {
+  transform: translateY(-100%);
+  animation: show-navbar .3s ease;
+  -webkit-animation: show-navbar .3s ease;
+}
+@keyframes show-navbar{
+  0%{transform: translateY(0)}
+}
+.filter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+}
+.filter > div {
+  margin: 15px
+}
+.run-list {
+  width: 80%;
+  margin: 0 auto;
+  margin-top: 15px;
+}
+span.tab {
+  width: 15px;
+  height: 1px;
+  display: block;
+  float: left;
+}
+
+/*-----------*/
+.indent {
+  margin-left: 15px;
+}
+.empty-line {
+  height: 15px;
 }

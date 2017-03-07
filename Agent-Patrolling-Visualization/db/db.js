@@ -33,8 +33,8 @@ module.exports.recordCreate = function(obj,callback){
 };
 
 
-var findRecordByTime= function(db, start,end, callback){
-  db.collection('record').find({ time: { $gt: start, $lt: end } }, function(err,thing){
+var findRecordByTime = function(db, start,end, callback){
+  db.collection('record').find({ id: { $gt: start, $lt: end } }).toArray(function(err, thing){
     db.close();
     if(thing){
       callback(null,thing);
@@ -43,7 +43,7 @@ var findRecordByTime= function(db, start,end, callback){
       callback(null,null);
     }
   });
-}
+};
 
 module.exports.getRecordByTime = function(start,end, callback){
   mongodb.connect(url,function(err,db){
@@ -57,7 +57,7 @@ module.exports.getRecordByTime = function(start,end, callback){
 };
 
 var findRecordByDescription= function(db, description, callback){
-  db.collection('record').find({ description: { $regex: /.*?/+description+/.*?/} } , function(err,thing){
+  db.collection('record').find({ description: new RegExp(description)}).toArray(function(err,thing){
     db.close();
     if(thing){
       callback(null,thing);

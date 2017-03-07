@@ -61,6 +61,18 @@ class Game extends React.Component {
   }
 
   runOneStep() {
+    /*-------------------*/
+    let $board = document.querySelector('#graph .info');
+    if ($board) {
+      $board.children[0].innerHTML = `Node :`;
+
+      let $currentAgents = $board.querySelector('.current-agents');
+      $currentAgents.innerHTML = '';
+      let $visitedAgents = $board.querySelector('.visited-agents');
+      $visitedAgents.innerHTML = '';
+    }
+    /*-------------------*/
+
     let curStep = this.state.curStep + 1;
     this.setState({curStep});
     let agents = this.state.agents;
@@ -721,7 +733,7 @@ class Game extends React.Component {
     ) : null;
 
     return (
-      <div>
+      <div id="Game">
         {leftBar}
         {background}
         {environment}

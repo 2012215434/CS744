@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const db = require('../db/db')
+const db = require('../db/db');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
@@ -28,6 +28,25 @@ app.post('/run', (req, res) => {
 
     res.send({success: false});
   });
+});
+
+app.get('/run', (req, res) => {
+  if (req.query.start && req.query.end) {
+    db.getRecordByTime(Number(req.query.start), Number(req.query.end), (err, result) => {
+      if (err) console.log(err);
+      else if (result) return res.send({success: true, result});
+
+      res.send({success: false});
+    });
+  } else if (req.query.description) {
+    db.getRecordByDescription(req.query.description, (err, result) => {
+      if (err) console.log(err);
+      else if (result) return res.send({success: true, result});
+      res.send({success: false});
+    });
+  } else {
+    res.send({success: false});
+  }
 });
 
 app.listen(3000, () => {

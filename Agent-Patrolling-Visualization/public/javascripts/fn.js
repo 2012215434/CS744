@@ -51,6 +51,20 @@ class f {
     num = parseInt(num);
     return !isNaN(num) && num > 0;
   }
+
+  debounce(f, delay, context) {
+    let timer = null;
+    let foo = function() {
+      let args = arguments;
+      if (args[0].target) args[0].persist();
+
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        f.apply(context, args);
+      }, delay);
+    };
+    return foo.bind(this);
+  }
 }
 
 const $f = new f();
