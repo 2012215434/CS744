@@ -45,7 +45,7 @@ class Game extends React.Component {
       toggle: -1, //-1 shows block view; 0,1,2... shows corresponding region
       curRegion: -1,
       show_nodeDetailBoard: false,
-      show_savePopUp: false,
+      show_savePopUp: 'init',
     };
 
     this.envirPosition = {
@@ -546,6 +546,7 @@ class Game extends React.Component {
   }
 
   saveRun() {
+    this.setState({show_savePopUp: false});
     let regions = Object.keys(algorithm.regions).map((key) => {
       let agents = [];
       algorithm.traces.forEach((trace, index) => {
@@ -716,8 +717,8 @@ class Game extends React.Component {
       <Graph toggle={this.state.toggle}/>
     );
 
-    const savePopUp = this.state.show_savePopUp ? (
-      <div className="save-popup">
+    const savePopUp = (
+      <div className={"save-popup " + (this.state.show_savePopUp ? (this.state.show_savePopUp === 'init' ? '' : 'show') : "hide")}>
         {/*<div>
           <div>Name:</div>
           <input type="text" ref={input => this.nameInput = input}/>
@@ -730,7 +731,7 @@ class Game extends React.Component {
           SAVE
         </div>
       </div>
-    ) : null;
+    );
 
     return (
       <div id="Game">
