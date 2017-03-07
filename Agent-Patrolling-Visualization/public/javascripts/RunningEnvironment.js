@@ -1,4 +1,3 @@
-import buckets from 'buckets-js';
 import PF from 'pathfinding';
 
 class RunningEnvironment{

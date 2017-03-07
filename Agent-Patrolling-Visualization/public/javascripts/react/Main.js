@@ -40,6 +40,9 @@ class Main extends React.Component {
     return (
       <MuiThemeProvider>
         <div id="main">
+          <div className="a">
+            
+          </div>
           {this.state.nav === 0 ? <Game/> : null}
           {this.state.nav === 1 ? <History/> : null}
           <Paper 
@@ -49,12 +52,12 @@ class Main extends React.Component {
               <BottomNavigationItem
                 label="Visualizing"
                 icon={<ImageBlurOn/>}
-                onClick={() => this.select(0)}
+                onTouchTap={() => this.select(0)}
               />
               <BottomNavigationItem
                 label="History"
                 icon={<ActionHistory/>}
-                onClick={() => this.select(1)}
+                onTouchTap={() => this.select(1)}
               />
             </BottomNavigation>
           </Paper>

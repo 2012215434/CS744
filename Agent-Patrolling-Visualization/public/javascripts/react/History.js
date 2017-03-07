@@ -5,6 +5,8 @@ import DatePicker from 'material-ui/DatePicker';
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton';
 import Snackbar from 'material-ui/Snackbar';
+import IconButton from 'material-ui/IconButton';
+import ActionSettingsBackupRestore from 'material-ui/svg-icons/action/settings-backup-restore';
 
 import {$f} from '../fn'
 
@@ -143,8 +145,9 @@ class History extends React.Component {
     });
 
     return (
-      <div>
+      <div id="history">
         <AppBar
+          iconElementLeft={<IconButton><ActionSettingsBackupRestore/></IconButton>}
           title="History Runs"
         />
         <div className="filter">

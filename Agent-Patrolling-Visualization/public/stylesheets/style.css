@@ -12,7 +12,9 @@ body {
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none;
 }
-
+::-webkit-scrollbar {
+    width: 0;
+}
 #main {
   width: 100%;
   height: 100%;
@@ -30,12 +32,17 @@ body {
 .runList .regions {
   margin-left: 10px;
 }
-
 #Game {
   width: 100%;
   height: 100%;
   position: fixed;
   background: #666699;
+}
+#history {
+  width: 100%;
+  min-height: 100%;
+  background: rgba(0,0,0,.02);
+  overflow: auto;
 }
 .square {
   border-top: 1px solid lightgrey;
@@ -517,6 +524,7 @@ body {
   opacity: .4;
   z-index: -1;
 }*/
+
 .save-popup > div {
   text-align: center;
   margin-top: 10px;
@@ -537,12 +545,13 @@ body {
   border-color: lightgray;
   color: black;
 }
-@keyframes popup {
-  0%{transform:translateY(-500px)};
-}
 @-webkit-keyframes popup {
-  0%{transform:translateY(-500px)};
+  0%{transform: translateY(-500px)}
 }
+@keyframes popup {
+  0%{transform:translateY(-500px)}
+}
+
 input {
   border: 0;
 }
@@ -569,20 +578,24 @@ textarea:focus {
 }
 @keyframes show-navbar{
   0%{transform: translateY(0)}
+  100%{transform: translateY(-100%)}
+}
+@-webkit-keyframes show-navbar{
+  0%{transform: translateY(0)}
+  100%{transform: translateY(-100%)}
 }
 .filter {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 15px;
+  margin: 35px 0;
 }
 .filter > div {
-  margin: 15px
+  margin: 0 25px;
 }
 .run-list {
   width: 80%;
-  margin: 0 auto;
-  margin-top: 15px;
+  margin: 15px auto;
 }
 span.tab {
   width: 15px;
