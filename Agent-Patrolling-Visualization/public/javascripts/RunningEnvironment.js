@@ -214,7 +214,7 @@ class RunningEnvironment{
                 
                     let trace = this.traces[agentID];
                     let currentPosition = trace[trace.length - 1];
-                    let target = this.getATargetFromTargetList(agentID, currentPosition);
+                    let target = this.getAFarestTarget(agentID, currentPosition);
                     if (!target) {
                         continue;
                     }
@@ -291,35 +291,49 @@ class RunningEnvironment{
                     this.targets[agentID].push(target);
                     this.removeFromTargetList(agentID, nextPosition);
                 } else {
+                    for (var i = 0; i < this.agents.length; i++) {
+                        let agent = this.agents[i];
+                        if (agent.ID === agentID) {
+                            tempAgents.push(agent);
+                        }
+                    }
+                }
+            }
+
+            tempAgents.sort(function (a, b) {
+                return a.visitedNodes - b.visitedNodes;
+            });
+
+            for (var i = 0; i < tempAgents.length; i++) {
+                let agent = tempAgents[i];
+                let agentID = agent.ID;
+                let trace = this.traces[agentID];
+                let currentPosition = trace[trace.length - 1];
+                let target = this.getAFarestTarget(agentID, currentPosition);
+                if (!target) {
+                    continue;
+                }
+                let grid = new PF.Grid(this.matrix); 
+                let finder = new PF.AStarFinder();
+                let path = finder.findPath(currentPosition.column, currentPosition.row,
+                                            target.column, target.row, grid);
                 
-                    let trace = this.traces[agentID];
-                    let currentPosition = trace[trace.length - 1];
-                    let target = this.getATargetFromTargetList(agentID, currentPosition);
-                    if (!target) {
-                        continue;
-                    }
-                    let grid = new PF.Grid(this.matrix); 
-                    let finder = new PF.AStarFinder();
-                    let path = finder.findPath(currentPosition.column, currentPosition.row,
-                                                target.column, target.row, grid);
-                    
-                    //take the next point and move to it
-                    let nextPosition = new Object();
-                    nextPosition.row = path[1][1];
-                    nextPosition.column = path[1][0];
-                    this.markVisited(nextPosition);
-                    trace.push(nextPosition);
-                    this.targets[agentID].push(target);
-                    this.removeFromTargetList(agentID, nextPosition);
-                    this.removeFromTargetList(agentID, target);
-                    //store the path into shortestPath
-                    let i;
-                    for (i = 2; i < path.length; i++) {
-                        let position = new Object();
-                        position['column'] = path[i][0];
-                        position['row'] = path[i][1];
-                        shortestPath.push(position);
-                    }
+                //take the next point and move to it
+                let nextPosition = new Object();
+                nextPosition.row = path[1][1];
+                nextPosition.column = path[1][0];
+                this.markVisited(nextPosition);
+                trace.push(nextPosition);
+                this.targets[agentID].push(target);
+                this.removeFromTargetList(agentID, nextPosition);
+                //this.removeFromTargetList(agentID, target);
+                //store the path into shortestPath
+                let i;
+                for (i = 2; i < path.length; i++) {
+                    let position = new Object();
+                    position['column'] = path[i][0];
+                    position['row'] = path[i][1];
+                    shortestPath.push(position);
                 }
             }
         }    
