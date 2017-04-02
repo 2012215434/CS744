@@ -1,7 +1,8 @@
 import React from 'react';
-// import ReactDOM from 'react-dom';
 import Immutable from 'immutable';
 import Hammer from 'react-hammerjs';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 
 import {$f} from '../fn.js'
 import {Board, initAgentsColor} from './Board';
@@ -35,6 +36,7 @@ class Game extends React.Component {
       btn_finished_class: 'hidden',
       btn_runOne_class: 'hidden',
       btn_runMuti_class: 'hidden',
+      selector_algorithm_class: 'hidden',
       btn_save_class: 'hidden',
       regionBar_class: 'show_regionBar',
       agentBar_class: '',
@@ -46,6 +48,7 @@ class Game extends React.Component {
       curRegion: -1,
       show_nodeDetailBoard: false,
       show_savePopUp: 'init',
+      selected_algorithm: 0, //0: free-form; 1: constrained-3; 2: constrained-4
     };
 
     this.envirPosition = {
@@ -199,7 +202,8 @@ class Game extends React.Component {
 
     if (this.state.mouseDown) {
       this.setState({mouseDown: false});
-      setTimeout(() => this.setState({btn_finished_class: 'show'}), 1000);
+      setTimeout(() => this.setState({btn_finished_class: 'show'}), 950);
+      setTimeout(() => this.setState({selector_algorithm_class: 'show'}), 800);
     }
     if (this.state.mouseDownOnEnvir){
       this.setState({mouseDownOnEnvir: false});
@@ -411,6 +415,11 @@ class Game extends React.Component {
   }
 
   configFinished() {
+    if (!$f.varify(this.state.selected_algorithm, this.state.agents.toArray(), this.state.regions.toArray())) {
+      alert('The inputs do not satisfy the constrains of the algorithm');
+      return;
+    }
+
     let legal = true;
     this.state.regions.forEach((region) => {
       let finded = this.state.agents.find((agent) => {
@@ -423,7 +432,9 @@ class Game extends React.Component {
     });
     if (!legal) return alert('There are some regions that have no agents!');
 
-    this.setState({btn_finished_class: 'hide'});
+    this.setState({selector_algorithm_class: 'hide'})
+    setTimeout(() => this.setState({selector_algorithm_class: 'hidden'}), 500);
+    setTimeout(() => this.setState({btn_finished_class: 'hide'}), 150);
     setTimeout(() => this.setState({btn_finished_class: 'hidden'}), 500);
 
     setTimeout(() => this.setState({btn_runOne_class: 'show'}), 500);
@@ -444,18 +455,27 @@ class Game extends React.Component {
         }
       });
     });
+    
     algorithm = new RunningEnvironment();
     algorithm.initBlock(envri);
-    // console.log(this.state.regions.toObject());
-    console.log(algorithm);
-    // console.log(this.state.environment.toJS());
+    // console.log(this.state.regions.toArray());
+    // console.log(this.state.agents.toJS());
     algorithm.addRegions(this.state.regions.toObject());
     this.state.agents.forEach((agent) => {
       algorithm.addAgent(agent.id, {column: agent.column, row: agent.row})
     });
-
-    algorithm.move();
+    switch (this.state.selected_algorithm) {
+      case 0:
+        algorithm.move();
+        break;
+      case 1:
+        algorithm.move3();
+        break;
+      case 2:
+        algorithm.move4();
+    }
     this.setState({configFinished: true});
+    console.log(algorithm);
     // window.algorithm = algorithm;
   }
 
@@ -667,6 +687,17 @@ class Game extends React.Component {
         <div className={`btn ${this.state.btn_save_class}`} onClick={() => this.setState({show_savePopUp: true})}>
           SAVE
         </div>
+        <SelectField 
+          id="selector-algorithm" 
+          className={`selector ${this.state.selector_algorithm_class}`} 
+          floatingLabelText="Algorithm"
+          value={this.state.selected_algorithm}
+          onChange={(event, index, val) => this.setState({selected_algorithm: val})}
+        >
+          <MenuItem value={0} primaryText="free-form" />
+          <MenuItem value={3} primaryText="constrained-3" />
+          <MenuItem value={4} primaryText="constrained-4" />
+        </SelectField>
         <div 
           id="btn-finished" 
           className={`btn ${this.state.btn_finished_class}`} 
