@@ -11,6 +11,7 @@ class RunningEnvironment{
         this.agentMapRegion = new Object();
         this.shortestPaths = new Object();
         this.historyTargetLists = new Object();
+        this.targets = new Object();
     }
 
     //init the environment with blockMatrix
@@ -121,9 +122,11 @@ class RunningEnvironment{
                 let shortestPath = this.shortestPaths[agentID];
 
                 if (shortestPath.length != 0) {
+                    let target = shortestPath[shortestPath.length - 1];
                     let nextPosition = shortestPath.shift();
                     this.markVisited(nextPosition);
                     this.traces[agentID].push(nextPosition);
+                    this.targets[agentID].push(target);
                     this.removeFromTargetList(agentID, nextPosition);
                 } else {
                 
@@ -144,6 +147,7 @@ class RunningEnvironment{
                     nextPosition.column = path[1][0];
                     this.markVisited(nextPosition);
                     trace.push(nextPosition);
+                    this.targets[agentID].push(target);
                     this.removeFromTargetList(agentID, nextPosition);
                     this.removeFromTargetList(agentID, target);
                     //store the path into shortestPath
@@ -165,7 +169,7 @@ class RunningEnvironment{
     }
 
     getAFarestTarget(agentID, currentPosition) {
-        
+
     }
 
     move3() {
