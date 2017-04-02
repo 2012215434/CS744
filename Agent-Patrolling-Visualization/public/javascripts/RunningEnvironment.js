@@ -12,6 +12,7 @@ class RunningEnvironment{
         this.shortestPaths = new Object();
         this.historyTargetLists = new Object();
         this.targets = new Object();
+        this.agents = [];
     }
 
     //init the environment with blockMatrix
@@ -43,6 +44,13 @@ class RunningEnvironment{
         let positions = [];
         positions.push(initialPosition);
         this.traces[ID] = positions;
+
+        let agent = new Object();
+        agent.ID = ID;
+        agent.visitedNodes = 1;
+        this.agents.push(agent);
+
+        this.targets[ID] = [];
 
         let shortestPath = [];
         this.shortestPaths[ID] = shortestPath;
@@ -248,6 +256,30 @@ class RunningEnvironment{
             for (var regionID in this.targetLists) {
                 this.historyTargetLists[regionID].push(this.targetLists[regionID]);
             }
+            //update the visited nodes of each agent
+            for (var agentID in this.traces) {
+                let trace = this.traces[agentID];
+                let temp = [];
+
+                for (var i = 0; i < trace.length; i++) {
+                    let position = trace[i];
+                    let isNewNode = true;
+                    for (var j = 0; j < temp.length; j++) {
+                        let node = temp[j];
+                        if (node.column === position.column && node.row === position.row) {
+                            isNewNode = false;
+                        } 
+                    }
+                    if (isNewNode) {
+                        temp.push(position);
+                    }
+                }
+                this.agents[agentID].visitedNodes = temp.length;
+            }
+
+            //store the agents who need to select target at the same time
+            let tempAgents = [];
+
             for (var agentID in this.traces) {
                 let shortestPath = this.shortestPaths[agentID];
 
