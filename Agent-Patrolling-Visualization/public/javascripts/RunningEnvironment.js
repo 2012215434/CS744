@@ -251,6 +251,11 @@ class RunningEnvironment{
     }
 
 //======================================== algorithm 4 ========================================
+    getTheFirstOfTargetList(agentID, currentPosition) {
+        let regionID = this.agentMapRegion[agentID];
+        return this.targetLists[regionID][0];
+    }
+    
     move4() {
         while (!this.isComplete() || !this.allAgentArriveTarget()) {
             for (var regionID in this.targetLists) {
@@ -309,7 +314,7 @@ class RunningEnvironment{
                 let agentID = agent.ID;
                 let trace = this.traces[agentID];
                 let currentPosition = trace[trace.length - 1];
-                let target = this.getAFarestTarget(agentID, currentPosition);
+                let target = this.getTheFirstOfTargetList(agentID, currentPosition);
                 if (!target) {
                     continue;
                 }
