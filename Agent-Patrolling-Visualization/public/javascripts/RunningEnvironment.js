@@ -95,7 +95,7 @@ class RunningEnvironment{
         let maxDistance = 0;
         let target;
         this.targetLists[regionID].forEach((position) => {
-            let distance = this.manhattanDistance(currentPosition, position)
+            let distance = this.manhattanDistance(currentPosition, position);
             if (distance > maxDistance) {
                 target = position;
                 maxDistance = distance;
@@ -138,7 +138,7 @@ class RunningEnvironment{
                     }
                     let grid = new PF.Grid(this.matrix); 
                     let finder = new PF.AStarFinder();
-                    let path = finder.findPath(currentPosistion.column, currentPosition.row,
+                    let path = finder.findPath(currentPosition.column, currentPosition.row,
                                                 target.column, target.row, grid);
                     
                     //take the next point and move to it
@@ -168,8 +168,23 @@ class RunningEnvironment{
         this.traces = map;
     }
 
+//=============================================== algorithm 3 ================================
     getAFarestTarget(agentID, currentPosition) {
-
+        let regionID = this.agentMapRegion[agentID];
+        let maxDistance = 0;
+        let target;
+        this.targetLists[regionID].forEach((position) => {
+            let grid = new PF.Grid(this.matrix); 
+            let finder = new PF.AStarFinder();
+            let path = finder.findPath(currentPosition.column, currentPosition.row,
+                                        position.column, position.row, grid);
+            let distance = path.length;
+            if (distance > maxDistance) {
+                target = position;
+                maxDistance = distance;
+            }
+        });
+        return target;
     }
 
     move3() {
@@ -181,9 +196,11 @@ class RunningEnvironment{
                 let shortestPath = this.shortestPaths[agentID];
 
                 if (shortestPath.length != 0) {
+                    let target = shortestPath[shortestPath.length - 1];
                     let nextPosition = shortestPath.shift();
                     this.markVisited(nextPosition);
                     this.traces[agentID].push(nextPosition);
+                    this.targets[agentID].push(target);
                     this.removeFromTargetList(agentID, nextPosition);
                 } else {
                 
@@ -195,7 +212,7 @@ class RunningEnvironment{
                     }
                     let grid = new PF.Grid(this.matrix); 
                     let finder = new PF.AStarFinder();
-                    let path = finder.findPath(currentPosistion.column, currentPosition.row,
+                    let path = finder.findPath(currentPosition.column, currentPosition.row,
                                                 target.column, target.row, grid);
                     
                     //take the next point and move to it
@@ -204,6 +221,7 @@ class RunningEnvironment{
                     nextPosition.column = path[1][0];
                     this.markVisited(nextPosition);
                     trace.push(nextPosition);
+                    this.targets[agentID].push(target);
                     this.removeFromTargetList(agentID, nextPosition);
                     //this.removeFromTargetList(agentID, target);
                     //store the path into shortestPath
@@ -224,6 +242,7 @@ class RunningEnvironment{
         this.traces = map;
     }
 
+//======================================== algorithm 4 ========================================
     move4() {
         while (!this.isComplete() || !this.allAgentArriveTarget()) {
             for (var regionID in this.targetLists) {
@@ -233,9 +252,11 @@ class RunningEnvironment{
                 let shortestPath = this.shortestPaths[agentID];
 
                 if (shortestPath.length != 0) {
+                    let target = shortestPath[shortestPath.length - 1];
                     let nextPosition = shortestPath.shift();
                     this.markVisited(nextPosition);
                     this.traces[agentID].push(nextPosition);
+                    this.targets[agentID].push(target);
                     this.removeFromTargetList(agentID, nextPosition);
                 } else {
                 
@@ -247,7 +268,7 @@ class RunningEnvironment{
                     }
                     let grid = new PF.Grid(this.matrix); 
                     let finder = new PF.AStarFinder();
-                    let path = finder.findPath(currentPosistion.column, currentPosition.row,
+                    let path = finder.findPath(currentPosition.column, currentPosition.row,
                                                 target.column, target.row, grid);
                     
                     //take the next point and move to it
@@ -256,6 +277,7 @@ class RunningEnvironment{
                     nextPosition.column = path[1][0];
                     this.markVisited(nextPosition);
                     trace.push(nextPosition);
+                    this.targets[agentID].push(target);
                     this.removeFromTargetList(agentID, nextPosition);
                     this.removeFromTargetList(agentID, target);
                     //store the path into shortestPath
