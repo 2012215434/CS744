@@ -65,6 +65,45 @@ class f {
     };
     return foo.bind(this);
   }
+
+  //varify if agents and regions satisfy the constrains of the algorithm
+  varify(algorithm, agents, regions) {
+    switch (algorithm) {
+      case 0:
+        return true;
+      case 3:
+        return regions.every((region) => {
+          let agentsInRegion = agents.filter((agent) => {
+            return region.some((square) => {
+              return square.row === agent.row && square.column === agent.column;
+            });
+          });
+
+          return agentsInRegion.length <= Math.ceil(region.length / 3); 
+        });
+      case 4:
+        return regions.every((region) => {
+          let agentsInRegion = agents.filter((agent) => {
+            return region.some((square) => {
+              return square.row === agent.row && square.column === agent.column;
+            });
+          });
+
+          let endPositions = region.filter((square) => {
+            let possibleNextPositions = region.filter((next) => {
+              if (next === square) return false;
+              return next.row === square.row || next.column === square.column;
+            });
+
+            return possibleNextPositions < 2;
+          });
+
+
+
+          return agentsInRegion.length <= Math.ceil(region.length / 3) ; 
+        });
+    }
+  }
 }
 
 const $f = new f();
