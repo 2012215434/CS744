@@ -10,6 +10,7 @@ class RunningEnvironment{
         this.targetLists = new Object();
         this.agentMapRegion = new Object();
         this.shortestPaths = new Object();
+        this.historyTargetLists = new Object();
     }
 
     //init the environment with blockMatrix
@@ -83,6 +84,7 @@ class RunningEnvironment{
         for (let key in regions) {
             this.regions[key] = regions[key];
             this.targetLists[key] = regions[key];
+            this.historyTargetLists[key] = [];
         }
     }
 
@@ -112,6 +114,9 @@ class RunningEnvironment{
 
     move() {
         while (!this.isComplete() || !this.allAgentArriveTarget()) {
+            for (var regionID in this.targetLists) {
+                this.historyTargetLists[regionID].push(this.targetLists[regionID]);
+            }
             for (var agentID in this.traces) {
                 let shortestPath = this.shortestPaths[agentID];
 
@@ -123,14 +128,122 @@ class RunningEnvironment{
                 } else {
                 
                     let trace = this.traces[agentID];
-                    let currentPosistion = trace[trace.length - 1];
-                    let target = this.getATargetFromTargetList(agentID, currentPosistion);
+                    let currentPosition = trace[trace.length - 1];
+                    let target = this.getATargetFromTargetList(agentID, currentPosition);
                     if (!target) {
                         continue;
                     }
                     let grid = new PF.Grid(this.matrix); 
                     let finder = new PF.AStarFinder();
-                    let path = finder.findPath(currentPosistion.column, currentPosistion.row,
+                    let path = finder.findPath(currentPosistion.column, currentPosition.row,
+                                                target.column, target.row, grid);
+                    
+                    //take the next point and move to it
+                    let nextPosition = new Object();
+                    nextPosition.row = path[1][1];
+                    nextPosition.column = path[1][0];
+                    this.markVisited(nextPosition);
+                    trace.push(nextPosition);
+                    this.removeFromTargetList(agentID, nextPosition);
+                    this.removeFromTargetList(agentID, target);
+                    //store the path into shortestPath
+                    let i;
+                    for (i = 2; i < path.length; i++) {
+                        let position = new Object();
+                        position['column'] = path[i][0];
+                        position['row'] = path[i][1];
+                        shortestPath.push(position);
+                    }
+                }
+            }
+        }    
+        let map = new Map();
+        Object.keys(this.traces).forEach(key => {
+            map.set(key, this.traces[key]);
+        }); 
+        this.traces = map;
+    }
+
+    getAFarestTarget(agentID, currentPosition) {
+        
+    }
+
+    move3() {
+        while (!this.isComplete() || !this.allAgentArriveTarget()) {
+            for (var regionID in this.targetLists) {
+                this.historyTargetLists[regionID].push(this.targetLists[regionID]);
+            }
+            for (var agentID in this.traces) {
+                let shortestPath = this.shortestPaths[agentID];
+
+                if (shortestPath.length != 0) {
+                    let nextPosition = shortestPath.shift();
+                    this.markVisited(nextPosition);
+                    this.traces[agentID].push(nextPosition);
+                    this.removeFromTargetList(agentID, nextPosition);
+                } else {
+                
+                    let trace = this.traces[agentID];
+                    let currentPosition = trace[trace.length - 1];
+                    let target = this.getATargetFromTargetList(agentID, currentPosition);
+                    if (!target) {
+                        continue;
+                    }
+                    let grid = new PF.Grid(this.matrix); 
+                    let finder = new PF.AStarFinder();
+                    let path = finder.findPath(currentPosistion.column, currentPosition.row,
+                                                target.column, target.row, grid);
+                    
+                    //take the next point and move to it
+                    let nextPosition = new Object();
+                    nextPosition.row = path[1][1];
+                    nextPosition.column = path[1][0];
+                    this.markVisited(nextPosition);
+                    trace.push(nextPosition);
+                    this.removeFromTargetList(agentID, nextPosition);
+                    //this.removeFromTargetList(agentID, target);
+                    //store the path into shortestPath
+                    let i;
+                    for (i = 2; i < path.length; i++) {
+                        let position = new Object();
+                        position['column'] = path[i][0];
+                        position['row'] = path[i][1];
+                        shortestPath.push(position);
+                    }
+                }
+            }
+        }    
+        let map = new Map();
+        Object.keys(this.traces).forEach(key => {
+            map.set(key, this.traces[key]);
+        }); 
+        this.traces = map;
+    }
+
+    move4() {
+        while (!this.isComplete() || !this.allAgentArriveTarget()) {
+            for (var regionID in this.targetLists) {
+                this.historyTargetLists[regionID].push(this.targetLists[regionID]);
+            }
+            for (var agentID in this.traces) {
+                let shortestPath = this.shortestPaths[agentID];
+
+                if (shortestPath.length != 0) {
+                    let nextPosition = shortestPath.shift();
+                    this.markVisited(nextPosition);
+                    this.traces[agentID].push(nextPosition);
+                    this.removeFromTargetList(agentID, nextPosition);
+                } else {
+                
+                    let trace = this.traces[agentID];
+                    let currentPosition = trace[trace.length - 1];
+                    let target = this.getATargetFromTargetList(agentID, currentPosition);
+                    if (!target) {
+                        continue;
+                    }
+                    let grid = new PF.Grid(this.matrix); 
+                    let finder = new PF.AStarFinder();
+                    let path = finder.findPath(currentPosistion.column, currentPosition.row,
                                                 target.column, target.row, grid);
                     
                     //take the next point and move to it
