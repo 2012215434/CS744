@@ -464,14 +464,15 @@ class Game extends React.Component {
     this.state.agents.forEach((agent) => {
       algorithm.addAgent(agent.id, {column: agent.column, row: agent.row})
     });
+
     switch (this.state.selected_algorithm) {
       case 0:
         algorithm.move();
         break;
-      case 1:
+      case 3:
         algorithm.move3();
         break;
-      case 2:
+      case 4:
         algorithm.move4();
     }
     this.setState({configFinished: true});

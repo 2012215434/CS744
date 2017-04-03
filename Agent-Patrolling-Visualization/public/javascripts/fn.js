@@ -92,15 +92,22 @@ class f {
           let endPositions = region.filter((square) => {
             let possibleNextPositions = region.filter((next) => {
               if (next === square) return false;
-              return next.row === square.row || next.column === square.column;
+              return (next.row === square.row && (next.column + 1 === square.column || next.column - 1 === square.column)) || 
+                (next.column === square.column && (next.row + 1 === square.row || next.row - 1 === square.row));
             });
-
-            return possibleNextPositions < 2;
+            return possibleNextPositions.length < 2;
           });
 
+          //Check if all agents are at end positions
+          let allAtEndPosition = agentsInRegion.every((agent) => {
+            return endPositions.some((endPosition) => {
+              return endPosition.row === agent.row && endPosition.column === agent.column;
+            });
+          });
+   
+          if (endPositions.length < 1) allAtEndPosition = true;
 
-
-          return agentsInRegion.length <= Math.ceil(region.length / 3) ; 
+          return agentsInRegion.length <= Math.ceil(region.length / 3) && allAtEndPosition; 
         });
     }
   }
