@@ -5,7 +5,10 @@ class Graph extends React.Component {
 
   render() {
     console.log(this.props.historyTargetLists, this.props.curRegion, this.props.curStep);
-    const targetList = this.props.historyTargetLists && this.props.curRegion > -1 ? (
+    const targetList = 
+    this.props.historyTargetLists 
+    && this.props.curRegion 
+    && this.props.historyTargetLists[this.props.curRegion] > -1 ? (
       this.props.historyTargetLists[this.props.curRegion][this.props.curStep].map((target, index) => {
         return (
           <div className="target" key={index}>
