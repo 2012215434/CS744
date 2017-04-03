@@ -7,8 +7,8 @@ class Graph extends React.Component {
     console.log(this.props.historyTargetLists, this.props.curRegion, this.props.curStep);
     const targetList = 
     this.props.historyTargetLists 
-    && this.props.curRegion 
-    && this.props.historyTargetLists[this.props.curRegion] > -1 ? (
+    && this.props.curRegion  > -1 
+    && this.props.historyTargetLists[this.props.curRegion][this.props.curStep]? (
       this.props.historyTargetLists[this.props.curRegion][this.props.curStep].map((target, index) => {
         return (
           <div className="target" key={index}>
