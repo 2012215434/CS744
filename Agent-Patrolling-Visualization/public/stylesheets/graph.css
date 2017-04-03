@@ -3,8 +3,8 @@
   top: 50%;
   left: 50%;
   margin-top: -400px;
-  margin-left: -400px;
-  width: 800px;
+  margin-left: -200px;
+  width: 400px;
   height: 800px;
   animation: show .5s ease;
   -webkit-animation: show .5s ease;
@@ -13,9 +13,9 @@
 
 #graph > .info {
   position: absolute;
-  right: 0;
+  right: -200px;
   top:100px;
-  width: 200px;
+  width: 260px;
   padding: 10px;
   color: white;
 }
@@ -27,7 +27,7 @@
   margin: 10px;
 }
 
-#graph .info::before {
+/*#graph .info::before {
   content: " ";
   position: absolute;
   top: 0;
@@ -37,7 +37,7 @@
   background: white;
   opacity: .3;
   z-index: -1;
-}
+}*/
 
 #graph .flip {
   position: absolute;
@@ -63,7 +63,6 @@
   align-items: center;
 }
 
-
 @keyframes show {
   0% {opacity: 0; transform: translateX(25px)}
   100% {opacity: 1;}
@@ -79,4 +78,16 @@
 @-webkit-keyframes hide{
   0% {opacity: 1; }
   100% {opacity: 0; transform: translateX(25px)}
+}
+
+.target {
+  width: 40px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+  border: 1px solid white;
+  float: left;
+  margin-right:5px;
+  font-size: 12px;
+  margin-bottom: 5px;
 }

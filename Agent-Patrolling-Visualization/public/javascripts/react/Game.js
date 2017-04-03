@@ -19,7 +19,7 @@ const OPEN = 'open',
       BlANK  = '';
 
 let agentId = 0;
-let algorithm;
+let algorithm = {};
 
 class Game extends React.Component {
   constructor(){
@@ -77,7 +77,6 @@ class Game extends React.Component {
     /*-------------------*/
 
     let curStep = this.state.curStep + 1;
-    this.setState({curStep});
     let agents = this.state.agents;
 
     let isEnd = true;
@@ -109,6 +108,7 @@ class Game extends React.Component {
       setTimeout(() => this.setState({btn_save_class: 'show'}), 700);
       return;
     }
+    this.setState({curStep});
 
     this.agents = agents;
     setTimeout(() => this.setState({agents}), 350);
@@ -745,7 +745,12 @@ class Game extends React.Component {
     );
     
     const graph = (
-      <Graph toggle={this.state.toggle}/>
+      <Graph 
+        toggle={this.state.toggle}
+        historyTargetLists={algorithm.historyTargetLists}
+        curRegion={this.state.curRegion}
+        curStep={this.state.curStep}
+      />
     );
 
     const savePopUp = (
