@@ -749,6 +749,7 @@ class Game extends React.Component {
       <Graph 
         toggle={this.state.toggle}
         historyTargetLists={algorithm.historyTargetLists}
+        targets={algorithm.targets}
         curRegion={this.state.curRegion}
         curStep={this.state.curStep}
       />

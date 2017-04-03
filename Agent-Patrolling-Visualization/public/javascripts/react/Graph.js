@@ -4,7 +4,6 @@ import {agentColors} from './agentColors';
 class Graph extends React.Component {
 
   render() {
-    console.log(this.props.historyTargetLists, this.props.curRegion, this.props.curStep);
     const targetList = 
     this.props.historyTargetLists 
     && this.props.curRegion  > -1 
@@ -18,9 +17,24 @@ class Graph extends React.Component {
       })
     ) : null;
 
+    let targets = this.props.targets,
+        curStep = this.props.curStep;
+    const curTargets = targets ? Object.keys(targets).map((key, index) => {
+      return (
+        <div key={index}>
+          <div className="curTargets-agent">
+            {'Agent ' + (index + 1)}
+          </div>
+          <div className="target curTarget">
+            {`(${targets[key][curStep].row}, ${targets[key][curStep].column})`}
+          </div>
+        </div>
+      );
+    }) : null;
+
     return (
       <div id="graph" style={{display: (this.props.toggle === -1 ? 'none' : 'block')}}>
-        <canvas className="graphView" width="400px" height="800px"></canvas>
+        <canvas className="graphView" width="600px" height="800px"></canvas>
         <div className="info hidden">
           <div>Node :</div>
           <div>Current agents:</div>
@@ -37,7 +51,15 @@ class Graph extends React.Component {
           <div className="targetList">
             {targetList}
           </div>
-          
+          <div className="curTargets">
+            <div>
+              <div>Agent</div>
+              <div>Current target</div>
+            </div>
+            <div>
+              {curTargets}
+            </div>
+          </div>
         </div>
       </div>
     );
