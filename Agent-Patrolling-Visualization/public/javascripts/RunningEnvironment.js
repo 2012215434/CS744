@@ -46,7 +46,7 @@ class RunningEnvironment{
         this.traces[ID] = positions;
 
         let agent = new Object();
-        agent.ID = ID;
+        agent.aid = ID;
         agent.visitedNodes = 1;
         this.agents.push(agent);
 
@@ -175,7 +175,7 @@ class RunningEnvironment{
                 }
             }
             for (var i = 0; i < positions.length; i++) {
-                this.removeFromTargetList(nextPosition.agentID, nextPosition);
+                this.removeFromTargetList(positions[i].agentID, positions[i]);
             }
         }    
         let map = new Map();
@@ -256,7 +256,7 @@ class RunningEnvironment{
                 }
             }
             for (var i = 0; i < positions.length; i++) {
-                this.removeFromTargetList(nextPosition.agentID, nextPosition);
+                this.removeFromTargetList(positions[i].agentID, positions[i]);
             }
         }    
         let map = new Map();
@@ -278,7 +278,7 @@ class RunningEnvironment{
                 this.historyTargetLists[regionID].push(this.targetLists[regionID]);
             }
 
-            let positoins = [];
+            let positions = [];
             //update the visited nodes of each agent
             for (var agentID in this.traces) {
                 let trace = this.traces[agentID];
@@ -316,7 +316,7 @@ class RunningEnvironment{
                 } else {
                     for (var i = 0; i < this.agents.length; i++) {
                         let agent = this.agents[i];
-                        if (agent.ID === agentID) {
+                        if (agent.aid == agentID) {
                             tempAgents.push(agent);
                         }
                     }
@@ -327,9 +327,11 @@ class RunningEnvironment{
                 return a.visitedNodes - b.visitedNodes;
             });
 
-            for (var i = 0; i < tempAgents.length; i++) {
-                let agent = tempAgents[i];
-                let agentID = agent.ID;
+            for (var j = 0; j < tempAgents.length; j++) {
+                let agent = tempAgents[j];
+                let agentID = agent.aid;
+
+                let shortestPath = this.shortestPaths[agentID];
                 let trace = this.traces[agentID];
                 let currentPosition = trace[trace.length - 1];
                 let target = this.getTheFirstOfTargetList(agentID, currentPosition);
@@ -363,7 +365,7 @@ class RunningEnvironment{
                 }
             }
             for (var i = 0; i < positions.length; i++) {
-                this.removeFromTargetList(nextPosition.agentID, nextPosition);
+                this.removeFromTargetList(positions[i].agentID, positions[i]);
             }
         }    
         let map = new Map();
