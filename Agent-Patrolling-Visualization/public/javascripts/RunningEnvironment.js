@@ -126,6 +126,9 @@ class RunningEnvironment{
             for (var regionID in this.targetLists) {
                 this.historyTargetLists[regionID].push(this.targetLists[regionID]);
             }
+            // positions need to be removed from the taregt list
+            let positions = [];
+
             for (var agentID in this.traces) {
                 let shortestPath = this.shortestPaths[agentID];
 
@@ -156,7 +159,10 @@ class RunningEnvironment{
                     this.markVisited(nextPosition);
                     trace.push(nextPosition);
                     this.targets[agentID].push(target);
-                    this.removeFromTargetList(agentID, nextPosition);
+                    //this.removeFromTargetList(agentID, nextPosition);
+                    nextPosition.agentID = agentID;
+                    positions.push(nextPosition);
+
                     this.removeFromTargetList(agentID, target);
                     //store the path into shortestPath
                     let i;
@@ -167,6 +173,9 @@ class RunningEnvironment{
                         shortestPath.push(position);
                     }
                 }
+            }
+            for (var i = 0; i < positions.length; i++) {
+                this.removeFromTargetList(nextPosition.agentID, nextPosition);
             }
         }    
         let map = new Map();
@@ -200,6 +209,8 @@ class RunningEnvironment{
             for (var regionID in this.targetLists) {
                 this.historyTargetLists[regionID].push(this.targetLists[regionID]);
             }
+            //the positions need to be removed from target list
+            let positions = [];
             for (var agentID in this.traces) {
                 let shortestPath = this.shortestPaths[agentID];
 
@@ -230,8 +241,10 @@ class RunningEnvironment{
                     this.markVisited(nextPosition);
                     trace.push(nextPosition);
                     this.targets[agentID].push(target);
-                    this.removeFromTargetList(agentID, nextPosition);
+                    // this.removeFromTargetList(agentID, nextPosition);
                     //this.removeFromTargetList(agentID, target);
+                    nextPosition.agentID = agentID;
+                    positions.push(nextPosition);
                     //store the path into shortestPath
                     let i;
                     for (i = 2; i < path.length; i++) {
@@ -241,6 +254,9 @@ class RunningEnvironment{
                         shortestPath.push(position);
                     }
                 }
+            }
+            for (var i = 0; i < positions.length; i++) {
+                this.removeFromTargetList(nextPosition.agentID, nextPosition);
             }
         }    
         let map = new Map();
@@ -261,6 +277,8 @@ class RunningEnvironment{
             for (var regionID in this.targetLists) {
                 this.historyTargetLists[regionID].push(this.targetLists[regionID]);
             }
+
+            let positoins = [];
             //update the visited nodes of each agent
             for (var agentID in this.traces) {
                 let trace = this.traces[agentID];
@@ -330,7 +348,10 @@ class RunningEnvironment{
                 this.markVisited(nextPosition);
                 trace.push(nextPosition);
                 this.targets[agentID].push(target);
-                this.removeFromTargetList(agentID, nextPosition);
+                
+                nextPosition.agentID = agentID;
+                positions.push(nextPosition);
+                //this.removeFromTargetList(agentID, nextPosition);
                 //this.removeFromTargetList(agentID, target);
                 //store the path into shortestPath
                 let i;
@@ -340,6 +361,9 @@ class RunningEnvironment{
                     position['row'] = path[i][1];
                     shortestPath.push(position);
                 }
+            }
+            for (var i = 0; i < positions.length; i++) {
+                this.removeFromTargetList(nextPosition.agentID, nextPosition);
             }
         }    
         let map = new Map();
