@@ -65,6 +65,52 @@ class f {
     };
     return foo.bind(this);
   }
+
+  //varify if agents and regions satisfy the constrains of the algorithm
+  varify(algorithm, agents, regions) {
+    switch (algorithm) {
+      case 0:
+        return true;
+      case 3:
+        return regions.every((region) => {
+          let agentsInRegion = agents.filter((agent) => {
+            return region.some((square) => {
+              return square.row === agent.row && square.column === agent.column;
+            });
+          });
+
+          return agentsInRegion.length <= Math.ceil(region.length / 3); 
+        });
+      case 4:
+        return regions.every((region) => {
+          let agentsInRegion = agents.filter((agent) => {
+            return region.some((square) => {
+              return square.row === agent.row && square.column === agent.column;
+            });
+          });
+
+          let endPositions = region.filter((square) => {
+            let possibleNextPositions = region.filter((next) => {
+              if (next === square) return false;
+              return (next.row === square.row && (next.column + 1 === square.column || next.column - 1 === square.column)) || 
+                (next.column === square.column && (next.row + 1 === square.row || next.row - 1 === square.row));
+            });
+            return possibleNextPositions.length < 2;
+          });
+
+          //Check if all agents are at end positions
+          let allAtEndPosition = agentsInRegion.every((agent) => {
+            return endPositions.some((endPosition) => {
+              return endPosition.row === agent.row && endPosition.column === agent.column;
+            });
+          });
+   
+          if (endPositions.length < 1) allAtEndPosition = true;
+
+          return agentsInRegion.length <= Math.ceil(region.length / 4) && allAtEndPosition; 
+        });
+    }
+  }
 }
 
 const $f = new f();

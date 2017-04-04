@@ -264,7 +264,7 @@ body {
   width: 180px;
 }
 #rightBar > .hidden {
-  display: none;
+  display: none !important;
 }
 
 #rightBar input {
@@ -405,6 +405,16 @@ body {
 }
 @-webkit-keyframes hideMoreBar{
   0% {transform: translateX(0);}
+}
+.selector {
+  width: 155px !important;
+  color: white !important;
+}
+.selector > label {
+  color: lightgrey !important;
+}
+.selector > div > div > div {
+  color: white !important;
 }
 
 #traces {
@@ -611,6 +621,7 @@ textarea:focus {
 .run-list {
   width: 80%;
   margin: 15px auto;
+  margin-bottom: 40px;
 }
 span.tab {
   width: 15px;
@@ -625,4 +636,7 @@ span.tab {
 }
 .empty-line {
   height: 15px;
+}
+.run-content{
+  padding-top: 5px !important;
 }

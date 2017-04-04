@@ -121,6 +121,9 @@ class History extends React.Component {
             {`Environment: ${run.environment[0].length} X ${run.environment.length}`}
           </div>
           <div>
+            {run.algorithm ? `Algorithm: ${run.algorithm}` : null}
+          </div>
+          <div>
             Regions:
           </div>
           <div className="indent">
@@ -137,7 +140,7 @@ class History extends React.Component {
             actAsExpander={true}
             showExpandableButton={true}
           />
-          <CardText expandable={true}>
+          <CardText expandable={true} className='run-content'>
             {content}
           </CardText>
         </Card>
