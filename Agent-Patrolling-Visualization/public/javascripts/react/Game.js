@@ -225,9 +225,11 @@ class Game extends React.Component {
 
     if(target.classList.contains(OPEN)) {
       this.addAgent.call(this, target);
-    }
-    else {
-      this.setState({regions: this.state.regions.push([])}, () => {this.setOpen(target)});
+    } else {
+      this.setState({regions: this.state.regions.push([])}, () => {
+        let legal = this.setOpen(target);
+        if (legal === false) this.setState({regions: this.state.regions.pop()});
+      });
     }
   }
 
@@ -269,7 +271,7 @@ class Game extends React.Component {
           return false;
         }
       })
-      if(illegal) return;
+      if(illegal) return false;
     }
 
     let region = regions.last();
@@ -596,7 +598,9 @@ class Game extends React.Component {
       environment: algorithm.block,
       regions,
       // name: this.nameInput.value,
-      description: this.descriptionInput.value
+      description: this.descriptionInput.value,
+      algorithm: this.state.selected_algorithm == 0 ? 
+      'free-form' : 'constrained-' + this.state.selected_algorithm
     }
     console.log(body);
 
@@ -745,15 +749,17 @@ class Game extends React.Component {
       </div>
     );
     
-    const graph = (
+    const graph = this.state.configFinished ? (
       <Graph 
         toggle={this.state.toggle}
         historyTargetLists={algorithm.historyTargetLists}
         targets={algorithm.targets}
         curRegion={this.state.curRegion}
+        regions={this.state.regions}
         curStep={this.state.curStep}
+        agents={this.state.agents}
       />
-    );
+    ) : null;
 
     const savePopUp = (
       <div className={"save-popup " + (this.state.show_savePopUp ? (this.state.show_savePopUp === 'init' ? '' : 'show') : "hide")}>

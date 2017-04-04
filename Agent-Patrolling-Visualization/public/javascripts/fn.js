@@ -107,7 +107,7 @@ class f {
    
           if (endPositions.length < 1) allAtEndPosition = true;
 
-          return agentsInRegion.length <= Math.ceil(region.length / 3) && allAtEndPosition; 
+          return agentsInRegion.length <= Math.ceil(region.length / 4) && allAtEndPosition; 
         });
     }
   }

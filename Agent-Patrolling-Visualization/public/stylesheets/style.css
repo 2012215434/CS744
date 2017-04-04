@@ -621,6 +621,7 @@ textarea:focus {
 .run-list {
   width: 80%;
   margin: 15px auto;
+  margin-bottom: 40px;
 }
 span.tab {
   width: 15px;
@@ -635,4 +636,7 @@ span.tab {
 }
 .empty-line {
   height: 15px;
+}
+.run-content{
+  padding-top: 5px !important;
 }

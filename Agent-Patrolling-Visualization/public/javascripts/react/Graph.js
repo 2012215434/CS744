@@ -4,11 +4,15 @@ import {agentColors} from './agentColors';
 class Graph extends React.Component {
 
   render() {
+    const targets = this.props.targets,
+        curStep = this.props.curStep,
+        curRegion = this.props.curRegion;
+
     const targetList = 
     this.props.historyTargetLists 
-    && this.props.curRegion  > -1 
-    && this.props.historyTargetLists[this.props.curRegion][this.props.curStep]? (
-      this.props.historyTargetLists[this.props.curRegion][this.props.curStep].map((target, index) => {
+    && curRegion  > -1 
+    && this.props.historyTargetLists[curRegion][curStep]? (
+      this.props.historyTargetLists[curRegion][curStep].map((target, index) => {
         return (
           <div className="target" key={index}>
             {`(${target.row}, ${target.column})`}
@@ -16,11 +20,19 @@ class Graph extends React.Component {
         );
       })
     ) : null;
+    
+    let agentsIds = [];
+    if (curRegion > -1) {
+      this.props.agents.forEach((agent, index) => {
+        let isInRegion = this.props.regions.get(curRegion).some((square) => {
+          return square.row === agent.row && square.column === agent.column;
+        });
+        if (isInRegion) agentsIds.push(index);
+      })
+    }
 
-    let targets = this.props.targets,
-        curStep = this.props.curStep;
     const curTargets = targets ? Object.keys(targets).map((key, index) => {
-      return targets[key][curStep] ? (
+      return agentsIds.indexOf(index) > -1 && targets[key][curStep] ? (
         <div key={index}>
           <div className="curTargets-agent">
             {'Agent ' + (index + 1)}
