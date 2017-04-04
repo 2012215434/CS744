@@ -20,7 +20,7 @@ class Graph extends React.Component {
     let targets = this.props.targets,
         curStep = this.props.curStep;
     const curTargets = targets ? Object.keys(targets).map((key, index) => {
-      return (
+      return targets[key][curStep] ? (
         <div key={index}>
           <div className="curTargets-agent">
             {'Agent ' + (index + 1)}
@@ -29,7 +29,7 @@ class Graph extends React.Component {
             {`(${targets[key][curStep].row}, ${targets[key][curStep].column})`}
           </div>
         </div>
-      );
+      ) : null;
     }) : null;
 
     return (

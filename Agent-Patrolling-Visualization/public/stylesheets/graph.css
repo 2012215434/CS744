@@ -15,7 +15,8 @@
   position: absolute;
   right: -200px;
   top:100px;
-  width: 260px;
+  max-width: 260px;
+  min-width: 180px;
   padding: 10px;
   color: white;
 }
@@ -27,7 +28,7 @@
   margin: 10px;
 }
 
-/*#graph .info::before {
+#graph .info::before {
   content: " ";
   position: absolute;
   top: 0;
@@ -37,7 +38,7 @@
   background: white;
   opacity: .3;
   z-index: -1;
-}*/
+}
 
 #graph .flip {
   position: absolute;
