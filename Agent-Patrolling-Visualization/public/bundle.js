@@ -18968,6 +18968,8 @@ var Game = function (_React$Component) {
           algorithm.move4();
       }
       this.setState({ configFinished: true });
+      this.setState({ moreBar_class: 'hide' });
+
       console.log(algorithm);
       // window.algorithm = algorithm;
     }
@@ -19041,7 +19043,12 @@ var Game = function (_React$Component) {
       }
       if (height <= 0 || width <= 0) return alert('Please check the configration');
 
-      this.setState({ btn_finished_class: 'show' });
+      setTimeout(function () {
+        return _this9.setState({ btn_finished_class: 'show' });
+      }, 950);
+      setTimeout(function () {
+        return _this9.setState({ selector_algorithm_class: 'show' });
+      }, 800);
 
       this.setState({
         environment: _immutable2.default.fromJS(Array(height).fill(Array(width).fill(OBSTACLE)))
