@@ -478,6 +478,8 @@ class Game extends React.Component {
         algorithm.move4();
     }
     this.setState({configFinished: true});
+    this.setState({moreBar_class: 'hide'});
+
     console.log(algorithm);
     // window.algorithm = algorithm;
   }
@@ -543,7 +545,8 @@ class Game extends React.Component {
     }
     if ( height <=0 || width <= 0) return alert('Please check the configration');
 
-    this.setState({btn_finished_class: 'show'})
+    setTimeout(() => this.setState({btn_finished_class: 'show'}), 950);
+    setTimeout(() => this.setState({selector_algorithm_class: 'show'}), 800);
 
     this.setState({
       environment: Immutable.fromJS(Array(height).fill(Array(width).fill(OBSTACLE)))
