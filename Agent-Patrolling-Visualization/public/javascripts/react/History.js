@@ -9,6 +9,7 @@ import IconButton from 'material-ui/IconButton';
 import ActionSettingsBackupRestore from 'material-ui/svg-icons/action/settings-backup-restore';
 
 import {$f} from '../fn'
+import Popup from './Popup.js'
 
 class History extends React.Component {
   constructor() {
@@ -19,9 +20,10 @@ class History extends React.Component {
   state = {
     runs: [],
     inputReminder_text: '',
+    alert: ''
   }
 
-  getRuns({start, end, description}) {
+  getRuns({start, end, envSize, regionNum, steps, description}) {
     let url;
     if (description) {
       url = `/run?description=${description}`;
@@ -30,7 +32,7 @@ class History extends React.Component {
     }
     let obj = {
       method: 'get',
-      url,
+      url
     };
     $f.ajax(obj)
       .then((result) => {
@@ -46,34 +48,67 @@ class History extends React.Component {
     let start = new Date(this.startDateInput.state.date).getTime();
     let end = new Date(this.endDateInput.state.date).getTime();
     let description = this.descriptionInput.input.value;
-    if (!description) {
-      if (!start && !end) {
-        this.getRuns({start: 0, end: new Date().getTime()});
-      } else if (!start || !end) {
-        let reminder = 'Please enter both start date and end date';
-        this.setState({inputReminder_text: reminder});
-      } else if (start > end) {
-        let reminder = 'The start date should comes before the end date';
-        this.setState({inputReminder_text: reminder});
-      } else {
-        this.getRuns({start, end});
-      }
+    let width = this.widthInput.input.value;
+    let height = this.heightInput.input.value;
+    let regionNum = this.regionNumInput.input.value;
+    let steps = this.stepsInput.input.value;
+
+    if (isNaN(width) || width < 1) {
+      this.setState({alert: 'Width should be a positive number'});
       return;
-    } else {
-      this.getRuns({description});
     }
+    if (isNaN(height) || height < 1) {
+      this.setState({alert: 'Height should be a positive number'});
+      return;
+    }
+    if (isNaN(regionNum) || regionNum < 1) {
+      this.setState({alert: 'Number of Regions should be a positive number'});
+      return;
+    }
+    if (isNaN(steps) || steps < 1) {
+      this.setState({alert: 'Steps should be a positive number'});
+      return;
+    }
+
+    this.getRuns({
+      start,
+      end,
+      description,
+      envSize: width + ',' + height,
+      regionNum,
+      steps
+    });
+
+
+    // return;
+    // if (!description) {
+    //   if (!start && !end) {
+    //     this.getRuns({start: 0, end: new Date().getTime()});
+    //   } else if (!start || !end) {
+    //     let reminder = 'Please enter both start date and end date';
+    //     this.setState({inputReminder_text: reminder});
+    //   } else if (start > end) {
+    //     let reminder = 'The start date should comes before the end date';
+    //     this.setState({inputReminder_text: reminder});
+    //   } else {
+    //     this.getRuns({start, end});
+    //   }
+    //   return;
+    // } else {
+    //   this.getRuns({description});
+    // }
     // this.getRuns(start, end);
   }
 
   handleDescriptionChange() {
-    this.startDateInput.refs.input.input.value = '';
-    this.endDateInput.refs.input.input.value = '';
-    this.startDateInput.state.date = undefined;
-    this.endDateInput.state.date = undefined;
+    // this.startDateInput.refs.input.input.value = '';
+    // this.endDateInput.refs.input.input.value = '';
+    // this.startDateInput.state.date = undefined;
+    // this.endDateInput.state.date = undefined;
   }
 
   handleDateChange() {
-    this.descriptionInput.input.value = '';
+    // this.descriptionInput.input.value = '';
   }
 
   render() {
@@ -153,22 +188,48 @@ class History extends React.Component {
           iconElementLeft={<IconButton><ActionSettingsBackupRestore/></IconButton>}
           title="History Runs"
         />
-        <div className="filter">
-          <DatePicker 
-            hintText="Start Date" 
-            mode="landscape" 
-            ref={input => this.startDateInput = input}
-            onChange={this.handleDateChange.bind(this)}/>
-          <DatePicker 
-            hintText="End Date" 
-            mode="landscape"
-            ref={input => this.endDateInput = input}
-            onChange={this.handleDateChange.bind(this)}/>
-          <TextField 
-            hintText="Description"
-            ref={input => this.descriptionInput = input}
-            onChange={this.handleDescriptionChange.bind(this)}/>
+        <div className="filters">
+          <div className="filter">
+            <DatePicker 
+              hintText="Start Date" 
+              mode="landscape" 
+              ref={input => this.startDateInput = input}
+              onChange={this.handleDateChange.bind(this)}/>
+            <DatePicker 
+              hintText="End Date" 
+              mode="landscape"
+              ref={input => this.endDateInput = input}
+              onChange={this.handleDateChange.bind(this)}/>
+            <TextField 
+              hintText="Description"
+              ref={input => this.descriptionInput = input}
+              onChange={this.handleDescriptionChange.bind(this)}/>
+          </div>
+          <div className="filter">
+            <div>
+              <TextField 
+              className="envSize"
+              hintText="Width"
+              ref={input => this.widthInput = input}
+              onChange={this.handleDescriptionChange.bind(this)}/>
+              <span>X</span>
+              <TextField 
+              className="envSize"
+              hintText="Height"
+              ref={input => this.heightInput = input}
+              onChange={this.handleDescriptionChange.bind(this)}/>
+            </div>
+            <TextField 
+              hintText="Number of Regions"
+              ref={input => this.regionNumInput = input}
+              onChange={this.handleDescriptionChange.bind(this)}/>
+            <TextField 
+              hintText="Steps"
+              ref={input => this.stepsInput = input}
+              onChange={this.handleDescriptionChange.bind(this)}/>
+          </div>
           <RaisedButton 
+            className="search"
             label="Search" 
             primary={true} 
             onClick={this.handleClickOnSearch.bind(this)}/>
@@ -184,6 +245,10 @@ class History extends React.Component {
             this.setState({inputReminder_text: ''});
           }}
         />
+        <Popup
+          alert={this.state.alert}
+          handleClose={() => this.setState({alert: ''})}
+          />
       </div>
     );
   }

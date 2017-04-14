@@ -609,11 +609,15 @@ textarea:focus {
   0%{transform: translateY(0)}
   100%{transform: translateY(-100%)}
 }
+.filters{
+  position: relative;
+}
 .filter {
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 35px 0;
+  color: lightgray;
 }
 .filter > div {
   margin: 0 25px;
@@ -628,6 +632,16 @@ span.tab {
   height: 1px;
   display: block;
   float: left;
+}
+.envSize {
+  width: 80px !important;
+  margin: 5px;
+}
+.search {
+  position: absolute;
+  right: 10%;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 /*-----------*/

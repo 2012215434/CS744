@@ -478,7 +478,7 @@ class Game extends React.Component {
         algorithm.move4();
     }
     this.setState({configFinished: true});
-    this.setState({moreBar_class: 'hide'});
+    if (this.state.moreBar_class.indexOf('show') > -1) this.setState({moreBar_class: 'hide'});
 
     console.log(algorithm);
     // window.algorithm = algorithm;
@@ -593,6 +593,7 @@ class Game extends React.Component {
         region: Number(key),
         coordinates: algorithm.regions[key],
         agents,
+        steps: this.state.curStep
       };
     });
 
@@ -810,3 +811,20 @@ Immutable.List.prototype.update = function (row, column, value){
 // }, 2000);
 
 export {Game};
+
+// const result = runs.filter((run) => {
+//   let {startTime, endTime, envSize, regionNum, steps, description} = req.query;
+
+//   if (
+//     ((run.environment.length == evnSize.split(',')[1] && run.environment[0].length == evnSize.split(',')[0]) || envSize == null) 
+//     &&
+//     ((startTime < run.id && endTime > run.id) || (startTime == null && endTime == null))
+//     &&
+//     ((run.description.indexOf(description) > -1) || description == null)
+// //  && 以下同理
+//   ) {
+//     return true;
+//   }
+
+//   return false;
+// });
