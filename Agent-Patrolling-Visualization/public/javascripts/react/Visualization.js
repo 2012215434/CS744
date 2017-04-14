@@ -12,6 +12,7 @@ import {Traces} from './Traces';
 import {Graph} from './Graph';
 import {agentColors} from './agentColors';
 import {readFile} from '../ReadingConfiguration'
+import Popup from './Popup.js'
 
 const OPEN = 'open',
       OBSTACLE = 'obstacle',
@@ -21,7 +22,7 @@ const OPEN = 'open',
 let agentId = 0;
 let algorithm = {};
 
-class Game extends React.Component {
+class Visualization extends React.Component {
   constructor(){
     super();
     this.state = {
@@ -49,6 +50,7 @@ class Game extends React.Component {
       show_nodeDetailBoard: false,
       show_savePopUp: 'init',
       selected_algorithm: 0, //0: free-form; 1: constrained-3; 2: constrained-4
+      alert: ''
     };
 
     this.envirPosition = {
@@ -132,7 +134,7 @@ class Game extends React.Component {
     if(!this.stepsInput.value) return;
 
     if (!$f.isPositiveInterger(this.stepsInput.value)) {
-      alert('Please enter a positive integer');
+      this.setState({alert: 'Please enter a positive integer'});
       return;
     }
 
@@ -418,7 +420,7 @@ class Game extends React.Component {
 
   configFinished() {
     if (!$f.varify(this.state.selected_algorithm, this.state.agents.toArray(), this.state.regions.toArray())) {
-      alert('The inputs do not satisfy the constrains of the algorithm');
+      this.setState({alert: 'The inputs do not satisfy the constrains of the algorithm'});
       return;
     }
 
@@ -432,7 +434,7 @@ class Game extends React.Component {
 
       if (!finded) legal = false;
     });
-    if (!legal) return alert('There are some regions that have no agents!');
+    if (!legal) return this.setState({alert: 'There are some regions that have no agents!'});
 
     this.setState({selector_algorithm_class: 'hide'})
     setTimeout(() => this.setState({selector_algorithm_class: 'hidden'}), 500);
@@ -534,16 +536,17 @@ class Game extends React.Component {
       height = this.heightInput.value;
       width = this.widthInput.value;
       if (!$f.isPositiveInterger(height) || !$f.isPositiveInterger(width)) {
-        alert('Please enter an positive integer');
+        this.setState({alert: 'Please enter an positive integer'});
         return;
       }
       
       height = Number(height);
       width = Number(width);
     } else {
-      return alert('Please set the configration first');
+      this.setState({alert: 'Please set the configration first'});
+      return;
     }
-    if ( height <=0 || width <= 0) return alert('Please check the configration');
+    if ( height <=0 || width <= 0) return this.setState({alert: 'Please check the configration'});
 
     setTimeout(() => this.setState({btn_finished_class: 'show'}), 950);
     setTimeout(() => this.setState({selector_algorithm_class: 'show'}), 800);
@@ -790,6 +793,10 @@ class Game extends React.Component {
         {graph}
         {moreBar}
         {savePopUp}
+        <Popup
+          alert={this.state.alert}
+          handleClose={() => this.setState({alert: ''})}
+        />
       </div>
     )
   }
@@ -810,7 +817,7 @@ Immutable.List.prototype.update = function (row, column, value){
 //   document.getElementsByClassName('leftBar')[0].style.left = window.innerWidth / 2 + 'px';
 // }, 2000);
 
-export {Game};
+export {Visualization};
 
 // const result = runs.filter((run) => {
 //   let {startTime, endTime, envSize, regionNum, steps, description} = req.query;

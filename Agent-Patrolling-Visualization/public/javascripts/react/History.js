@@ -53,22 +53,17 @@ class History extends React.Component {
     let regionNum = this.regionNumInput.input.value;
     let steps = this.stepsInput.input.value;
 
-    if (isNaN(width) || width < 1) {
-      this.setState({alert: 'Width should be a positive number'});
-      return;
-    }
-    if (isNaN(height) || height < 1) {
-      this.setState({alert: 'Height should be a positive number'});
-      return;
-    }
-    if (isNaN(regionNum) || regionNum < 1) {
-      this.setState({alert: 'Number of Regions should be a positive number'});
-      return;
-    }
-    if (isNaN(steps) || steps < 1) {
-      this.setState({alert: 'Steps should be a positive number'});
-      return;
-    }
+    if (!$f.isPositiveInterger(width, true)) return this.setState({alert: 'Width should be a positive integer'});
+
+    if (!$f.isPositiveInterger(height, true)) return this.setState({alert: 'Height should be a positive integer'});
+
+    if (!$f.isPositiveInterger(regionNum, true)) return this.setState({alert: 'Number of Regions should be a positive integer'});
+    
+    if (!$f.isPositiveInterger(steps, true)) return this.setState({alert: 'Steps should be a positive integer'});
+    
+    if ($f.isNull(width) && !$f.isNull(height)) return this.setState({alert: 'Please enter width'});
+
+    if (!$f.isNull(width) && $f.isNull(height)) return this.setState({alert: 'Please enter height'});
 
     this.getRuns({
       start,

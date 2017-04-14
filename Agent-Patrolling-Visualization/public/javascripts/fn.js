@@ -47,9 +47,14 @@ class f {
     }
   }
 
-  isPositiveInterger(num) {
-    num = parseInt(num);
-    return !isNaN(num) && num > 0;
+  isPositiveInterger(val, canBeNull) {
+    if (canBeNull && this.isNull(val)) return true;
+
+    return !isNaN(val) && val > 0 && val == parseInt(val);
+  }
+
+  isNull(val) {
+    return val == null || val == '';
   }
 
   debounce(f, delay, context) {
