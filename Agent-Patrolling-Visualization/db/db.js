@@ -128,7 +128,7 @@ module.exports.getAllRecords = function( callback){
       callback(err,null);
     }
     else {
-      findAllRecords(db,start,end,callback);
+      findAllRecords(db,callback);
     }
   });
 };
