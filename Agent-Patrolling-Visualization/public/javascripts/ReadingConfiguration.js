@@ -3,6 +3,8 @@ function readFile(files, callback) {
 
     var result = {};
     var regions = [];
+    //include all region's agents
+    var agents = [];
     // files is a FileList of File objects. List some properties.
     var f = files[0];
     
@@ -25,7 +27,7 @@ function readFile(files, callback) {
             var i;
             var numberOfRegions = parseInt(lines[1]);
             
-            for (i = 2; i + 1 < lines.length; i = i + 2) {
+            for (i = 2; i + 1 < lines.length; i = i + 3) {
                 var regionID = parseInt(lines[i].split(':')[1].trim());
                 var positions = [];
                 var p = lines[i + 1].split(', ');
@@ -42,9 +44,25 @@ function readFile(files, callback) {
                 }
                 //add to regions, positions represent a positions in a region
                 regions.push(positions);
+
+                // the agents in one region
+                var agent = [];
+                var a = lines[i + 2].split(', ');
+                for (j = 0; j < a.length; j++) {
+                    var coordinate = a[j].split(',');
+                    var row = coordinate[0].substring(1);
+                    var column = coordinate[1].substring(0, 1);
+                    var position = {};
+                    position['row'] = parseInt(row);
+                    position['column'] = parseInt(column);
+                    agent.push(position);
+                }
+                agents.push(agent);
             }
             //all regions as an value in the result
             result['regions'] = regions;
+            result['agents'] = agents;
+            
             callback(result);
             console.log(result);
             // return result;
