@@ -619,8 +619,8 @@ textarea:focus {
   color: lightgray;
 }
 .filters > div:first-child {
-  margin-top: 35px;
-  margin-bottom: 26px;
+  margin-top: 31px;
+  margin-bottom: 18px;
 }
 .filter {
   margin: 0 25px !important;

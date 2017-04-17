@@ -174,6 +174,9 @@ class History extends React.Component {
             {run.algorithm ? `Algorithm: ${run.algorithm}` : null}
           </div>
           <div>
+            {run.steps ? `Steps: ${run.steps}` : null}
+          </div>
+          <div>
             Regions:
           </div>
           <div className="indent">

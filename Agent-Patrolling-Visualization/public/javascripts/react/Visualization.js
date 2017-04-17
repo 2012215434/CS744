@@ -671,7 +671,6 @@ class Visualization extends React.Component {
         region: Number(key),
         coordinates: algorithm.regions[key],
         agents,
-        steps: this.state.curStep
       };
     });
 
@@ -679,10 +678,10 @@ class Visualization extends React.Component {
       id: new Date().getTime(),
       environment: algorithm.block,
       regions,
-      // name: this.nameInput.value,
       description: this.descriptionInput.value,
       algorithm: this.state.selected_algorithm == 0 ? 
-      'free-form' : 'constrained-' + this.state.selected_algorithm
+      'free-form' : 'constrained-' + this.state.selected_algorithm,
+      steps: this.state.curStep
     }
     console.log(body);
 
