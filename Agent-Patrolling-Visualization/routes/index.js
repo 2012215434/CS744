@@ -49,7 +49,7 @@ app.get('/run', (req, res) => {
 });
 
 app.get('/runs',(req ,res)=>{
-  let {startTime, endTime, envSize, regionNum, steps, description}= req.query;
+  let {start, end, envSize, regionNum, steps, description}= req.query;
   db.getAllRecords(function(err,records){
     if (err) {
       res.send(err)
@@ -58,7 +58,7 @@ app.get('/runs',(req ,res)=>{
         if (
           (envSize==null||(run.environment.length == envSize.split(',')[1]&&run.environment[0].length==envSize.split(',')[0]))
           &&
-          ((startTime == null && endTime==null)||(startTime<run.id && endTime > run.id))
+          ((start == null && end==null)||(start<run.id && end > run.id))
           &&
           (description==null||(run.description.indexOf(description)>-1))
           &&

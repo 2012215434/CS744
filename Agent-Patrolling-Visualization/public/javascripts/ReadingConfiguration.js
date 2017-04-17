@@ -15,6 +15,10 @@ function readFile(files, callback) {
         reader.onload = function(event) {
             //get all contents in the file
             var contents = event.target.result;
+
+            var re = /^\d+\sX\s\d+(\r\n|\r|\n)\d+(\r\n|\r|\n)(regionID:\s\d(\r\n|\r|\n)(\(\d+,\d+\),\s)*(\(\d,\d\))(\r\n|\r|\n)(\(\d+,\d+\),\s)*(\(\d,\d\))(\r\n|\r|\n)?)+/;
+            if (!contents.match(re)) return callback(false, 'The format is incorrect, please have a check');
+            
             var lines = contents.split('\n');
 
             var dimension = lines[0].split('X');

@@ -226,7 +226,7 @@ class Visualization extends React.Component {
     }
 
     if(target.classList.contains(OPEN)) {
-      this.addAgent.call(this, target);
+      this.addAgent.call(this, target.getAttribute('data-row'), target.getAttribute('data-column'));
     } else {
       this.setState({regions: this.state.regions.push([])}, () => {
         let legal = this.setOpen(target);
@@ -243,9 +243,7 @@ class Visualization extends React.Component {
     }
   }
 
-  addAgent(target) {
-    let row = target.getAttribute('data-row'),
-        column = target.getAttribute('data-column');
+  addAgent(row, column) {
     let agents = this.state.agents;
     agents = agents.push({
       id: agentId++,
@@ -517,8 +515,9 @@ class Visualization extends React.Component {
     this.setState({content_toggle: 2});
     this.widthInput.value = '';
     this.heightInput.value = '';
-    readFile(this.fileInput.files, (result) => {
-      this.fileResult = result;
+    readFile(this.fileInput.files, (result, err) => {
+      if (result) this.fileResult = result;
+      else if (err) this.setState({alert: err});
     });
   }
 
@@ -529,8 +528,29 @@ class Visualization extends React.Component {
       height = parseInt(this.fileResult.height),
       width = parseInt(this.fileResult.width);
 
-      let regions = Immutable.List(this.fileResult.regions);
+      const regions = Immutable.List(this.fileResult.regions);
       this.setState({regions});
+
+      let agentId = 0;
+      let agents = this.fileResult.agents.reduce((pre, cur) => {
+        return pre.concat(cur);
+      });
+      agents = agents.map((agent) => {
+        return {
+          id: agentId++,
+          row: Number(agent.row),
+          column: Number(agent.column)
+        }
+      });
+
+      agents = Immutable.List(agents);
+      this.setState({agents});
+
+      if (!this.checkEnvironment(agents, regions, width, height)){
+        this.setState({regions: Immutable.List([])});
+        this.setState({agents: Immutable.List([])});
+        return;
+      }
 
     } else if (this.heightInput.value && this.widthInput.value) {
       height = this.heightInput.value;
@@ -539,7 +559,6 @@ class Visualization extends React.Component {
         this.setState({alert: 'Please enter an positive integer'});
         return;
       }
-      
       height = Number(height);
       width = Number(width);
     } else {
@@ -572,6 +591,62 @@ class Visualization extends React.Component {
         this.setState({environment});
       }
     });
+  }
+
+  //agent is not in any region; region is out of environment; joint regions; discrete regions;
+  checkEnvironment(agents, regions, width, height) {
+    const allAgentsInRegion =  agents.every((agent) => {
+      return regions.some((region) => {
+        return region.some((square) => {
+          return agent.row == square.row && agent.column == square.column;
+        });
+      });
+    });
+
+    const allRegionsInEnv = regions.every((region) => {
+      return region.every((square) => {
+        return square.row < height && square.column < width;
+      });
+    });
+
+    const noJointRegions = !regions.some((region1, index1) => {
+      return regions.some((region2, index2) => {
+        if (index1 === index2) return false;
+
+        return region1.some((square1) => {
+          return region2.some((square2) => {
+            return square1.row === square2.row && square1.column === square2.column || $f.isAdjacent(square1, square2);
+          });
+        });
+      });
+    });
+
+    const noDiscreteRegion = regions.every((region) => {
+      return region.every((square1, index) => {
+        return region.some((square2, index) => {
+          return $f.isAdjacent(square1, square2);
+        });
+      });
+    });
+
+    if (!allAgentsInRegion) {
+      this.setState({alert: 'There are some agents out of the region'});
+      return false;
+    }
+    if (!allRegionsInEnv) {
+      this.setState({alert: 'There are some regions out of the environment'});
+      return false;
+    }
+    if (!noJointRegions) {
+      this.setState({alert: 'There are some joint regions'});
+      return false;
+    }
+    if (!noDiscreteRegion) {
+      this.setState({alert: 'There are some isolate open spaces'});
+      return false;
+    }
+
+    return true;
   }
 
   saveRun() {
@@ -750,7 +825,11 @@ class Visualization extends React.Component {
         }></div>
         <div className={'content ' + (this.state.content_toggle === 2 ? 'selected' : '')}>
           <p>Read from file:</p>
-          <input type="file" id = "fileInput" ref={(input) => { this.fileInput = input;}} onChange={this.handleSelectFile.bind(this)}/>
+          <input 
+            type="file" 
+            id = "fileInput" 
+            ref={(input) => { this.fileInput = input;}} 
+            onChange={this.handleSelectFile.bind(this)}/>
         </div>
         <div className={'btn ' + (this.state.content_toggle !== 0 ? 'selected' : '')} onClick={this.generateEnvironment.bind(this)}>GENERATE</div>
       </div>

@@ -612,15 +612,20 @@ textarea:focus {
 .filters{
   position: relative;
 }
-.filter {
+.filters > div {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 35px 0;
   color: lightgray;
 }
-.filter > div {
-  margin: 0 25px;
+.filters > div:first-child {
+  margin-top: 35px;
+  margin-bottom: 26px;
+}
+.filter {
+  margin: 0 25px !important;
+  width: 180px !important;
+  overflow-x: hidden;
 }
 .run-list {
   width: 80%;

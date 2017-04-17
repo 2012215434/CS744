@@ -2,6 +2,7 @@ import React from 'react';
 import AppBar from 'material-ui/AppBar';
 import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
 import DatePicker from 'material-ui/DatePicker';
+import TimePicker from 'material-ui/TimePicker';
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton';
 import Snackbar from 'material-ui/Snackbar';
@@ -20,24 +21,22 @@ class History extends React.Component {
   state = {
     runs: [],
     inputReminder_text: '',
-    alert: ''
+    alert: '',
+    startTime: null,
+    endTime: null,
   }
 
   getRuns({start, end, envSize, regionNum, steps, description}) {
-    let url;
-    if (description) {
-      url = `/run?description=${description}`;
-    } else if ((start || start == 0) && end) {
-      url = `/run?start=${start}&end=${end}`
-    }
+    let url = '/runs' + $f.objToQuery(arguments[0]);
+    console.log(url)
     let obj = {
       method: 'get',
       url
     };
     $f.ajax(obj)
       .then((result) => {
-        result = JSON.parse(result);
-        this.setState({runs: result.result});
+        result = JSON.parse(result);  
+        this.setState({runs: result});
       })
       .catch((err) => {
         console.log(err);
@@ -45,13 +44,28 @@ class History extends React.Component {
   }
 
   handleClickOnSearch() {
-    let start = new Date(this.startDateInput.state.date).getTime();
-    let end = new Date(this.endDateInput.state.date).getTime();
-    let description = this.descriptionInput.input.value;
-    let width = this.widthInput.input.value;
-    let height = this.heightInput.input.value;
-    let regionNum = this.regionNumInput.input.value;
-    let steps = this.stepsInput.input.value;
+
+    const startTime = new Date(this.startTimeInput.state.time);
+    const startTimestamp = startTime.getTime() - new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate(), 0).getTime();
+    const startDate = new Date(this.startDateInput.state.date);
+    const startDateTimestamp = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0).getTime();
+
+    const endTime = new Date(this.endTimeInput.state.time);
+    const endTimestamp = endTime.getTime() - new Date(endTime.getFullYear(), endTime.getMonth(), endTime.getDate(), 0).getTime();
+    const endDate = new Date(this.endDateInput.state.date);
+    const endDateTimestamp = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 0).getTime();
+
+    const start = startDateTimestamp + startTimestamp || '';
+    const end = endDateTimestamp + endTimestamp || '';
+    const description = this.descriptionInput.input.value;
+    const width = this.widthInput.input.value;
+    const height = this.heightInput.input.value;
+    const regionNum = this.regionNumInput.input.value;
+    const steps = this.stepsInput.input.value;
+
+    if (!$f.isNull(start) && $f.isNull(end)) return this.setState({alert: 'Please enter the start Date and time'});
+    
+    if ($f.isNull(start) && !$f.isNull(end)) return this.setState({alert: 'Please enter the end Date and time'});    
 
     if (!$f.isPositiveInterger(width, true)) return this.setState({alert: 'Width should be a positive integer'});
 
@@ -65,17 +79,17 @@ class History extends React.Component {
 
     if (!$f.isNull(width) && $f.isNull(height)) return this.setState({alert: 'Please enter height'});
 
+    const envSize = $f.isNull(width) ? null : width + ',' + height;
     this.getRuns({
       start,
       end,
       description,
-      envSize: width + ',' + height,
+      envSize,
       regionNum,
       steps
     });
 
 
-    // return;
     // if (!description) {
     //   if (!start && !end) {
     //     this.getRuns({start: 0, end: new Date().getTime()});
@@ -102,8 +116,14 @@ class History extends React.Component {
     // this.endDateInput.state.date = undefined;
   }
 
-  handleDateChange() {
-    // this.descriptionInput.input.value = '';
+  handleStartDateChange() {
+    const now = new Date();
+    this.setState({startTime: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1)});
+  }
+
+  handleEndDateChange() {
+    const now = new Date();
+    this.setState({endTime: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1)});
   }
 
   render() {
@@ -184,43 +204,62 @@ class History extends React.Component {
           title="History Runs"
         />
         <div className="filters">
-          <div className="filter">
+          <div>
             <DatePicker 
+              className="filter"
               hintText="Start Date" 
               mode="landscape" 
               ref={input => this.startDateInput = input}
-              onChange={this.handleDateChange.bind(this)}/>
+              onChange={this.handleStartDateChange.bind(this)}/>
+            <TimePicker
+              className="filter"
+              hintText="Start Time"
+              ref={input => this.startTimeInput = input}
+              value={this.state.startTime}
+            />
             <DatePicker 
+              className="filter"
               hintText="End Date" 
               mode="landscape"
               ref={input => this.endDateInput = input}
-              onChange={this.handleDateChange.bind(this)}/>
-            <TextField 
-              hintText="Description"
-              ref={input => this.descriptionInput = input}
-              onChange={this.handleDescriptionChange.bind(this)}/>
+              onChange={this.handleEndDateChange.bind(this)}/>
+            <TimePicker
+              className="filter"
+              hintText="End Time"
+              ref={input => this.endTimeInput = input}
+              value={this.state.endTime}
+            />
           </div>
-          <div className="filter">
+          <div>
             <div>
               <TextField 
-              className="envSize"
-              hintText="Width"
-              ref={input => this.widthInput = input}
-              onChange={this.handleDescriptionChange.bind(this)}/>
+                className="filter"
+                className="envSize"
+                hintText="Width"
+                ref={input => this.widthInput = input}
+                onChange={this.handleDescriptionChange.bind(this)}/>
               <span>X</span>
               <TextField 
-              className="envSize"
-              hintText="Height"
-              ref={input => this.heightInput = input}
-              onChange={this.handleDescriptionChange.bind(this)}/>
+                className="filter"
+                className="envSize"
+                hintText="Height"
+                ref={input => this.heightInput = input}
+                onChange={this.handleDescriptionChange.bind(this)}/>
             </div>
             <TextField 
+              className="filter"
               hintText="Number of Regions"
               ref={input => this.regionNumInput = input}
               onChange={this.handleDescriptionChange.bind(this)}/>
             <TextField 
+              className="filter"
               hintText="Steps"
               ref={input => this.stepsInput = input}
+              onChange={this.handleDescriptionChange.bind(this)}/>
+            <TextField 
+              className="filter"
+              hintText="Description"
+              ref={input => this.descriptionInput = input}
               onChange={this.handleDescriptionChange.bind(this)}/>
           </div>
           <RaisedButton 
