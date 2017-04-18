@@ -63,9 +63,10 @@ class History extends React.Component {
     const regionNum = this.regionNumInput.input.value;
     const steps = this.stepsInput.input.value;
 
-    if (!$f.isNull(start) && $f.isNull(end)) return this.setState({alert: 'Please enter the start Date and time'});
+    //-------------------------------------------------
+    if (!$f.isNull(start) && $f.isNull(end)) return this.setState({alert: 'Please enter the end date and time'});
     
-    if ($f.isNull(start) && !$f.isNull(end)) return this.setState({alert: 'Please enter the end Date and time'});    
+    if ($f.isNull(start) && !$f.isNull(end)) return this.setState({alert: 'Please enter the start date and time'});    
 
     if (!$f.isPositiveInterger(width, true)) return this.setState({alert: 'Width should be a positive integer'});
 
