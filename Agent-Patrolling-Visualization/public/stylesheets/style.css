@@ -609,14 +609,23 @@ textarea:focus {
   0%{transform: translateY(0)}
   100%{transform: translateY(-100%)}
 }
-.filter {
+.filters{
+  position: relative;
+}
+.filters > div {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 35px 0;
+  color: lightgray;
 }
-.filter > div {
-  margin: 0 25px;
+.filters > div:first-child {
+  margin-top: 31px;
+  margin-bottom: 18px;
+}
+.filter {
+  margin: 0 25px !important;
+  width: 180px !important;
+  overflow-x: hidden;
 }
 .run-list {
   width: 80%;
@@ -628,6 +637,16 @@ span.tab {
   height: 1px;
   display: block;
   float: left;
+}
+.envSize {
+  width: 80px !important;
+  margin: 5px;
+}
+.search {
+  position: absolute;
+  right: 10%;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 /*-----------*/

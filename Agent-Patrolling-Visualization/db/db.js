@@ -78,3 +78,57 @@ module.exports.getRecordByDescription = function(description, callback){
     }
   });
 };
+
+
+var findRecordByMutiple= function(db, queryObject, callback){
+
+  db.collection('record').find({ description: new RegExp(description)}).toArray(function(err,thing){
+    db.close();
+    if(thing){
+      callback(null,thing);
+    }
+    else {
+      callback(null,null);
+    }
+  });
+};
+
+module.exports.getRecordByMutiple = function(queryObject, callback){
+  mongodb.connect(url,function(err,db){
+    if(err){
+      callback(err,null);
+    }
+    else {
+      findRecordByMutiple(db,description,callback);
+    }
+  });
+};
+
+
+
+
+
+
+
+var findAllRecords = function(db, callback){
+  db.collection('record').find().toArray(function(err, thing){
+    db.close();
+    if(thing){
+      callback(null,thing);
+    }
+    else {
+      callback(null,null);
+    }
+  });
+};
+
+module.exports.getAllRecords = function( callback){
+  mongodb.connect(url,function(err,db){
+    if(err){
+      callback(err,null);
+    }
+    else {
+      findAllRecords(db,callback);
+    }
+  });
+};

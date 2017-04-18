@@ -47,9 +47,27 @@ class f {
     }
   }
 
-  isPositiveInterger(num) {
-    num = parseInt(num);
-    return !isNaN(num) && num > 0;
+  //convert js object to query string
+  objToQuery(obj) {
+    let query = '?';
+    Object.keys(obj).forEach((key, index) => {
+      if (obj[key] instanceof Object) return;
+      if (!obj[key]) return;
+      index === 0 ? query += key + '=' + obj[key] : query += '&' + key + '=' + obj[key];
+    });
+
+    return query;
+  }
+
+  isPositiveInterger(val, canBeNull) {
+    if (canBeNull && this.isNull(val)) return true;
+
+    return !isNaN(val) && val > 0 && val == parseInt(val);
+  }
+
+  //check if value is null or undefined or ''
+  isNull(val) {
+    return val == null || val == '';
   }
 
   debounce(f, delay, context) {
@@ -110,6 +128,16 @@ class f {
           return agentsInRegion.length <= Math.ceil(region.length / 4) && allAtEndPosition; 
         });
     }
+  }
+
+  //check if two squares are joint
+  isAdjacent(square1, square2) {
+    return (
+      square1.row + 1 === square2.row && square1.column === square2.column ||
+      square1.row - 1 === square2.row && square1.column === square2.column ||
+      square1.row === square2.row && square1.column + 1 === square2.column ||
+      square1.row === square2.row && square1.column - 1 === square2.column
+    );
   }
 }
 
