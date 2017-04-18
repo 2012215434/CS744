@@ -515,6 +515,7 @@ class Visualization extends React.Component {
     this.setState({content_toggle: 2});
     this.widthInput.value = '';
     this.heightInput.value = '';
+
     readFile(this.fileInput.files, (result, err) => {
       if (result) this.fileResult = result;
       else if (err) this.setState({alert: err});
@@ -549,6 +550,7 @@ class Visualization extends React.Component {
       if (!this.checkEnvironment(agents, regions, width, height)){
         this.setState({regions: Immutable.List([])});
         this.setState({agents: Immutable.List([])});
+        this.setState({environment: null});
         return;
       }
 
@@ -828,6 +830,7 @@ class Visualization extends React.Component {
             type="file" 
             id = "fileInput" 
             ref={(input) => { this.fileInput = input;}} 
+            onClick={() => {this.fileInput.value = null;}}
             onChange={this.handleSelectFile.bind(this)}/>
         </div>
         <div className={'btn ' + (this.state.content_toggle !== 0 ? 'selected' : '')} onClick={this.generateEnvironment.bind(this)}>GENERATE</div>
