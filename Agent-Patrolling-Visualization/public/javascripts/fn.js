@@ -85,7 +85,7 @@ class f {
   }
 
   //varify if agents and regions satisfy the constrains of the algorithm
-  varify(algorithm, agents, regions) {
+  varify(algorithm, agents, regions, callback) {
     switch (algorithm) {
       case 0:
         return true;
@@ -96,10 +96,14 @@ class f {
               return square.row === agent.row && square.column === agent.column;
             });
           });
-
-          return agentsInRegion.length <= Math.ceil(region.length / 3); 
+          
+          let lessThanLimit = agentsInRegion.length <= Math.ceil(region.length / 3); 
+          if (!lessThanLimit) callback('The number of agents in region should at most be n/3');
+          
+          return lessThanLimit;
         });
-      case 4:
+      case 4: {
+        let id = 0;
         return regions.every((region) => {
           let agentsInRegion = agents.filter((agent) => {
             return region.some((square) => {
@@ -116,17 +120,37 @@ class f {
             return possibleNextPositions.length < 2;
           });
 
+          let agentsOutOfEndPosition = [];
           //Check if all agents are at end positions
-          let allAtEndPosition = agentsInRegion.every((agent) => {
-            return endPositions.some((endPosition) => {
+          agentsInRegion.forEach((agent) => {
+            id++;
+            let inPosistion =  endPositions.some((endPosition) => {
               return endPosition.row === agent.row && endPosition.column === agent.column;
             });
+
+            if (!inPosistion) agentsOutOfEndPosition.push(id);
+
+            return inPosistion;
           });
-   
+          
+          let allAtEndPosition = agentsOutOfEndPosition.length > 0 ? false : true;
+
           if (endPositions.length < 1) allAtEndPosition = true;
 
-          return agentsInRegion.length <= Math.ceil(region.length / 4) && allAtEndPosition; 
+          let lessThanLimit = agentsInRegion.length <= Math.ceil(region.length / 4);
+
+          if (!lessThanLimit) {
+            callback('The number of agents in region should at most be n/4');
+          }
+
+          if (!allAtEndPosition) {
+            if (agentsOutOfEndPosition.length <=1 ) callback(`Agent ${agentsOutOfEndPosition[0]} is not at the end position`);
+            else callback(`Agent ${agentsOutOfEndPosition.reduce((pre, cur) => pre + ', ' + cur)} are not at the end position`);
+          }
+
+          return lessThanLimit && allAtEndPosition; 
         });
+      }
     }
   }
 

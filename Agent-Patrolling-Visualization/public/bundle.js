@@ -7562,6 +7562,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.$f = undefined;
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 __webpack_require__(138);
@@ -7673,7 +7675,7 @@ var f = function () {
 
   }, {
     key: 'varify',
-    value: function varify(algorithm, agents, regions) {
+    value: function varify(algorithm, agents, regions, callback) {
       switch (algorithm) {
         case 0:
           return true;
@@ -7685,35 +7687,67 @@ var f = function () {
               });
             });
 
-            return agentsInRegion.length <= Math.ceil(region.length / 3);
+            var lessThanLimit = agentsInRegion.length <= Math.ceil(region.length / 3);
+            if (!lessThanLimit) callback('The number of agents in region should at most be n/3');
+
+            return lessThanLimit;
           });
         case 4:
-          return regions.every(function (region) {
-            var agentsInRegion = agents.filter(function (agent) {
-              return region.some(function (square) {
-                return square.row === agent.row && square.column === agent.column;
-              });
-            });
+          {
+            var _ret = function () {
+              var id = 0;
+              return {
+                v: regions.every(function (region) {
+                  var agentsInRegion = agents.filter(function (agent) {
+                    return region.some(function (square) {
+                      return square.row === agent.row && square.column === agent.column;
+                    });
+                  });
 
-            var endPositions = region.filter(function (square) {
-              var possibleNextPositions = region.filter(function (next) {
-                if (next === square) return false;
-                return next.row === square.row && (next.column + 1 === square.column || next.column - 1 === square.column) || next.column === square.column && (next.row + 1 === square.row || next.row - 1 === square.row);
-              });
-              return possibleNextPositions.length < 2;
-            });
+                  var endPositions = region.filter(function (square) {
+                    var possibleNextPositions = region.filter(function (next) {
+                      if (next === square) return false;
+                      return next.row === square.row && (next.column + 1 === square.column || next.column - 1 === square.column) || next.column === square.column && (next.row + 1 === square.row || next.row - 1 === square.row);
+                    });
+                    return possibleNextPositions.length < 2;
+                  });
 
-            //Check if all agents are at end positions
-            var allAtEndPosition = agentsInRegion.every(function (agent) {
-              return endPositions.some(function (endPosition) {
-                return endPosition.row === agent.row && endPosition.column === agent.column;
-              });
-            });
+                  var agentsOutOfEndPosition = [];
+                  //Check if all agents are at end positions
+                  agentsInRegion.forEach(function (agent) {
+                    id++;
+                    var inPosistion = endPositions.some(function (endPosition) {
+                      return endPosition.row === agent.row && endPosition.column === agent.column;
+                    });
 
-            if (endPositions.length < 1) allAtEndPosition = true;
+                    if (!inPosistion) agentsOutOfEndPosition.push(id);
 
-            return agentsInRegion.length <= Math.ceil(region.length / 4) && allAtEndPosition;
-          });
+                    return inPosistion;
+                  });
+
+                  var allAtEndPosition = agentsOutOfEndPosition.length > 0 ? false : true;
+
+                  if (endPositions.length < 1) allAtEndPosition = true;
+
+                  var lessThanLimit = agentsInRegion.length <= Math.ceil(region.length / 4);
+
+                  if (!lessThanLimit) {
+                    callback('The number of agents in region should at most be n/4');
+                  }
+
+                  if (!allAtEndPosition) {
+                    if (agentsOutOfEndPosition.length <= 1) callback('Agent ' + agentsOutOfEndPosition[0] + ' is not at the end position');else callback('Agent ' + agentsOutOfEndPosition.reduce(function (pre, cur) {
+                      return pre + ', ' + cur;
+                    }) + ' are not at the end position');
+                  }
+
+                  return lessThanLimit && allAtEndPosition;
+                })
+              };
+            }();
+
+            if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+          }
       }
     }
 
@@ -20471,12 +20505,14 @@ var Visualization = function (_React$Component) {
     value: function configFinished() {
       var _this7 = this;
 
-      if (!_fn.$f.varify(this.state.selected_algorithm, this.state.agents.toArray(), this.state.regions.toArray())) {
-        this.setState({ alert: 'The inputs do not satisfy the constrains of the algorithm' });
-        return;
-      }
+      var legal = _fn.$f.varify(this.state.selected_algorithm, this.state.agents.toArray(), this.state.regions.toArray(), function (err) {
+        if (err) {
+          _this7.setState({ alert: err });
+        }
+      });
+      if (!legal) return;
 
-      var legal = true;
+      legal = true;
       this.state.regions.forEach(function (region) {
         var finded = _this7.state.agents.find(function (agent) {
           return region.find(function (square) {

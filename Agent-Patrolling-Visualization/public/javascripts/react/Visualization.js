@@ -417,12 +417,14 @@ class Visualization extends React.Component {
   }
 
   configFinished() {
-    if (!$f.varify(this.state.selected_algorithm, this.state.agents.toArray(), this.state.regions.toArray())) {
-      this.setState({alert: 'The inputs do not satisfy the constrains of the algorithm'});
-      return;
-    }
+    let legal = $f.varify(this.state.selected_algorithm, this.state.agents.toArray(), this.state.regions.toArray(), (err) => {
+      if (err) {
+        this.setState({alert: err});
+      }
+    });
+    if (!legal) return;
 
-    let legal = true;
+    legal = true;
     this.state.regions.forEach((region) => {
       let finded = this.state.agents.find((agent) => {
         return region.find((square) => {
