@@ -58,10 +58,8 @@ function readFile(files, callback) {
                     var agent = {};
                     var agentID = parseInt(a[j]);
                     agent['ID'] = agentID;
-                    var position = {};
-                    position['row'] = parseInt(a[j + 1]);
-                    position['column'] = parseInt(a[j + 2]);
-                    agent['position'] = position;
+                    agent['row'] = parseInt(a[j + 1]);
+                    agent['column'] = parseInt(a[j + 2]);
 
                     agents.push(agent);
                 }

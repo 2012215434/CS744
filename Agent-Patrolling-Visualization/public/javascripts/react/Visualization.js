@@ -755,7 +755,7 @@ class Visualization extends React.Component {
               >
                 <div className="agent" style={{background: agent.hidden ? '#8585ad' : agentColors[agent.id]}}>
                 </div>
-                <p className={agent.hidden ? ' light' : ''}>agent {index+1}</p>
+                <p className={agent.hidden ? ' light' : ''}>agent {agent.aid+1}</p>
               </div>
             ))}
           </div>
