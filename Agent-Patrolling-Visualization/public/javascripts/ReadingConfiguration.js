@@ -3,8 +3,6 @@ function readFile(files, callback) {
 
     var result = {};
     var regions = [];
-    //include all region's agents
-    var agents = [];
     // files is a FileList of File objects. List some properties.
     var f = files[0];
     
@@ -16,56 +14,63 @@ function readFile(files, callback) {
             //get all contents in the file
             var contents = event.target.result;
 
-            var re = /^\d+\sX\s\d+(\r\n|\r|\n)\d+(\r\n|\r|\n)(regionID:\s\d(\r\n|\r|\n)(\(\d+,\d+\),\s)*(\(\d,\d\))(\r\n|\r|\n)(\(\d+,\d+\),\s)*(\(\d,\d\))(\r\n|\r|\n)?)+/;
-            if (!contents.match(re)) return callback(false, 'The format is incorrect, please have a check');
-            
-            var lines = contents.split('\n');
+            var newContents = contents.replace(/\),([\r\n]|\s)+/g,'),').replace(/(Agent\s\d+\sat\s\(\d+,\d+\))([\r\n]|\s)+(Agent)/g, (match, p1, p2, p3) => {
+	            return p1 + ', ' + p3;
+            });
 
-            var dimension = lines[0].split('X');
-            var width = dimension[0].trim();
-            var length = dimension[1].trim();
+            var lines = newContents.split('\n');
+
+            var size = lines[0].match(/\d+/g);
+            var width = size[0];
+            var length = size[1];
             
             result['width'] = parseInt(width);
             result['height'] = parseInt(length);
 
             var i;
-            var numberOfRegions = parseInt(lines[1]);
+            var regionStrings = newContents.split("Region");
+            var numberOfRegions = regionStrings.length - 1;
             
-            for (i = 2; i + 1 < lines.length; i = i + 3) {
-                var regionID = parseInt(lines[i].split(':')[1].trim());
+            for (i = 1; i < regionStrings.length; i++) {
+                var seperateLines = regionStrings[i].split('\n');
+
+                var region = {};
+
+                var regionID = parseInt(seperateLines[0].match(/\d+/g)[0]);
+                region['ID'] = regionID;
+
                 var positions = [];
-                var p = lines[i + 1].split(', ');
+                var p = seperateLines[1].match(/\d+/g);
                 
                 var j;
-                for (j = 0; j < p.length; j++) {
-                    var coordinate = p[j].split(',');
-                    var row = coordinate[0].substring(1);
-                    var column = coordinate[1].substring(0, 1);
+                for (j = 0; j < p.length; j = j + 2) {
                     var position = {};
-                    position['row'] = parseInt(row);
-                    position['column'] = parseInt(column);
+                    position['row'] = parseInt(p[j]);
+                    position['column'] = parseInt(p[j + 1]);
                     positions.push(position);
                 }
-                //add to regions, positions represent a positions in a region
-                regions.push(positions);
+                region['positions'] = positions;
 
                 // the agents in one region
-                var agent = [];
-                var a = lines[i + 2].split(', ');
-                for (j = 0; j < a.length; j++) {
-                    var coordinate = a[j].split(',');
-                    var row = coordinate[0].substring(1);
-                    var column = coordinate[1].substring(0, 1);
+                var agents = [];
+                var a = seperateLines[2].match(/\d+/g);
+                for (j = 0; j < a.length; j = j + 3) {
+                    var agent = {};
+                    var agentID = parseInt(a[j]);
+                    agent['ID'] = agentID;
                     var position = {};
-                    position['row'] = parseInt(row);
-                    position['column'] = parseInt(column);
-                    agent.push(position);
+                    position['row'] = parseInt(a[j + 1]);
+                    position['column'] = parseInt(a[j + 2]);
+                    agent['position'] = position;
+
+                    agents.push(agent);
                 }
-                agents.push(agent);
+                region['agents'] = agents;
+                //add to regions, positions represent a positions in a region
+                regions.push(region);
             }
             //all regions as an value in the result
             result['regions'] = regions;
-            result['agents'] = agents;
             
             callback(result);
             console.log(result);
