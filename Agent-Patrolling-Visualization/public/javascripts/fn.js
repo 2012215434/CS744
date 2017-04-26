@@ -163,7 +163,21 @@ class f {
       square1.row === square2.row && square1.column - 1 === square2.column
     );
   }
+
+    get(agents, id) {
+    return agents.filter((agent) => {
+      return agent.id == id;
+    }).get(0);
+  }
+
+  set(agents, id, value) {
+    return agents.map((agent) => {
+      if (agent.id == id) return value;
+      return agent;
+    });
+  }
 }
+
 
 const $f = new f();
 

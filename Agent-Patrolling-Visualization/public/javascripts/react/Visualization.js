@@ -65,6 +65,19 @@ class Visualization extends React.Component {
     this.mouseUpCoor = {};
   }
 
+  getAgent(agents, id) {
+    return agents.filter((agent) => {
+      return agent.id == id;
+    }).get(0);
+  }
+
+  setAgent(agents, id, value) {
+    return agents.map((agent) => {
+      if (agent.id == id) return value;
+      return agent;
+    });
+  }
+
   runOneStep() {
     /*-------------------*/
     let $board = document.querySelector('#graph .info');
@@ -80,9 +93,7 @@ class Visualization extends React.Component {
 
     let curStep = this.state.curStep + 1;
     let agents = this.state.agents;
-
     let isEnd = true;
-
     algorithm.traces.forEach((trace, id) => {
       if(!trace[curStep]) return;
       isEnd = false;
@@ -90,15 +101,14 @@ class Visualization extends React.Component {
       let curPosition = trace[curStep],
           row = curPosition.row,
           column = curPosition.column;
-      
-      let move = judgeMove(agents.get(id), {row, column});
+      let move = judgeMove($f.get(agents, id), {row, column});
 
       if(document.getElementById('agent-' + id)) {
         document.getElementById('agent-' + id).classList.add(move);
       }
 
-      let hidden = agents.get(id).hidden;
-      agents = agents.set(id, {id, row, column, hidden});
+      let hidden = $f.get(agents, id).hidden;
+      agents = $f.set(agents, id, {id, row, column, hidden});
     });
     
     if  (isEnd) {
@@ -154,7 +164,7 @@ class Visualization extends React.Component {
           column = curPosition.column;
       
 
-      let hidden = agents.get(id).hidden;
+      let hidden = $f.get(agents, id).hidden;
       agents = agents.set(id, {id, row, column, hidden});
     });
     
@@ -366,7 +376,7 @@ class Visualization extends React.Component {
     );
       
     return (
-      <div key={index} className="sketchBlock" data-regionID={index}>
+      <div key={index} className="sketchBlock" data-regionID={region.id}>
         <div 
           style={{width, height}} 
           className={'sketch ' + (this.state.toggle === index ? 'selected' : '')}
@@ -374,7 +384,7 @@ class Visualization extends React.Component {
         >
           {squares}
         </div>
-        {deleter}
+        {/*{deleter}*/}
         <div className="clearFloat"></div>
       </div>
     );

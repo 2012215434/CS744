@@ -14,7 +14,7 @@ function readFile(files, callback) {
             //get all contents in the file
             var contents = event.target.result;
 
-            var newContents = contents.replace(/\),([\r\n]|\s)+/g,'),').replace(/(Agent\s\d+\sat\s\(\d+,\d+\))([\r\n]|\s)+(Agent)/g, (match, p1, p2, p3) => {
+            var newContents = contents.replace(/\),(\s)+/g,'),').replace(/(gent\s\d+\sat\s\(\d+,\d+\))(\s)+(A)/g, (match, p1, p2, p3) => {
 	            return p1 + ', ' + p3;
             });
 
