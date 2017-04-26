@@ -535,12 +535,13 @@ class Visualization extends React.Component {
       this.setState({regions});
 
       let agentId = 0;
-      let agents = this.fileResult.agents.reduce((pre, cur) => {
-        return pre.concat(cur);
-      });
+      let agents = this.fileResult.regions.reduce((pre, cur) => {
+        return pre.concat(cur.agents);
+      }, []);
+
       agents = agents.map((agent) => {
         return {
-          id: agentId++,
+          id: Number(agent.id),
           row: Number(agent.row),
           column: Number(agent.column)
         }

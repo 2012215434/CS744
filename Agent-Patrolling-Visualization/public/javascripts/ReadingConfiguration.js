@@ -34,12 +34,11 @@ function readFile(files, callback) {
             for (i = 1; i < regionStrings.length; i++) {
                 var seperateLines = regionStrings[i].split('\n');
 
-                var region = {};
+                var region = [];
 
                 var regionID = parseInt(seperateLines[0].match(/\d+/g)[0]);
-                region['ID'] = regionID;
+                region['id'] = regionID;
 
-                var positions = [];
                 var p = seperateLines[1].match(/\d+/g);
                 
                 var j;
@@ -47,9 +46,8 @@ function readFile(files, callback) {
                     var position = {};
                     position['row'] = parseInt(p[j]);
                     position['column'] = parseInt(p[j + 1]);
-                    positions.push(position);
+                    region.push(position);
                 }
-                region['positions'] = positions;
 
                 // the agents in one region
                 var agents = [];
@@ -57,7 +55,7 @@ function readFile(files, callback) {
                 for (j = 0; j < a.length; j = j + 3) {
                     var agent = {};
                     var agentID = parseInt(a[j]);
-                    agent['ID'] = agentID;
+                    agent['id'] = agentID;
                     agent['row'] = parseInt(a[j + 1]);
                     agent['column'] = parseInt(a[j + 2]);
 
