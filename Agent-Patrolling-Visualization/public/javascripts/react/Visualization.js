@@ -629,7 +629,7 @@ class Visualization extends React.Component {
     let regionsOutOfEnv = [];
     regions.forEach((region) => {
       let isOutOf = region.some((square) => {
-        return square.row + 1 > height || square.column + 1 > width;
+        return square.row + 1 > height || square.row < 0 || square.column + 1 > width || square.column < 0;
       });
       if (isOutOf) regionsOutOfEnv.push(region);
     });
@@ -648,11 +648,13 @@ class Visualization extends React.Component {
       });
     });
 
-    const noDiscreteRegion = regions.every((region) => {
-      return region.every((square1, index) => {
-        return region.some((square2, index) => {
+    let isolateSpaces = [];
+    regions.forEach((region) => {
+      region.forEach((square1, index) => {
+        let notIsolate = region.some((square2, index) => {
           return $f.isAdjacent(square1, square2);
         });
+        if (!notIsolate) isolateSpaces.push({square: square1, regionId: region.id});
       });
     });
 
@@ -681,11 +683,12 @@ class Visualization extends React.Component {
       return false;
     }
     if (jointRegions.length > 0) {
-      this.setState({alert: 'There are some joint regions'});
+      this.setState({alert: `Region ${jointRegions[1].id} and region ${jointRegions[0].id} are connected`});
       return false;
     }
-    if (!noDiscreteRegion) {
-      this.setState({alert: 'There are some isolate open spaces'});
+    if (isolateSpaces.length > 0) {
+      let space = isolateSpaces[0];
+      this.setState({alert: `Open space (${space.square.row + 1}, ${space.square.column + 1}) in region ${space.regionId} is isolate`});
       return false;
     }
 
