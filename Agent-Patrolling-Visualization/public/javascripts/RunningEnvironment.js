@@ -13,6 +13,7 @@ class RunningEnvironment{
         this.historyTargetLists = new Object();
         this.targets = new Object();
         this.agents = [];
+        this.steps = 0;
     }
 
     //init the environment with blockMatrix
@@ -123,6 +124,7 @@ class RunningEnvironment{
 
     move() {
         while (!this.isComplete() || !this.allAgentArriveTarget()) {
+            this.steps++;
             for (var regionID in this.targetLists) {
                 this.historyTargetLists[regionID].push(this.targetLists[regionID]);
             }
@@ -206,6 +208,7 @@ class RunningEnvironment{
 
     move3() {
         while (!this.isComplete() || !this.allAgentArriveTarget()) {
+            this.steps++;
             for (var regionID in this.targetLists) {
                 this.historyTargetLists[regionID].push(this.targetLists[regionID]);
             }
@@ -274,6 +277,7 @@ class RunningEnvironment{
     
     move4() {
         while (!this.isComplete() || !this.allAgentArriveTarget()) {
+            this.steps++;
             for (var regionID in this.targetLists) {
                 this.historyTargetLists[regionID].push(this.targetLists[regionID]);
             }
