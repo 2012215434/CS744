@@ -65,6 +65,11 @@ class Visualization extends React.Component {
     this.mouseUpCoor = {};
   }
 
+  componentDidMount() {
+    setTimeout(() => this.setState({btn_finished_class: 'show'}), 450);
+    setTimeout(() => this.setState({selector_algorithm_class: 'show'}), 300);
+  }
+
   getAgent(agents, id) {
     return agents.filter((agent) => {
       return agent.id == id;
@@ -214,8 +219,6 @@ class Visualization extends React.Component {
 
     if (this.state.mouseDown) {
       this.setState({mouseDown: false});
-      setTimeout(() => this.setState({btn_finished_class: 'show'}), 950);
-      setTimeout(() => this.setState({selector_algorithm_class: 'show'}), 800);
     }
     if (this.state.mouseDownOnEnvir){
       this.setState({mouseDownOnEnvir: false});

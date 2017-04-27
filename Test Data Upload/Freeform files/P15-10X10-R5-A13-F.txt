@@ -14,6 +14,7 @@ Agents:      Agent 21 at (8,3)
              Agent 24 at (7,1)
              Agent 25 at (8,2)
              Agent 26 at (6,3)
+             Agent 72 at (7,2)
 Region 3
 Coordinates: (1,5),(2,5),(3,5),
              (1,6),(2,6),(3,6),
