@@ -297,7 +297,12 @@ class RunningEnvironment{
                         temp.push(position);
                     }
                 }
-                this.agents[agentID].visitedNodes = temp.length;
+                for (let j = 0; j < this.agents.length; j++) {
+                    if (this.agents[i].aid == agentID) {
+                        this.agents[i].visitedNodes = temp.length;
+                        break;
+                    }
+                } 
             }
 
             //store the agents who need to select target at the same time
