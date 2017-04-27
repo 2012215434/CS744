@@ -89,22 +89,62 @@ class f {
     switch (algorithm) {
       case 0:
         return true;
-      case 3:
-        return regions.every((region) => {
+      case 3: {
+        let illegalRegions = [];
+        regions.forEach((region) => {
           let agentsInRegion = agents.filter((agent) => {
             return region.some((square) => {
               return square.row === agent.row && square.column === agent.column;
             });
           });
           
-          let lessThanLimit = agentsInRegion.length <= Math.ceil(region.length / 3); 
-          if (!lessThanLimit) callback('The number of agents in region should at most be n/3');
-          
-          return lessThanLimit;
+          if (agentsInRegion.length > Math.ceil(region.length / 3)) illegalRegions.push(region);
         });
+
+        if (illegalRegions.length > 0) {
+          if (illegalRegions.length === 1)
+            callback('The number of agents in region ' + illegalRegions[0].id + ' is more than n/3');
+          else {
+            let regions = illegalRegions.map((region) => {
+              return 'region ' + region.id;
+            }).join(', ');
+
+            callback('The number of agents in ' + regions + ' are more than n/3');
+          }
+
+          return false;
+        } else {
+          return true;
+        }
+      }
       case 4: {
-        let id = 0;
-        return regions.every((region) => {
+        let illegalRegions = [];
+        regions.forEach((region) => {
+          let agentsInRegion = agents.filter((agent) => {
+            return region.some((square) => {
+              return square.row === agent.row && square.column === agent.column;
+            });
+          });
+          
+          if (agentsInRegion.length > Math.ceil(region.length / 4)) illegalRegions.push(region);
+        });
+        
+        if (illegalRegions.length > 0) {
+          if (illegalRegions.length === 1)
+            callback('The number of agents in region ' + illegalRegions[0].id + ' is more than n/4');
+          else {
+            let regions = illegalRegions.map((region) => {
+              return 'region ' + region.id;
+            }).join(', ');
+
+            callback('The number of agents in ' + regions + ' are more than n/4');
+          }
+
+          return false;
+        }
+
+        let illegalAgents = [];
+        regions.forEach((region) => {
           let agentsInRegion = agents.filter((agent) => {
             return region.some((square) => {
               return square.row === agent.row && square.column === agent.column;
@@ -123,12 +163,11 @@ class f {
           let agentsOutOfEndPosition = [];
           //Check if all agents are at end positions
           agentsInRegion.forEach((agent) => {
-            id++;
             let inPosistion =  endPositions.some((endPosition) => {
               return endPosition.row === agent.row && endPosition.column === agent.column;
             });
 
-            if (!inPosistion) agentsOutOfEndPosition.push(id);
+            if (!inPosistion) agentsOutOfEndPosition.push(agent);
 
             return inPosistion;
           });
@@ -137,19 +176,27 @@ class f {
 
           if (endPositions.length < 1) allAtEndPosition = true;
 
-          let lessThanLimit = agentsInRegion.length <= Math.ceil(region.length / 4);
+          // let lessThanLimit = agentsInRegion.length <= Math.ceil(region.length / 4);
 
-          if (!lessThanLimit) {
-            callback('The number of agents in region should at most be n/4');
-          }
-
-          if (!allAtEndPosition) {
-            if (agentsOutOfEndPosition.length <=1 ) callback(`Agent ${agentsOutOfEndPosition[0]} is not at the end position`);
-            else callback(`Agent ${agentsOutOfEndPosition.reduce((pre, cur) => pre + ', ' + cur)} are not at the end position`);
-          }
-
-          return lessThanLimit && allAtEndPosition; 
+          // if (!lessThanLimit) {
+          //   callback('The number of agents in region should at most be n/4');
+          // }
+          if (!allAtEndPosition) illegalAgents = illegalAgents.concat(agentsOutOfEndPosition);
         });
+
+        if (illegalAgents.length > 0) {
+          if (illegalAgents.length === 1 ) callback(`Agent ${illegalAgents[0].id} is not at the end position`);
+          else {
+            let agents = illegalAgents.map((agent) => {
+              return 'agent' + agent.id;
+            }).join(', ').replace(/a/, 'A');
+            callback(agents + ' are not at the end position');
+          }
+          
+          return false;
+        }
+
+        return true;
       }
     }
   }

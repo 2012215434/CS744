@@ -38,6 +38,7 @@ class Visualization extends React.Component {
       btn_runOne_class: 'hidden',
       btn_runMuti_class: 'hidden',
       selector_algorithm_class: 'hidden',
+      selector_disabled: false,
       btn_save_class: 'hidden',
       regionBar_class: 'show_regionBar',
       agentBar_class: '',
@@ -449,8 +450,9 @@ class Visualization extends React.Component {
     });
     if (!legal) return this.setState({alert: 'There are some regions that have no agents!'});
 
-    this.setState({selector_algorithm_class: 'hide'})
-    setTimeout(() => this.setState({selector_algorithm_class: 'hidden'}), 500);
+    this.setState({selector_disabled: true});
+    // this.setState({selector_algorithm_class: 'hide'})
+    // setTimeout(() => this.setState({selector_algorithm_class: 'hidden'}), 500);
     setTimeout(() => this.setState({btn_finished_class: 'hide'}), 150);
     setTimeout(() => this.setState({btn_finished_class: 'hidden'}), 500);
 
@@ -692,6 +694,28 @@ class Visualization extends React.Component {
       return false;
     }
 
+    let legal = $f.varify(this.state.selected_algorithm, agents.toArray(), regions.toArray(), (err) => {
+      if (err) {
+        this.setState({alert: err});
+      }
+    });
+    if (!legal) return false;
+
+    legal = true;
+    this.state.regions.forEach((region) => {
+      let finded = this.state.agents.find((agent) => {
+        return region.find((square) => {
+          return square.row == agent.row && square.column == agent.column;
+        });
+      });
+
+      if (!finded) legal = false;
+    });
+    if (!legal) {
+      this.setState({alert: 'There are some regions that have no agents!'});
+      return false;
+    }
+
     return true;
   }
 
@@ -810,21 +834,13 @@ class Visualization extends React.Component {
 
     const rightBar = (
       <div id="rightBar">
-        <div className={`btn ${this.state.btn_runOne_class}`} onClick={this.runOneStep.bind(this)}>
-          RUN 1 STEP
-        </div>
-        <div className={`btn ${this.state.btn_runMuti_class}`} onClick={this.runMutiSteps.bind(this)}>
-          RUN <input type="text" ref={input => this.stepsInput = input}/> STEPS
-        </div>
-        <div className={`btn ${this.state.btn_save_class}`} onClick={() => this.setState({show_savePopUp: true})}>
-          SAVE
-        </div>
         <SelectField 
           id="selector-algorithm" 
           className={`selector ${this.state.selector_algorithm_class}`} 
           floatingLabelText="Algorithm"
           value={this.state.selected_algorithm}
           onChange={(event, index, val) => this.setState({selected_algorithm: val})}
+          disabled={this.state.selector_disabled}
         >
           <MenuItem value={0} primaryText="free-form"/>
           <MenuItem value={3} primaryText="constrained-3" />
@@ -836,6 +852,15 @@ class Visualization extends React.Component {
           onClick={this.configFinished.bind(this)}
         >
           FINISHED
+        </div>
+        <div className={`btn ${this.state.btn_runOne_class}`} onClick={this.runOneStep.bind(this)}>
+          RUN 1 STEP
+        </div>
+        <div className={`btn ${this.state.btn_runMuti_class}`} onClick={this.runMutiSteps.bind(this)}>
+          RUN <input type="text" ref={input => this.stepsInput = input}/> STEPS
+        </div>
+        <div className={`btn ${this.state.btn_save_class}`} onClick={() => this.setState({show_savePopUp: true})}>
+          SAVE
         </div>
       </div>
     );
