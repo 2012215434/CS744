@@ -6,13 +6,19 @@ class Graph extends React.Component {
   render() {
     const targets = this.props.targets,
         curStep = this.props.curStep,
-        curRegion = this.props.curRegion;
+        curRegion = this.props.curRegion,
+        algorithm = this.props.algorithm;
 
     const targetList = 
     this.props.historyTargetLists 
     && curRegion  > -1 
     && this.props.historyTargetLists[curRegion][curStep]? (
-      this.props.historyTargetLists[curRegion][curStep].map((target, index) => {
+      this.props.historyTargetLists[curRegion][curStep].filter((tar) => {
+        if (algorithm == 3 || algorithm == 4) return true;
+        return  Object.keys(targets).every((key) => {
+          return targets[key][curStep].row != tar.row || targets[key][curStep].column != tar.column;
+        });
+      }).map((target, index) => {
         return (
           <div className="target" key={index}>
             {`(${target.row}, ${target.column})`}

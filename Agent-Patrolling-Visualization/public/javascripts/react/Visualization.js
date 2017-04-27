@@ -585,8 +585,8 @@ class Visualization extends React.Component {
     }
     if ( height <=0 || width <= 0) return this.setState({alert: 'Please check the configration'});
 
-    setTimeout(() => this.setState({btn_finished_class: 'show'}), 950);
-    setTimeout(() => this.setState({selector_algorithm_class: 'show'}), 800);
+    // setTimeout(() => this.setState({btn_finished_class: 'show'}), 950);
+    // setTimeout(() => this.setState({selector_algorithm_class: 'show'}), 800);
 
     this.setState({
       environment: Immutable.fromJS(Array(height).fill(Array(width).fill(OBSTACLE)))
@@ -609,16 +609,21 @@ class Visualization extends React.Component {
         this.setState({environment});
       }
     });
+
+    setTimeout(() => {this.configFinished()}, 500);
   }
 
   //agent is not in any region; region is out of environment; joint regions; discrete regions;
   checkEnvironment(agents, regions, width, height) {
-    const allAgentsInRegion =  agents.every((agent) => {
-      return regions.some((region) => {
+    let agentsOutOfRegion = [];
+    agents.forEach((agent) => {
+      let inRegion = regions.some((region) => {
         return region.some((square) => {
           return agent.row == square.row && agent.column == square.column;
         });
       });
+
+      if (!inRegion) agentsOutOfRegion.push(agent);
     });
 
     const allRegionsInEnv = regions.every((region) => {
@@ -647,7 +652,7 @@ class Visualization extends React.Component {
       });
     });
 
-    if (!allAgentsInRegion) {
+    if (agentsOutOfRegion.length > 0) {
       this.setState({alert: 'There are some agents out of the region'});
       return false;
     }
@@ -862,6 +867,7 @@ class Visualization extends React.Component {
         regions={this.state.regions}
         curStep={this.state.curStep}
         agents={this.state.agents}
+        algorithm={this.state.selected_algorithm}
       />
     ) : null;
 
