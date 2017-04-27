@@ -37,11 +37,9 @@ class Graph extends React.Component {
           <div className="curTargets-agent">
             {'Agent ' + (index + 1)}
           </div>
-          {
-            curStep == 0 ? null : (<div className="target curTarget">
-              {`(${targets[key][curStep].row}, ${targets[key][curStep].column})`}
-            </div>)
-          }
+          <div className="target curTarget">
+            {`(${targets[key][curStep].row}, ${targets[key][curStep].column})`}
+          </div>
         </div>
       ) : null;
     }) : null;
