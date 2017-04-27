@@ -626,21 +626,25 @@ class Visualization extends React.Component {
       if (!inRegion) agentsOutOfRegion.push(agent);
     });
 
-    const allRegionsInEnv = regions.every((region) => {
-      return region.every((square) => {
-        return square.row < height && square.column < width;
+    let regionsOutOfEnv = [];
+    regions.forEach((region) => {
+      let isOutOf = region.some((square) => {
+        return square.row + 1 > height || square.column + 1 > width;
       });
+      if (isOutOf) regionsOutOfEnv.push(region);
     });
 
-    const noJointRegions = !regions.some((region1, index1) => {
-      return regions.some((region2, index2) => {
+    let jointRegions = [];
+    regions.forEach((region1, index1) => {
+      regions.forEach((region2, index2) => {
         if (index1 === index2) return false;
 
-        return region1.some((square1) => {
+        let joint =  region1.some((square1) => {
           return region2.some((square2) => {
             return square1.row === square2.row && square1.column === square2.column || $f.isAdjacent(square1, square2);
           });
         });
+        if (joint) jointRegions = [region1, region2];
       });
     });
 
@@ -653,14 +657,30 @@ class Visualization extends React.Component {
     });
 
     if (agentsOutOfRegion.length > 0) {
-      this.setState({alert: 'There are some agents out of the region'});
+      if (agentsOutOfRegion.length === 1)
+        this.setState({alert: 'Agent ' + agentsOutOfRegion[0].id + ' is out of the region'});
+      else {
+        let agents = agentsOutOfRegion.map((agent) => {
+          return 'agent ' + agent.id;
+        });
+        agents = agents.join(', ').replace(/a/, 'A');
+        this.setState({alert: agents + ' are out of the region'});
+      }
       return false;
     }
-    if (!allRegionsInEnv) {
-      this.setState({alert: 'There are some regions out of the environment'});
+    if (regionsOutOfEnv.length > 0) {
+      if (regionsOutOfEnv.length === 1)
+        this.setState({alert: 'Region ' + regionsOutOfEnv[0].id + ' is out of the environment'});
+      else {
+        let regions = regionsOutOfEnv.map((region) => {
+          return 'region ' + region.id;
+        });
+        regions = regions.join(', ').replace(/a/, 'R');
+        this.setState({alert: regions + ' are out of the environment'});
+      }
       return false;
     }
-    if (!noJointRegions) {
+    if (jointRegions.length > 0) {
       this.setState({alert: 'There are some joint regions'});
       return false;
     }
@@ -803,7 +823,7 @@ class Visualization extends React.Component {
           value={this.state.selected_algorithm}
           onChange={(event, index, val) => this.setState({selected_algorithm: val})}
         >
-          <MenuItem value={0} primaryText="free-form" />
+          <MenuItem value={0} primaryText="free-form"/>
           <MenuItem value={3} primaryText="constrained-3" />
           <MenuItem value={4} primaryText="constrained-4" />
         </SelectField>

@@ -131,7 +131,7 @@ body {
   border-right: 1px solid lightgray;
   border-bottom: 1px solid lightgray;
   margin: 15px;
-  margin-right: -15px;
+  /*margin-right: -15px;*/
   float: left;
   cursor: pointer;
 }
