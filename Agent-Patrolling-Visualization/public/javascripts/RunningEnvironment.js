@@ -302,8 +302,8 @@ class RunningEnvironment{
                     }
                 }
                 for (let j = 0; j < this.agents.length; j++) {
-                    if (this.agents[i].aid == agentID) {
-                        this.agents[i].visitedNodes = temp.length;
+                    if (this.agents[j].aid == agentID) {
+                        this.agents[j].visitedNodes = temp.length;
                         break;
                     }
                 } 
