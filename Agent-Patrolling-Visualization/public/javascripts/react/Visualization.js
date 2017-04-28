@@ -179,7 +179,7 @@ class Visualization extends React.Component {
     this.agents = agents;
     this.setState({agents});
     
-    graph(this.state.regions.get(0), algorithm.traces, curStep);
+    graph(this.state.regions.get(this.state.curRegion), algorithm.traces, curStep);
 
     let isEnd = true;
     algorithm.traces.forEach((trace, id) => {
