@@ -632,6 +632,7 @@ class Visualization extends React.Component {
 
   //agent is not in any region; region is out of environment; joint regions; discrete regions;
   checkEnvironment(agents, regions, width, height) {
+    let alerts = [], valid = true;
     let agentsOutOfRegion = [];
     agents.forEach((agent) => {
       let inRegion = regions.some((region) => {
@@ -658,7 +659,8 @@ class Visualization extends React.Component {
 
         let joint =  region1.some((square1) => {
           return region2.some((square2) => {
-            return square1.row === square2.row && square1.column === square2.column || $f.isAdjacent(square1, square2);
+            let join = square1.row === square2.row && square1.column === square2.column || $f.isAdjacent(square1, square2);
+            return join;
           });
         });
         if (joint) jointRegions = [region1, region2];
@@ -674,64 +676,74 @@ class Visualization extends React.Component {
         if (!notIsolate) isolateSpaces.push({square: square1, regionId: region.id});
       });
     });
-    console.log(agentsOutOfRegion);
+
     if (agentsOutOfRegion.length > 0) {
       if (agentsOutOfRegion.length === 1)
-        this.setState({alert: 'Agent ' + agentsOutOfRegion[0].id + ' is out of the region'});
+        alerts.push('Agent ' + agentsOutOfRegion[0].id + ' is out of the region');
       else {
         let agents = agentsOutOfRegion.map((agent) => {
           return 'agent ' + agent.id;
         });
         agents = agents.join(', ').replace(/a/, 'A');
+        alerts.push();
         this.setState({alert: agents + ' are out of the region'});
       }
-      return false;
+      valid = false;
     }
+
     if (regionsOutOfEnv.length > 0) {
       if (regionsOutOfEnv.length === 1)
-        this.setState({alert: 'Region ' + regionsOutOfEnv[0].id + ' is out of the environment'});
+        alerts.push('Region ' + regionsOutOfEnv[0].id + ' is out of the environment');
       else {
         let regions = regionsOutOfEnv.map((region) => {
           return 'region ' + region.id;
         });
         regions = regions.join(', ').replace(/a/, 'R');
-        this.setState({alert: regions + ' are out of the environment'});
+        alerts.push(regions + ' are out of the environment');
       }
-      return false;
+      valid = false;
     }
+
     if (jointRegions.length > 0) {
-      this.setState({alert: `Region ${jointRegions[1].id} and region ${jointRegions[0].id} are connected`});
-      return false;
+      alerts.push(`Region ${jointRegions[1].id} and region ${jointRegions[0].id} are connected`);
+      valid = false;
     }
+
     if (isolateSpaces.length > 0) {
       let space = isolateSpaces[0];
-      this.setState({alert: `Open space (${space.square.row + 1}, ${space.square.column + 1}) in region ${space.regionId} is isolate`});
-      return false;
+      alerts.push(`Open space (${space.square.row + 1}, ${space.square.column + 1}) in region ${space.regionId} is isolate`);
+      valid = false;
     }
 
     let legal = $f.varify(this.state.selected_algorithm, agents.toArray(), regions.toArray(), (err) => {
       if (err) {
-        this.setState({alert: err});
+        alerts.push(err);
       }
     });
-    if (!legal) return false;
+    if (!legal) valid = false;
 
-    legal = true;
-    this.state.regions.forEach((region) => {
-      let finded = this.state.agents.find((agent) => {
+    let regionsWithNoAgent = []
+    regions.forEach((region) => {
+      let finded = agents.find((agent) => {
         return region.find((square) => {
           return square.row == agent.row && square.column == agent.column;
         });
       });
-
-      if (!finded) legal = false;
+      if (!finded) regionsWithNoAgent.push(region.id);
     });
-    if (!legal) {
-      this.setState({alert: 'There are some regions that have no agents!'});
-      return false;
+    if (regionsWithNoAgent.length > 0) {
+      let str = regionsWithNoAgent.map((region) => {
+        return 'region ' + region;
+      }).join(', ').replace(/r/, 'R') + ' do not have agent';
+      alerts.push(str);
+      valid = false;
     }
 
-    return true;
+    if (alerts.length > 0) {
+      this.setState({alert: alerts.join('. ')});
+    }
+
+    return valid;
   }
 
   saveRun() {

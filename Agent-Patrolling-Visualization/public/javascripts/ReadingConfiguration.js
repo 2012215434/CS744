@@ -52,14 +52,16 @@ function readFile(files, callback) {
                 // the agents in one region
                 var agents = [];
                 var a = seperateLines[2].match(/\d+/g);
-                for (j = 0; j < a.length; j = j + 3) {
-                    var agent = {};
-                    var agentID = parseInt(a[j]);
-                    agent['id'] = agentID;
-                    agent['row'] = parseInt(a[j + 1] - 1);
-                    agent['column'] = parseInt(a[j + 2] - 1);
+                if (a) {
+                    for (j = 0; j < a.length; j = j + 3) {
+                        var agent = {};
+                        var agentID = parseInt(a[j]);
+                        agent['id'] = agentID;
+                        agent['row'] = parseInt(a[j + 1] - 1);
+                        agent['column'] = parseInt(a[j + 2] - 1);
 
-                    agents.push(agent);
+                        agents.push(agent);
+                    }
                 }
                 region['agents'] = agents;
                 //add to regions, positions represent a positions in a region
