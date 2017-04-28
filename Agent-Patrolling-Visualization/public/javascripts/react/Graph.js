@@ -1,14 +1,23 @@
 import React from 'react';
 import {agentColors} from './agentColors';
+import IconButton from 'material-ui/IconButton';
+import ActionCode from 'material-ui/svg-icons/action/code';
 
 class Graph extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      hidden: false
+    }
+  }
 
   render() {
     const targets = this.props.targets,
-        curStep = this.props.curStep,
+        steps = this.props.steps,
+        curStep = this.props.curStep > steps ? steps : this.props.curStep,
         curRegion = this.props.curRegion,
         algorithm = this.props.algorithm;
-
+        
     const targetList = 
     this.props.historyTargetLists 
     && curRegion  > -1 
@@ -52,7 +61,7 @@ class Graph extends React.Component {
 
     return (
       <div id="graph" style={{display: (this.props.toggle === -1 ? 'none' : 'block')}}>
-        <canvas className="graphView" width="600px" height="800px"></canvas>
+        <canvas className="graphView" width="1000px" height="800px"></canvas>
         <div className="info hidden">
           <div>Node :</div>
           <div>Current agents:</div>
@@ -65,11 +74,14 @@ class Graph extends React.Component {
         <div className="info">
           <div>
             Target list
+            <IconButton id="toggle" onClick={() => this.setState({hidden: !this.state.hidden})}>
+              <ActionCode color={'white'} hoverColor={'#BDBDBD'}/>
+            </IconButton>
           </div>
-          <div className="targetList">
+          <div className={"targetList" + (this.state.hidden ? " hidden" : "")}>
             {targetList}
           </div>
-          <div className="curTargets">
+          <div className={"curTargets" + (this.state.hidden ? " hidden" : "")}>
             <div>
               <div>Agent</div>
               <div>Current target</div>

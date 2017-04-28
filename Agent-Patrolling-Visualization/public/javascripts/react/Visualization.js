@@ -51,7 +51,8 @@ class Visualization extends React.Component {
       show_nodeDetailBoard: false,
       show_savePopUp: 'init',
       selected_algorithm: 0, //0: free-form; 1: constrained-3; 2: constrained-4
-      alert: ''
+      alert: '',
+      steps: 1000
     };
 
     this.envirPosition = {
@@ -161,11 +162,11 @@ class Visualization extends React.Component {
     this.setState({curStep});
     let agents = this.state.agents;
 
-    console.log(curStep);
     algorithm.traces.forEach((trace, id) => {
-      if(!trace[curStep]) curStep = trace.length - 1;
+      let step = curStep;
+      if(!trace[step]) step = trace.length - 1;
 
-      let curPosition = trace[curStep],
+      let curPosition = trace[step],
           row = curPosition.row,
           column = curPosition.column;
       
@@ -176,9 +177,24 @@ class Visualization extends React.Component {
     
 
     this.agents = agents;
-    this.setState({agents})
+    this.setState({agents});
     
     graph(this.state.regions.get(0), algorithm.traces, curStep);
+
+    let isEnd = true;
+    algorithm.traces.forEach((trace, id) => {
+      if(trace[curStep]) isEnd = false;
+    });
+    
+    if  (isEnd) {
+      this.setState({btn_runOne_class: 'hide'});
+      setTimeout(() => this.setState({btn_runOne_class: 'hidden'}), 490);
+      this.setState({btn_runMuti_class: 'hide'});
+      setTimeout(() => this.setState({btn_runMuti_class: 'hidden'}), 490);
+
+      setTimeout(() => this.setState({btn_save_class: 'show'}), 700);
+      return;
+    }
   }
 
   handleMouseDownOnBackground(e) {
@@ -496,7 +512,7 @@ class Visualization extends React.Component {
     }
     this.setState({configFinished: true});
     if (this.state.moreBar_class.indexOf('show') > -1) this.setState({moreBar_class: 'hide'});
-
+    this.setState({steps: algorithm.steps});
     console.log(algorithm);
     // window.algorithm = algorithm;
   }
@@ -916,6 +932,7 @@ class Visualization extends React.Component {
         curStep={this.state.curStep}
         agents={this.state.agents}
         algorithm={this.state.selected_algorithm}
+        steps={this.state.steps}
       />
     ) : null;
 

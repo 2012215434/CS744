@@ -113,6 +113,7 @@ body {
   height: 600px;
   overflow: auto;
   overflow-x: hidden;
+  z-index: 10;
 }
 .sketchBlock {
   position: relative; 
