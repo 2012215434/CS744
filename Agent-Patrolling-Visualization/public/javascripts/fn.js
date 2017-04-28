@@ -211,10 +211,12 @@ class f {
     );
   }
 
-    get(agents, id) {
-    return agents.filter((agent) => {
+  get(agents, id) {
+    agents = agents.toArray();
+    return agents.filter((agent, index) => {
+      if (!agent) return;
       return agent.id == id;
-    }).get(0);
+    })[0];
   }
 
   set(agents, id, value) {

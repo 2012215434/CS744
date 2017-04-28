@@ -170,9 +170,8 @@ class Visualization extends React.Component {
           row = curPosition.row,
           column = curPosition.column;
       
-
       let hidden = $f.get(agents, id).hidden;
-      agents = agents.set(id, {id, row, column, hidden});
+      agents = $f.set(agents, id, {id, row, column, hidden});
     });
     
 
@@ -675,7 +674,7 @@ class Visualization extends React.Component {
         if (!notIsolate) isolateSpaces.push({square: square1, regionId: region.id});
       });
     });
-
+    console.log(agentsOutOfRegion);
     if (agentsOutOfRegion.length > 0) {
       if (agentsOutOfRegion.length === 1)
         this.setState({alert: 'Agent ' + agentsOutOfRegion[0].id + ' is out of the region'});
