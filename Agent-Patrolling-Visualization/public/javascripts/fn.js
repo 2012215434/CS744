@@ -86,6 +86,10 @@ class f {
 
   //varify if agents and regions satisfy the constrains of the algorithm
   varify(algorithm, agents, regions, callback) {
+    if (agents.length < 1 || regions.length < 1) {
+      callback('You should set the environment');
+      return false;
+    }
     switch (algorithm) {
       case 0:
         return true;
