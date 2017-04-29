@@ -634,6 +634,9 @@ class Visualization extends React.Component {
 
   //agent is not in any region; region is out of environment; joint regions; discrete regions;
   checkEnvironment(agents, regions, width, height) {
+    agents = agents.toArray();
+    regions = regions.toArray();
+    
     let alerts = [], valid = true;
     let agentsOutOfRegion = [];
     agents.forEach((agent) => {
@@ -687,8 +690,7 @@ class Visualization extends React.Component {
           return 'agent ' + agent.id;
         });
         agents = agents.join(', ').replace(/a/, 'A');
-        alerts.push();
-        this.setState({alert: agents + ' are out of the region'});
+        alerts.push(agents + ' are out of the region');
       }
       valid = false;
     }
@@ -717,25 +719,21 @@ class Visualization extends React.Component {
       valid = false;
     }
 
-    let legal = $f.varify(this.state.selected_algorithm, agents.toArray(), regions.toArray(), (err) => {
+    let legal = $f.varify(this.state.selected_algorithm, agents, regions, (err) => {
       if (err) {
         alerts.push(err);
       }
     });
     if (!legal) valid = false;
 
-    let regionsWithNoAgent = []
-    regions.forEach((region) => {
-      let finded = agents.find((agent) => {
-        return region.find((square) => {
-          return square.row == agent.row && square.column == agent.column;
-        });
-      });
-      if (!finded) regionsWithNoAgent.push(region.id);
+    let regionsWithNoAgent = [];
+    regionsWithNoAgent = regions.filter((region) => {
+      return region.agents.length < 1;
     });
+
     if (regionsWithNoAgent.length > 0) {
       let str = regionsWithNoAgent.map((region) => {
-        return 'region ' + region;
+        return 'region ' + region.id;
       }).join(', ').replace(/r/, 'R') + ' do not have agent';
       alerts.push(str);
       valid = false;
