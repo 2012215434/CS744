@@ -44,8 +44,8 @@ function readFile(files, callback) {
                 var j;
                 for (j = 0; j < p.length; j = j + 2) {
                     var position = {};
-                    position['row'] = parseInt(p[j] - 1);
-                    position['column'] = parseInt(p[j + 1] - 1);
+                    position['column'] = parseInt(p[j] - 1);
+                    position['row'] = parseInt(p[j + 1] - 1);
                     region.push(position);
                 }
 
@@ -57,8 +57,8 @@ function readFile(files, callback) {
                         var agent = {};
                         var agentID = parseInt(a[j]);
                         agent['id'] = agentID;
-                        agent['row'] = parseInt(a[j + 1] - 1);
-                        agent['column'] = parseInt(a[j + 2] - 1);
+                        agent['column'] = parseInt(a[j + 1] - 1);
+                        agent['row'] = parseInt(a[j + 2] - 1);
 
                         agents.push(agent);
                     }

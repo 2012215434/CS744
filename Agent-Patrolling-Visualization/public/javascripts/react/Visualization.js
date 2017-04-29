@@ -552,6 +552,8 @@ class Visualization extends React.Component {
       if (result) this.fileResult = result;
       else if (err) this.setState({alert: err});
     });
+
+    this.setState({selector_disabled: true});
   }
 
   generateEnvironment() {
@@ -711,7 +713,7 @@ class Visualization extends React.Component {
 
     if (isolateSpaces.length > 0) {
       let space = isolateSpaces[0];
-      alerts.push(`Open space (${space.square.row + 1}, ${space.square.column + 1}) in region ${space.regionId} is isolate`);
+      alerts.push(`Open space (${space.square.column + 1}, ${space.square.row + 1}) in region ${space.regionId} is isolate`);
       valid = false;
     }
 
