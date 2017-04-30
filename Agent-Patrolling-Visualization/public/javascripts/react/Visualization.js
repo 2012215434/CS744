@@ -636,18 +636,26 @@ class Visualization extends React.Component {
   checkEnvironment(agents, regions, width, height) {
     agents = agents.toArray();
     regions = regions.toArray();
-    
+
     let alerts = [], valid = true;
     let agentsOutOfRegion = [];
-    agents.forEach((agent) => {
-      let inRegion = regions.some((region) => {
-        return region.some((square) => {
+    regions.forEach((region) => {
+      region.agents.forEach((agent) => {
+        let exists = region.some((square) => {
           return agent.row == square.row && agent.column == square.column;
         });
+        if (!exists) agentsOutOfRegion.push(agent);
       });
-
-      if (!inRegion) agentsOutOfRegion.push(agent);
     });
+    // agents.forEach((agent) => {
+    //   let inRegion = regions.some((region) => {
+    //     return region.some((square) => {
+    //       return agent.row == square.row && agent.column == square.column;
+    //     });
+    //   });
+
+    //   if (!inRegion) agentsOutOfRegion.push(agent);
+    // });
 
     let regionsOutOfEnv = [];
     regions.forEach((region) => {

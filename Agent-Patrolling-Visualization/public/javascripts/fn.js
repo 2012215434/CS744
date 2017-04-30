@@ -91,8 +91,34 @@ class f {
       return false;
     }
     switch (algorithm) {
-      case 0:
-        return true;
+      case 0: {
+        let illegalRegions = [];
+        regions.forEach((region) => {
+          let agentsInRegion = agents.filter((agent) => {
+            return region.some((square) => {
+              return square.row === agent.row && square.column === agent.column;
+            });
+          });
+          
+          if (agentsInRegion.length > Math.ceil(region.length / 2)) illegalRegions.push(region);
+        });
+
+        if (illegalRegions.length > 0) {
+          if (illegalRegions.length === 1)
+            callback('The number of agents in region ' + illegalRegions[0].id + ' is more than n/2');
+          else {
+            let regions = illegalRegions.map((region) => {
+              return 'region ' + region.id;
+            }).join(', ');
+
+            callback('The number of agents in ' + regions + ' are more than n/2');
+          }
+
+          return false;
+        } else {
+          return true;
+        }
+      }
       case 3: {
         let illegalRegions = [];
         regions.forEach((region) => {
