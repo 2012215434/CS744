@@ -758,8 +758,9 @@ class Visualization extends React.Component {
     this.setState({show_savePopUp: false});
     let regions = Object.keys(algorithm.regions).map((key) => {
       let agents = [];
+      let region = algorithm.regions[key];
       algorithm.traces.forEach((trace, index) => {
-        let finded = algorithm.regions[key].find((square, index) => {
+        let finded = region.find((square, index) => {
           if (square.row === trace[0].row && square.column === trace[0].column) return true;
           return false;
         });
@@ -773,8 +774,8 @@ class Visualization extends React.Component {
       });
 
       return {
-        region: Number(key),
-        coordinates: algorithm.regions[key],
+        region: region.id,
+        coordinates: region,
         agents,
       };
     });

@@ -142,7 +142,7 @@ class History extends React.Component {
           return (
             <div key={index} >
               <div>
-                {`agent ${agent.agent + 1}:`}
+                {`agent ${agent.agent}:`}
               </div>
               <div className="indent">
                 {`trace: ${trace.join(', ')}`}
@@ -154,7 +154,7 @@ class History extends React.Component {
         return (  
           <div key={index}>
             <div>
-              {`region ${region.region + 1}:`}
+              {`region ${region.region}:`}
             </div>
             <div className="indent">
               <div>
