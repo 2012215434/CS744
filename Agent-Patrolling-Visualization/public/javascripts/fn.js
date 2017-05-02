@@ -218,7 +218,7 @@ class f {
           if (illegalAgents.length === 1 ) callback(`Agent ${illegalAgents[0].id} is not at the end position`);
           else {
             let agents = illegalAgents.map((agent) => {
-              return 'agent' + agent.id;
+              return 'agent ' + agent.id;
             }).join(', ').replace(/a/, 'A');
             callback(agents + ' are not at the end position');
           }
