@@ -45,7 +45,7 @@ class Graph extends React.Component {
       }).map((target, index) => {
         return (
           <div className="target" key={index}>
-            {`(${target.row + 1}, ${target.column + 1})`}
+            {`(${target.column + 1}, ${target.row + 1})`}
           </div>
         );
       })
@@ -58,7 +58,7 @@ class Graph extends React.Component {
             {'Agent ' + key}
           </div>
           <div className="target curTarget">
-            {`(${targets[key][curStep].row + 1}, ${targets[key][curStep].column + 1})`}
+            {`(${targets[key][curStep].column + 1}, ${targets[key][curStep].row + 1})`}
           </div>
         </div>
       ) : null;
