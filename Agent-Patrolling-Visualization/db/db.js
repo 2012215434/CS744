@@ -32,7 +32,6 @@ module.exports.recordCreate = function(obj,callback){
   });
 };
 
-
 var findRecordByTime = function(db, start,end, callback){
   db.collection('record').find({ id: { $gt: start, $lt: end } }).toArray(function(err, thing){
     db.close();
@@ -103,12 +102,6 @@ module.exports.getRecordByMutiple = function(queryObject, callback){
     }
   });
 };
-
-
-
-
-
-
 
 var findAllRecords = function(db, callback){
   db.collection('record').find().toArray(function(err, thing){
