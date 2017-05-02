@@ -312,16 +312,13 @@ class RunningEnvironment{
             //store the agents who need to select target at the same time
             let tempAgents = [];
 
+            let notChoosetargetAgents = [];
+
             for (var agentID in this.traces) {
                 let shortestPath = this.shortestPaths[agentID];
 
                 if (shortestPath.length != 0) {
-                    let target = shortestPath[shortestPath.length - 1];
-                    let nextPosition = shortestPath.shift();
-                    this.markVisited(nextPosition);
-                    this.traces[agentID].push(nextPosition);
-                    this.targets[agentID].push(target);
-                    this.removeFromTargetList(agentID, nextPosition);
+                    notChoosetargetAgents.push(agentID);
                 } else {
                     for (var i = 0; i < this.agents.length; i++) {
                         let agent = this.agents[i];
@@ -375,6 +372,17 @@ class RunningEnvironment{
             }
             for (var i = 0; i < positions.length; i++) {
                 this.removeFromTargetList(positions[i].agentID, positions[i]);
+            }
+            for (let i = 0; i < notChoosetargetAgents.length; i++) {
+                let aid = notChoosetargetAgents[i];
+                let shortestPath = this.shortestPaths[aid];
+                let target = shortestPath[shortestPath.length - 1];
+                    
+                let nextPosition = shortestPath.shift();
+                this.markVisited(nextPosition);
+                this.traces[aid].push(nextPosition);
+                this.targets[aid].push(target);
+                this.removeFromTargetList(aid, nextPosition);
             }
         }    
         let map = new Map();
