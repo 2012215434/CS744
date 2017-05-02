@@ -5858,6 +5858,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.$f = undefined;
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 __webpack_require__(138);
@@ -5970,113 +5972,168 @@ var f = function () {
   }, {
     key: 'varify',
     value: function varify(algorithm, agents, regions, callback) {
+      if (agents.length < 1 || regions.length < 1) {
+        callback('You should set the environment');
+        return false;
+      }
       switch (algorithm) {
         case 0:
-          return true;
-        case 3:
           {
-            var illegalRegions = [];
-            regions.forEach(function (region) {
-              var agentsInRegion = agents.filter(function (agent) {
-                return region.some(function (square) {
-                  return square.row === agent.row && square.column === agent.column;
+            var _ret = function () {
+              var illegalRegions = [];
+              regions.forEach(function (region) {
+                var agentsInRegion = agents.filter(function (agent) {
+                  return region.some(function (square) {
+                    return square.row === agent.row && square.column === agent.column;
+                  });
                 });
+
+                if (agentsInRegion.length > Math.ceil(region.length / 2)) illegalRegions.push(region);
               });
 
-              if (agentsInRegion.length > Math.ceil(region.length / 3)) illegalRegions.push(region);
-            });
+              if (illegalRegions.length > 0) {
+                if (illegalRegions.length === 1) callback('The number of agents in region ' + illegalRegions[0].id + ' is more than n/2');else {
+                  var _regions = illegalRegions.map(function (region) {
+                    return 'region ' + region.id;
+                  }).join(', ');
 
-            if (illegalRegions.length > 0) {
-              if (illegalRegions.length === 1) callback('The number of agents in region ' + illegalRegions[0].id + ' is more than n/3');else {
-                var _regions = illegalRegions.map(function (region) {
-                  return 'region ' + region.id;
-                }).join(', ');
+                  callback('The number of agents in ' + _regions + ' are more than n/2');
+                }
 
-                callback('The number of agents in ' + _regions + ' are more than n/3');
+                return {
+                  v: false
+                };
+              } else {
+                return {
+                  v: true
+                };
               }
+            }();
 
-              return false;
-            } else {
-              return true;
-            }
+            if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+          }
+        case 3:
+          {
+            var _ret2 = function () {
+              var illegalRegions = [];
+              regions.forEach(function (region) {
+                var agentsInRegion = agents.filter(function (agent) {
+                  return region.some(function (square) {
+                    return square.row === agent.row && square.column === agent.column;
+                  });
+                });
+
+                if (agentsInRegion.length > Math.ceil(region.length / 3)) illegalRegions.push(region);
+              });
+
+              if (illegalRegions.length > 0) {
+                if (illegalRegions.length === 1) callback('The number of agents in region ' + illegalRegions[0].id + ' is more than n/3');else {
+                  var _regions2 = illegalRegions.map(function (region) {
+                    return 'region ' + region.id;
+                  }).join(', ');
+
+                  callback('The number of agents in ' + _regions2 + ' are more than n/3');
+                }
+
+                return {
+                  v: false
+                };
+              } else {
+                return {
+                  v: true
+                };
+              }
+            }();
+
+            if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
           }
         case 4:
           {
-            var _illegalRegions = [];
-            regions.forEach(function (region) {
-              var agentsInRegion = agents.filter(function (agent) {
-                return region.some(function (square) {
-                  return square.row === agent.row && square.column === agent.column;
+            var _ret3 = function () {
+              var illegalRegions = [];
+              regions.forEach(function (region) {
+                var agentsInRegion = agents.filter(function (agent) {
+                  return region.some(function (square) {
+                    return square.row === agent.row && square.column === agent.column;
+                  });
                 });
+
+                if (agentsInRegion.length > Math.ceil(region.length / 4)) illegalRegions.push(region);
               });
 
-              if (agentsInRegion.length > Math.ceil(region.length / 4)) _illegalRegions.push(region);
-            });
+              if (illegalRegions.length > 0) {
+                if (illegalRegions.length === 1) callback('The number of agents in region ' + illegalRegions[0].id + ' is more than n/4');else {
+                  var _regions3 = illegalRegions.map(function (region) {
+                    return 'region ' + region.id;
+                  }).join(', ');
 
-            if (_illegalRegions.length > 0) {
-              if (_illegalRegions.length === 1) callback('The number of agents in region ' + _illegalRegions[0].id + ' is more than n/4');else {
-                var _regions2 = _illegalRegions.map(function (region) {
-                  return 'region ' + region.id;
-                }).join(', ');
+                  callback('The number of agents in ' + _regions3 + ' are more than n/4');
+                }
 
-                callback('The number of agents in ' + _regions2 + ' are more than n/4');
+                return {
+                  v: false
+                };
               }
 
-              return false;
-            }
-
-            var illegalAgents = [];
-            regions.forEach(function (region) {
-              var agentsInRegion = agents.filter(function (agent) {
-                return region.some(function (square) {
-                  return square.row === agent.row && square.column === agent.column;
-                });
-              });
-
-              var endPositions = region.filter(function (square) {
-                var possibleNextPositions = region.filter(function (next) {
-                  if (next === square) return false;
-                  return next.row === square.row && (next.column + 1 === square.column || next.column - 1 === square.column) || next.column === square.column && (next.row + 1 === square.row || next.row - 1 === square.row);
-                });
-                return possibleNextPositions.length < 2;
-              });
-
-              var agentsOutOfEndPosition = [];
-              //Check if all agents are at end positions
-              agentsInRegion.forEach(function (agent) {
-                var inPosistion = endPositions.some(function (endPosition) {
-                  return endPosition.row === agent.row && endPosition.column === agent.column;
+              var illegalAgents = [];
+              regions.forEach(function (region) {
+                var agentsInRegion = agents.filter(function (agent) {
+                  return region.some(function (square) {
+                    return square.row === agent.row && square.column === agent.column;
+                  });
                 });
 
-                if (!inPosistion) agentsOutOfEndPosition.push(agent);
+                var endPositions = region.filter(function (square) {
+                  var possibleNextPositions = region.filter(function (next) {
+                    if (next === square) return false;
+                    return next.row === square.row && (next.column + 1 === square.column || next.column - 1 === square.column) || next.column === square.column && (next.row + 1 === square.row || next.row - 1 === square.row);
+                  });
+                  return possibleNextPositions.length < 2;
+                });
 
-                return inPosistion;
+                var agentsOutOfEndPosition = [];
+                //Check if all agents are at end positions
+                agentsInRegion.forEach(function (agent) {
+                  var inPosistion = endPositions.some(function (endPosition) {
+                    return endPosition.row === agent.row && endPosition.column === agent.column;
+                  });
+
+                  if (!inPosistion) agentsOutOfEndPosition.push(agent);
+
+                  return inPosistion;
+                });
+
+                var allAtEndPosition = agentsOutOfEndPosition.length > 0 ? false : true;
+
+                if (endPositions.length < 1) allAtEndPosition = true;
+
+                // let lessThanLimit = agentsInRegion.length <= Math.ceil(region.length / 4);
+
+                // if (!lessThanLimit) {
+                //   callback('The number of agents in region should at most be n/4');
+                // }
+                if (!allAtEndPosition) illegalAgents = illegalAgents.concat(agentsOutOfEndPosition);
               });
 
-              var allAtEndPosition = agentsOutOfEndPosition.length > 0 ? false : true;
+              if (illegalAgents.length > 0) {
+                if (illegalAgents.length === 1) callback('Agent ' + illegalAgents[0].id + ' is not at the end position');else {
+                  var _agents = illegalAgents.map(function (agent) {
+                    return 'agent ' + agent.id;
+                  }).join(', ').replace(/a/, 'A');
+                  callback(_agents + ' are not at the end position');
+                }
 
-              if (endPositions.length < 1) allAtEndPosition = true;
-
-              // let lessThanLimit = agentsInRegion.length <= Math.ceil(region.length / 4);
-
-              // if (!lessThanLimit) {
-              //   callback('The number of agents in region should at most be n/4');
-              // }
-              if (!allAtEndPosition) illegalAgents = illegalAgents.concat(agentsOutOfEndPosition);
-            });
-
-            if (illegalAgents.length > 0) {
-              if (illegalAgents.length === 1) callback('Agent ' + illegalAgents[0].id + ' is not at the end position');else {
-                var _agents = illegalAgents.map(function (agent) {
-                  return 'agent' + agent.id;
-                }).join(', ').replace(/a/, 'A');
-                callback(_agents + ' are not at the end position');
+                return {
+                  v: false
+                };
               }
 
-              return false;
-            }
+              return {
+                v: true
+              };
+            }();
 
-            return true;
+            if ((typeof _ret3 === 'undefined' ? 'undefined' : _typeof(_ret3)) === "object") return _ret3.v;
           }
       }
     }
@@ -6091,9 +6148,11 @@ var f = function () {
   }, {
     key: 'get',
     value: function get(agents, id) {
-      return agents.filter(function (agent) {
+      agents = agents.toArray();
+      return agents.filter(function (agent, index) {
+        if (!agent) return;
         return agent.id == id;
-      }).get(0);
+      })[0];
     }
   }, {
     key: 'set',
@@ -18062,7 +18121,7 @@ var stylesInDom = {},
 		};
 	},
 	isOldIE = memoize(function() {
-		return /msie [6-9]\b/.test(self.navigator.userAgent.toLowerCase());
+		return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
 	}),
 	getHeadElement = memoize(function () {
 		return document.head || document.getElementsByTagName("head")[0];
@@ -18421,22 +18480,24 @@ function readFile(files, callback) {
                 var j;
                 for (j = 0; j < p.length; j = j + 2) {
                     var position = {};
-                    position['row'] = parseInt(p[j] - 1);
-                    position['column'] = parseInt(p[j + 1] - 1);
+                    position['column'] = parseInt(p[j] - 1);
+                    position['row'] = parseInt(p[j + 1] - 1);
                     region.push(position);
                 }
 
                 // the agents in one region
                 var agents = [];
                 var a = seperateLines[2].match(/\d+/g);
-                for (j = 0; j < a.length; j = j + 3) {
-                    var agent = {};
-                    var agentID = parseInt(a[j]);
-                    agent['id'] = agentID;
-                    agent['row'] = parseInt(a[j + 1] - 1);
-                    agent['column'] = parseInt(a[j + 2] - 1);
+                if (a) {
+                    for (j = 0; j < a.length; j = j + 3) {
+                        var agent = {};
+                        var agentID = parseInt(a[j]);
+                        agent['id'] = agentID;
+                        agent['column'] = parseInt(a[j + 1] - 1);
+                        agent['row'] = parseInt(a[j + 2] - 1);
 
-                    agents.push(agent);
+                        agents.push(agent);
+                    }
                 }
                 region['agents'] = agents;
                 //add to regions, positions represent a positions in a region
@@ -18812,8 +18873,8 @@ var RunningEnvironment = function () {
                         }
                     }
                     for (var _j = 0; _j < this.agents.length; _j++) {
-                        if (this.agents[i].aid == agentID) {
-                            this.agents[i].visitedNodes = temp.length;
+                        if (this.agents[_j].aid == agentID) {
+                            this.agents[_j].visitedNodes = temp.length;
                             break;
                         }
                     }
@@ -19068,23 +19129,25 @@ var Row = function (_React$Component) {
 
       var _loop = function _loop(i) {
         if (_this2.props.agents) {
-          var agents = [];
-          _this2.props.agents.forEach(function (agent) {
-            if (agent.column == i) {
-              agents.push(agent);
-            }
-          });
-          // console.log(agents);
-          squares.push(_react2.default.createElement(Square, {
-            key: i,
-            row: _this2.props.rIndex,
-            column: i,
-            info: _this2.props.rowInfo.get(i),
-            agents: agents,
-            agentColors: _this2.props.agentColors,
-            traces: _this2.props.traces,
-            curStep: _this2.props.curStep
-          }));
+          (function () {
+            var agents = [];
+            _this2.props.agents.forEach(function (agent) {
+              if (agent.column == i) {
+                agents.push(agent);
+              }
+            });
+            // console.log(agents);
+            squares.push(_react2.default.createElement(Square, {
+              key: i,
+              row: _this2.props.rIndex,
+              column: i,
+              info: _this2.props.rowInfo.get(i),
+              agents: agents,
+              agentColors: _this2.props.agentColors,
+              traces: _this2.props.traces,
+              curStep: _this2.props.curStep
+            }));
+          })();
         } else {
           squares.push(_react2.default.createElement(Square, {
             key: i,
@@ -19136,22 +19199,24 @@ var Board = function (_React$Component2) {
 
       var _loop2 = function _loop2(i) {
         if (_this4.props.agents) {
-          var agents = [];
-          _this4.props.agents.forEach(function (agent) {
-            if (agent.row == i) {
-              agents.push(agent);
-            }
-          });
-          rows.push(_react2.default.createElement(Row, {
-            key: i,
-            rIndex: i,
-            num: cNum,
-            rowInfo: _this4.props.board.get(i),
-            agents: agents,
-            agentColors: _this4.props.agentColors,
-            traces: _this4.props.traces,
-            curStep: _this4.props.curStep
-          }));
+          (function () {
+            var agents = [];
+            _this4.props.agents.forEach(function (agent) {
+              if (agent.row == i) {
+                agents.push(agent);
+              }
+            });
+            rows.push(_react2.default.createElement(Row, {
+              key: i,
+              rIndex: i,
+              num: cNum,
+              rowInfo: _this4.props.board.get(i),
+              agents: agents,
+              agentColors: _this4.props.agentColors,
+              traces: _this4.props.traces,
+              curStep: _this4.props.curStep
+            }));
+          })();
         } else {
           rows.push(_react2.default.createElement(Row, { key: i,
             rIndex: i, num: cNum,
@@ -19255,10 +19320,25 @@ var Graph = function (_React$Component) {
           curRegion = this.props.curRegion,
           algorithm = this.props.algorithm;
 
+      var agentsIds = [];
+      if (curRegion > -1) {
+        this.props.agents.forEach(function (agent, index) {
+          var isInRegion = _this2.props.regions.get(curRegion).some(function (square) {
+            return square.row === agent.row && square.column === agent.column;
+          });
+          if (isInRegion) agentsIds.push(agent.id.toString());
+        });
+      }
+
+      var currrentTar = {};
+      Object.keys(targets).forEach(function (key) {
+        if (agentsIds.indexOf(key) > -1) currrentTar[key] = targets[key];
+      });
+
       var targetList = this.props.historyTargetLists && curRegion > -1 && this.props.historyTargetLists[curRegion][curStep] ? this.props.historyTargetLists[curRegion][curStep].filter(function (tar) {
         if (algorithm == 3 || algorithm == 4) return true;
-        return Object.keys(targets).every(function (key) {
-          return targets[key][curStep].row != tar.row || targets[key][curStep].column != tar.column;
+        return Object.keys(currrentTar).every(function (key) {
+          return currrentTar[key][curStep].row != tar.row || currrentTar[key][curStep].column != tar.column;
         });
       }).map(function (target, index) {
         return _react2.default.createElement(
@@ -19268,18 +19348,8 @@ var Graph = function (_React$Component) {
         );
       }) : null;
 
-      var agentsIds = [];
-      if (curRegion > -1) {
-        this.props.agents.forEach(function (agent, index) {
-          var isInRegion = _this2.props.regions.get(curRegion).some(function (square) {
-            return square.row === agent.row && square.column === agent.column;
-          });
-          if (isInRegion) agentsIds.push(index);
-        });
-      }
-
-      var curTargets = targets ? Object.keys(targets).map(function (key, index) {
-        return agentsIds.indexOf(index) > -1 && targets[key][curStep] ? _react2.default.createElement(
+      var curTargets = Object.keys(currrentTar).length > 0 ? Object.keys(currrentTar).map(function (key, index) {
+        return currrentTar[key][curStep] ? _react2.default.createElement(
           'div',
           { key: index },
           _react2.default.createElement(
@@ -19597,7 +19667,7 @@ var History = function (_React$Component) {
               _react2.default.createElement(
                 'div',
                 null,
-                'agent ' + (agent.agent + 1) + ':'
+                'agent ' + agent.agent + ':'
               ),
               _react2.default.createElement(
                 'div',
@@ -19613,7 +19683,7 @@ var History = function (_React$Component) {
             _react2.default.createElement(
               'div',
               null,
-              'region ' + (region.region + 1) + ':'
+              'region ' + region.region + ':'
             ),
             _react2.default.createElement(
               'div',
@@ -20353,13 +20423,13 @@ var Visualization = function (_React$Component) {
             column = curPosition.column;
 
         var hidden = _fn.$f.get(agents, id).hidden;
-        agents = agents.set(id, { id: id, row: row, column: column, hidden: hidden });
+        agents = _fn.$f.set(agents, id, { id: id, row: row, column: column, hidden: hidden });
       });
 
       this.agents = agents;
       this.setState({ agents: agents });
 
-      (0, _graph.graph)(this.state.regions.get(0), algorithm.traces, curStep);
+      (0, _graph.graph)(this.state.regions.get(this.state.curRegion), algorithm.traces, curStep);
 
       var isEnd = true;
       algorithm.traces.forEach(function (trace, id) {
@@ -20766,6 +20836,8 @@ var Visualization = function (_React$Component) {
       (0, _ReadingConfiguration.readFile)(this.fileInput.files, function (result, err) {
         if (result) _this9.fileResult = result;else if (err) _this9.setState({ alert: err });
       });
+
+      this.setState({ selector_disabled: true });
     }
   }, {
     key: 'generateEnvironment',
@@ -20833,13 +20905,15 @@ var Visualization = function (_React$Component) {
         document.getElementById('environment').style.left = rect.left;
 
         if (_this10.fileResult) {
-          var environment = _this10.state.environment;
-          _this10.fileResult.regions.forEach(function (region) {
-            region.forEach(function (square) {
-              environment = environment.update(square.row, square.column, OPEN);
+          (function () {
+            var environment = _this10.state.environment;
+            _this10.fileResult.regions.forEach(function (region) {
+              region.forEach(function (square) {
+                environment = environment.update(square.row, square.column, OPEN);
+              });
             });
-          });
-          _this10.setState({ environment: environment });
+            _this10.setState({ environment: environment });
+          })();
         }
       });
 
@@ -20853,18 +20927,29 @@ var Visualization = function (_React$Component) {
   }, {
     key: 'checkEnvironment',
     value: function checkEnvironment(agents, regions, width, height) {
-      var _this11 = this;
+      agents = agents.toArray();
+      regions = regions.toArray();
 
+      var alerts = [],
+          valid = true;
       var agentsOutOfRegion = [];
-      agents.forEach(function (agent) {
-        var inRegion = regions.some(function (region) {
-          return region.some(function (square) {
+      regions.forEach(function (region) {
+        region.agents.forEach(function (agent) {
+          var exists = region.some(function (square) {
             return agent.row == square.row && agent.column == square.column;
           });
+          if (!exists) agentsOutOfRegion.push(agent);
         });
-
-        if (!inRegion) agentsOutOfRegion.push(agent);
       });
+      // agents.forEach((agent) => {
+      //   let inRegion = regions.some((region) => {
+      //     return region.some((square) => {
+      //       return agent.row == square.row && agent.column == square.column;
+      //     });
+      //   });
+
+      //   if (!inRegion) agentsOutOfRegion.push(agent);
+      // });
 
       var regionsOutOfEnv = [];
       regions.forEach(function (region) {
@@ -20881,7 +20966,8 @@ var Visualization = function (_React$Component) {
 
           var joint = region1.some(function (square1) {
             return region2.some(function (square2) {
-              return square1.row === square2.row && square1.column === square2.column || _fn.$f.isAdjacent(square1, square2);
+              var join = square1.row === square2.row && square1.column === square2.column || _fn.$f.isAdjacent(square1, square2);
+              return join;
             });
           });
           if (joint) jointRegions = [region1, region2];
@@ -20899,58 +20985,63 @@ var Visualization = function (_React$Component) {
       });
 
       if (agentsOutOfRegion.length > 0) {
-        if (agentsOutOfRegion.length === 1) this.setState({ alert: 'Agent ' + agentsOutOfRegion[0].id + ' is out of the region' });else {
+        if (agentsOutOfRegion.length === 1) alerts.push('Agent ' + agentsOutOfRegion[0].id + ' is out of the region');else {
           var _agents = agentsOutOfRegion.map(function (agent) {
             return 'agent ' + agent.id;
           });
           _agents = _agents.join(', ').replace(/a/, 'A');
-          this.setState({ alert: _agents + ' are out of the region' });
+          alerts.push(_agents + ' are out of the region');
         }
-        return false;
+        valid = false;
       }
+
       if (regionsOutOfEnv.length > 0) {
-        if (regionsOutOfEnv.length === 1) this.setState({ alert: 'Region ' + regionsOutOfEnv[0].id + ' is out of the environment' });else {
+        if (regionsOutOfEnv.length === 1) alerts.push('Region ' + regionsOutOfEnv[0].id + ' is out of the environment');else {
           var _regions = regionsOutOfEnv.map(function (region) {
             return 'region ' + region.id;
           });
           _regions = _regions.join(', ').replace(/a/, 'R');
-          this.setState({ alert: _regions + ' are out of the environment' });
+          alerts.push(_regions + ' are out of the environment');
         }
-        return false;
+        valid = false;
       }
+
       if (jointRegions.length > 0) {
-        this.setState({ alert: 'Region ' + jointRegions[1].id + ' and region ' + jointRegions[0].id + ' are connected' });
-        return false;
+        alerts.push('Region ' + jointRegions[1].id + ' and region ' + jointRegions[0].id + ' are connected');
+        valid = false;
       }
+
       if (isolateSpaces.length > 0) {
         var space = isolateSpaces[0];
-        this.setState({ alert: 'Open space (' + (space.square.row + 1) + ', ' + (space.square.column + 1) + ') in region ' + space.regionId + ' is isolate' });
-        return false;
+        alerts.push('Open space (' + (space.square.column + 1) + ', ' + (space.square.row + 1) + ') in region ' + space.regionId + ' is isolate');
+        valid = false;
       }
 
-      var legal = _fn.$f.varify(this.state.selected_algorithm, agents.toArray(), regions.toArray(), function (err) {
+      var legal = _fn.$f.varify(this.state.selected_algorithm, agents, regions, function (err) {
         if (err) {
-          _this11.setState({ alert: err });
+          alerts.push(err);
         }
       });
-      if (!legal) return false;
+      if (!legal) valid = false;
 
-      legal = true;
-      this.state.regions.forEach(function (region) {
-        var finded = _this11.state.agents.find(function (agent) {
-          return region.find(function (square) {
-            return square.row == agent.row && square.column == agent.column;
-          });
-        });
-
-        if (!finded) legal = false;
+      var regionsWithNoAgent = [];
+      regionsWithNoAgent = regions.filter(function (region) {
+        return region.agents.length < 1;
       });
-      if (!legal) {
-        this.setState({ alert: 'There are some regions that have no agents!' });
-        return false;
+
+      if (regionsWithNoAgent.length > 0) {
+        var str = regionsWithNoAgent.map(function (region) {
+          return 'region ' + region.id;
+        }).join(', ').replace(/r/, 'R') + ' do not have agent';
+        alerts.push(str);
+        valid = false;
       }
 
-      return true;
+      if (alerts.length > 0) {
+        this.setState({ alert: alerts.join('. ') });
+      }
+
+      return valid;
     }
   }, {
     key: 'saveRun',
@@ -20958,8 +21049,9 @@ var Visualization = function (_React$Component) {
       this.setState({ show_savePopUp: false });
       var regions = Object.keys(algorithm.regions).map(function (key) {
         var agents = [];
+        var region = algorithm.regions[key];
         algorithm.traces.forEach(function (trace, index) {
-          var finded = algorithm.regions[key].find(function (square, index) {
+          var finded = region.find(function (square, index) {
             if (square.row === trace[0].row && square.column === trace[0].column) return true;
             return false;
           });
@@ -20973,8 +21065,8 @@ var Visualization = function (_React$Component) {
         });
 
         return {
-          region: Number(key),
-          coordinates: algorithm.regions[key],
+          region: region.id,
+          coordinates: region,
           agents: agents
         };
       });
@@ -21003,7 +21095,7 @@ var Visualization = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this12 = this;
+      var _this11 = this;
 
       var background = _react2.default.createElement(_Board.Board, {
         id: 'background',
@@ -21050,7 +21142,7 @@ var Visualization = function (_React$Component) {
                 { 'data-id': index,
                   className: 'agentBlock',
                   key: index,
-                  onClick: _this12.handleLeftBarAgentClick.bind(_this12)
+                  onClick: _this11.handleLeftBarAgentClick.bind(_this11)
                 },
                 _react2.default.createElement('div', { className: 'agent', style: { background: agent.hidden ? '#8585ad' : _agentColors.agentColors[agent.id] } }),
                 _react2.default.createElement(
@@ -21081,7 +21173,7 @@ var Visualization = function (_React$Component) {
             floatingLabelText: 'Algorithm',
             value: this.state.selected_algorithm,
             onChange: function onChange(event, index, val) {
-              return _this12.setState({ selected_algorithm: val });
+              return _this11.setState({ selected_algorithm: val });
             },
             disabled: this.state.selector_disabled
           },
@@ -21108,14 +21200,14 @@ var Visualization = function (_React$Component) {
           { className: 'btn ' + this.state.btn_runMuti_class, onClick: this.runMutiSteps.bind(this) },
           'RUN ',
           _react2.default.createElement('input', { type: 'text', ref: function ref(input) {
-              return _this12.stepsInput = input;
+              return _this11.stepsInput = input;
             } }),
           ' STEPS'
         ),
         _react2.default.createElement(
           'div',
           { className: 'btn ' + this.state.btn_save_class, onClick: function onClick() {
-              return _this12.setState({ show_savePopUp: true });
+              return _this11.setState({ show_savePopUp: true });
             } },
           'SAVE'
         )
@@ -21141,7 +21233,7 @@ var Visualization = function (_React$Component) {
               'width:'
             ),
             _react2.default.createElement('input', { type: 'text', ref: function ref(input) {
-                _this12.widthInput = input;
+                _this11.widthInput = input;
               }, onChange: this.handleEnterSize.bind(this) }),
             _react2.default.createElement('div', { className: 'clearFloat' })
           ),
@@ -21154,21 +21246,21 @@ var Visualization = function (_React$Component) {
               'height:'
             ),
             _react2.default.createElement('input', { type: 'text', ref: function ref(input) {
-                _this12.heightInput = input;
+                _this11.heightInput = input;
               }, onChange: this.handleEnterSize.bind(this) }),
             _react2.default.createElement('div', { className: 'clearFloat' })
           )
         ),
         _react2.default.createElement('div', { className: 'hr' }),
         _react2.default.createElement('div', { className: 'toggle', onClick: function onClick() {
-            if (_this12.state.configFinished) return;
+            if (_this11.state.configFinished) return;
 
-            _this12.setState({ moreBar_class: _this12.state.moreBar_class !== 'show' ? 'show' : 'hide' });
-            _this12.setState({ content_toggle: 0 });
-            _this12.widthInput.value = '';
-            _this12.heightInput.value = '';
-            _this12.fileInput.value = '';
-            _this12.fileResult = null;
+            _this11.setState({ moreBar_class: _this11.state.moreBar_class !== 'show' ? 'show' : 'hide' });
+            _this11.setState({ content_toggle: 0 });
+            _this11.widthInput.value = '';
+            _this11.heightInput.value = '';
+            _this11.fileInput.value = '';
+            _this11.fileResult = null;
           } }),
         _react2.default.createElement(
           'div',
@@ -21182,10 +21274,10 @@ var Visualization = function (_React$Component) {
             type: 'file',
             id: 'fileInput',
             ref: function ref(input) {
-              _this12.fileInput = input;
+              _this11.fileInput = input;
             },
             onClick: function onClick() {
-              _this12.fileInput.value = null;
+              _this11.fileInput.value = null;
             },
             onChange: this.handleSelectFile.bind(this) })
         ),
@@ -21220,7 +21312,7 @@ var Visualization = function (_React$Component) {
             'Description:'
           ),
           _react2.default.createElement('textarea', { type: 'text', ref: function ref(input) {
-              return _this12.descriptionInput = input;
+              return _this11.descriptionInput = input;
             } })
         ),
         _react2.default.createElement(
@@ -21243,7 +21335,7 @@ var Visualization = function (_React$Component) {
         _react2.default.createElement(_Popup2.default, {
           alert: this.state.alert,
           handleClose: function handleClose() {
-            return _this12.setState({ alert: '' });
+            return _this11.setState({ alert: '' });
           }
         })
       );
@@ -65272,8 +65364,8 @@ if(content.locals) module.exports = content.locals;
 if(false) {
 	// When the styles change, update the <style> tags
 	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js!./graph.css", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js!./graph.css");
+		module.hot.accept("!!./../../node_modules/css-loader/index.js!./graph.css", function() {
+			var newContent = require("!!./../../node_modules/css-loader/index.js!./graph.css");
 			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 			update(newContent);
 		});
@@ -65298,8 +65390,8 @@ if(content.locals) module.exports = content.locals;
 if(false) {
 	// When the styles change, update the <style> tags
 	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js!./style.css", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js!./style.css");
+		module.hot.accept("!!./../../node_modules/css-loader/index.js!./style.css", function() {
+			var newContent = require("!!./../../node_modules/css-loader/index.js!./style.css");
 			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 			update(newContent);
 		});
