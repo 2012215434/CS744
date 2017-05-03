@@ -209,7 +209,7 @@ function graph(region, traces, step) {
       context.fillText(d.count, d.x - 3.2, d.y + 3.6);
       context.font = '11px Arial';
       context.fillStyle = '#fff';
-      context.fillText(`(${d.row}, ${d.column})`, d.x + 5, d.y - r);
+      context.fillText(`(${d.column + 1}，${d.row + 1})`, d.x + 5, d.y - r);
     }
   }
 

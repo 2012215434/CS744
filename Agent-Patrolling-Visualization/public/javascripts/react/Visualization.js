@@ -402,6 +402,9 @@ class Visualization extends React.Component {
           onClick={this.handleSketchClick.bind(this, index)}
         >
           {squares}
+          <div className={"regionID"}>
+            {region.id}
+          </div>
         </div>
         {/*{deleter}*/}
         <div className="clearFloat"></div>
