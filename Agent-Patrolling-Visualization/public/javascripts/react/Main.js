@@ -43,6 +43,7 @@ class Main extends React.Component {
           <div className="a">
             
           </div>
+          <Visualization/>
           {this.state.nav === 0 ? <Visualization/> : null}
           {this.state.nav === 1 ? <History/> : null}
           <Paper 
